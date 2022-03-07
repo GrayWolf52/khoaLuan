@@ -11,7 +11,7 @@ class DayViewModel : ViewModel() {
     private val _listDay = MutableLiveData<List<DayModel?>>()
     val listDay: LiveData<List<DayModel?>>
         get() = _listDay
-
+    private var autoId: Int = 0
     fun insertDay(day: DayModel?) {
         var updatedList = listDay.value?.toMutableList()
         try {
@@ -32,17 +32,18 @@ class DayViewModel : ViewModel() {
         cal.setTime(date)
         var dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
         for (i in 1 until (dayOfWeek - 1)) {
-            listDayOfMonth.add(DayModel(null))
+            listDayOfMonth.add(DayModel(++autoId, null))
         }
         do {
-            listDayOfMonth.add(DayModel(date))
+            var day = DayModel(++autoId, date);
+            listDayOfMonth.add(day)
             dayOfMonth++
             date = Date(year - 1900, month - 1, dayOfMonth)
         } while (date!!.month == month - 1)
         cal.setTime(Date(year - 1900, month - 1, dayOfMonth - 1))
         dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
         for (i in dayOfWeek - 1 until 7) {
-            listDayOfMonth.add(DayModel(null))
+            listDayOfMonth.add(DayModel(++autoId, null))
         }
         var updatedList = _listDay.value?.toMutableList()
         try {
@@ -51,6 +52,45 @@ class DayViewModel : ViewModel() {
                 updatedList!!.addAll(listDayOfMonth)
                 _listDay.postValue(updatedList!!)
             }
+        } catch (ex: Exception) {
+        }
+    }
+    fun updateStatus1(id: Int, value: Boolean) {
+        var updatedList = listDay.value?.toMutableList() ?: return
+        try {
+            var n = updatedList.count()
+            for (i in 0 until n) {
+                if (updatedList[i]!!.id == id) {
+                    var day = updatedList[i]!!
+                    updatedList.removeAt(i);
+                    var newDay = DayModel(day.id, day.date)
+                    newDay.status1 = value
+                    newDay.status2 = day.status2
+                    updatedList.add(i, newDay)
+                    break
+                }
+            }
+            _listDay.postValue(updatedList)
+        } catch (ex: Exception) {
+            var a = 1
+        }
+    }
+    fun updateStatus2(id: Int, value: Boolean) {
+        var updatedList = listDay.value?.toMutableList() ?: return
+        try {
+            var n = updatedList.count()
+            for (i in 0 until n) {
+                if (updatedList[i]!!.id == id) {
+                    var day = updatedList[i]!!
+                    updatedList.removeAt(i);
+                    var newDay = DayModel(day.id, day.date)
+                    newDay.status1 = day.status1
+                    newDay.status2 = value
+                    updatedList.add(i, newDay)
+                    break
+                }
+            }
+            _listDay.postValue(updatedList)
         } catch (ex: Exception) {
         }
     }

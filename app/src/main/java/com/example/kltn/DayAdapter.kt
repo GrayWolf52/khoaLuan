@@ -1,5 +1,6 @@
 package com.example.kltn
 
+import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,12 +16,14 @@ class DayAdapter(private val onClick: (View?, DayModel) -> Unit) :
     class DayViewHolder(itemView: View, val onClick: (View?, DayModel) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val lbDay: TextView = itemView.findViewById<TextView>(R.id.lbDay)
+        private val lbStatus1: TextView = itemView.findViewById<TextView>(R.id.lbStatus1)
+        private val lbStatus2: TextView = itemView.findViewById<TextView>(R.id.lbStatus2)
         private lateinit var dayModel: DayModel
 
         init {
             itemView.setOnClickListener {
                 dayModel.let {
-                    onClick(itemView, it)
+                    if (dayModel.date != null) onClick(itemView, it)
                 }
             }
         }
@@ -30,6 +33,15 @@ class DayAdapter(private val onClick: (View?, DayModel) -> Unit) :
 
             if (day.date != null)
                 lbDay.setText(day.date?.date.toString())
+            else
+                lbDay.setText("")
+            if (dayModel.status1) lbStatus1.visibility = View.VISIBLE
+            else lbStatus1.visibility = View.GONE
+
+            if (dayModel.status2) lbStatus2.visibility = View.VISIBLE
+            else lbStatus2.visibility = View.GONE
+
+
         }
     }
 
@@ -46,13 +58,10 @@ class DayAdapter(private val onClick: (View?, DayModel) -> Unit) :
 }
 object DayDiffCallback : DiffUtil.ItemCallback<DayModel>() {
     override fun areItemsTheSame(oldItem: DayModel, newItem: DayModel): Boolean {
-        return false
-        if (oldItem == null && newItem == null) return true
-        if (oldItem == null || newItem == null) return false
-        return oldItem!!.date == newItem!!.date
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: DayModel, newItem: DayModel): Boolean {
-        return true
+        return (oldItem.status1 == newItem.status1 && oldItem.status2 == newItem.status2)
     }
 }

@@ -17,12 +17,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var recyclerView : RecyclerView
     lateinit var dayViewModel: DayViewModel
     lateinit var lbMonth: TextView
+    lateinit var dayAdapter: DayAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recyclerView);
         lbMonth = findViewById(R.id.lbMonth)
-        var dayAdapter = DayAdapter { view, table -> }
+        dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day)}
         recyclerView.adapter = dayAdapter
         dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(this.applicationContext as Context)).get(DayViewModel::class.java)
         var countMonth = 1;
@@ -40,7 +41,15 @@ class MainActivity : AppCompatActivity() {
         dayViewModel.insertMonth(now.month + countMonth, now.year + 1900)
     }
 
-    fun adapterDayOnClick(view: View, day: DayModel) {
-        Toast.makeText(applicationContext, day.date!!.day.toString(), Toast.LENGTH_SHORT)
+    fun adapterDayOnClick(view: View?, day: DayModel) {
+        if (!day.status1) {
+            dayViewModel.updateStatus1(day.id, true)
+            return
+        }
+
+        if (!day.status2) {
+            dayViewModel.updateStatus2(day.id, true)
+        }
+
     }
 }
