@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 
-class LoginActivity : AppCompatActivity() {
+class ActivityLogin : AppCompatActivity() {
 
     lateinit var btnLogin: Button;
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,7 +21,7 @@ class LoginActivity : AppCompatActivity() {
         //Lấy username vs password từ màn hình
         //Gọi Api Login
         //Trong response chứa UserId
-        val intent = Intent(this, MainActivity::class.java).apply {
+        val intent = Intent(this, ActivityMain::class.java).apply {
             putExtra("UserId", 1);
         }
         startActivity(intent)

@@ -1,151 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <LinearLayout
-        android:id="@+id/linerLayout1"
-        android:layout_width="0dp"
-        android:layout_height="48dp"
-        android:orientation="horizontal"
-        android:background="@drawable/border_bottom"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/btnBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="prev"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat" />
-
-        <TextView
-            android:id="@+id/lbMonth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="2 / 2022"
-            android:textAlignment="center"
-            android:textSize="16sp" />
-
-        <TextView
-            android:id="@+id/btnNext"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="next"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="0dp"
-        android:layout_height="36dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linerLayout1">
-
-        <TextView
-            android:id="@+id/lbDay1"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="T2"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_right_bottom" />
-
-        <TextView
-            android:id="@+id/lbDay2"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="T3"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_right_bottom" />
-
-        <TextView
-            android:id="@+id/lbDay3"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="T4"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_right_bottom" />
-
-        <TextView
-            android:id="@+id/lbDay4"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="T5"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_right_bottom"/>
-
-        <TextView
-            android:id="@+id/lbDay5"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="T6"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_right_bottom"/>
-
-        <TextView
-            android:id="@+id/lbDay6"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="T7"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_right_bottom"/>
-
-        <TextView
-            android:id="@+id/lbDay7"
-            android:layout_width="wrap_content"
-            android:layout_weight="1"
-            android:layout_height="36dp"
-            android:gravity="center_vertical"
-            android:text="CN"
-            android:textAlignment="center"
-            tools:ignore="RtlCompat"
-            android:background="@drawable/border_bottom"/>
-
-    </LinearLayout>
+    android:orientation="vertical">
 
     <FrameLayout
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+        android:id="@+id/fragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/mainNavBar" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="GridLayoutManager"
-            app:spanCount="7" />
-    </FrameLayout>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/mainNavBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#fff"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/main_menu" />
+</RelativeLayout>

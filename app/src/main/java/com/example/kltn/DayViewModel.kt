@@ -6,12 +6,19 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import java.util.*
+import kotlin.collections.ArrayList
 
 class DayViewModel : ViewModel() {
     private val _listDay = MutableLiveData<List<DayModel?>>()
     val listDay: LiveData<List<DayModel?>>
         get() = _listDay
+    private val _listEvent = MutableLiveData<List<EventModel?>>()
+    val listEvent: LiveData<List<EventModel?>>
+        get() = _listEvent
+
     private var autoId: Int = 0
+    private var autoEventId: Int = 0
+
     fun insertDay(day: DayModel?) {
         var updatedList = listDay.value?.toMutableList()
         try {
@@ -31,6 +38,8 @@ class DayViewModel : ViewModel() {
         var cal = Calendar.getInstance()
         cal.setTime(date)
         var dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == 1)
+            dayOfWeek = 8
         for (i in 1 until (dayOfWeek - 1)) {
             listDayOfMonth.add(DayModel(++autoId, null))
         }
@@ -42,6 +51,7 @@ class DayViewModel : ViewModel() {
         } while (date!!.month == month - 1)
         cal.setTime(Date(year - 1900, month - 1, dayOfMonth - 1))
         dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == 1) dayOfWeek = 8
         for (i in dayOfWeek - 1 until 7) {
             listDayOfMonth.add(DayModel(++autoId, null))
         }
@@ -73,6 +83,32 @@ class DayViewModel : ViewModel() {
             _listDay.postValue(updatedList)
         } catch (ex: Exception) {
             var a = 1
+        }
+    }
+    fun insertEvent(date: Date, type: Int, name: String) {
+        var updatedList = listEvent.value?.toMutableList()
+        try {
+            if (updatedList == null) _listEvent.postValue(listOf<EventModel?>(EventModel(++autoEventId, date, type, name)))
+            else {
+                updatedList!!.add(EventModel(++autoEventId, date, type, name))
+                _listEvent.postValue(updatedList!!)
+            }
+            var currentListDay = listDay.value?.toMutableList()
+            if (currentListDay != null) {
+                var n = currentListDay.count()
+                for (i in 0 until n) {
+                    var day = currentListDay[i]!!
+                    if (day!!.date != null && day!!.date == date) {
+                        currentListDay.removeAt(i);
+                        var newDay = DayModel(day.id, day.date)
+                        newDay.status1 = true
+                        newDay.status2 = true
+                        currentListDay.add(i, newDay)
+                        break
+                    }
+                }
+            }
+        } catch (ex: Exception) {
         }
     }
     fun updateStatus2(id: Int, value: Boolean) {

@@ -1,6 +1,5 @@
 package com.example.kltn
 
-import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import java.util.*
 
 class DayAdapter(private val onClick: (View?, DayModel) -> Unit) :
     ListAdapter<DayModel, DayAdapter.DayViewHolder>(DayDiffCallback) {
@@ -47,7 +45,7 @@ class DayAdapter(private val onClick: (View?, DayModel) -> Unit) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DayViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.day_item, parent, false)
+            .inflate(R.layout.item_day, parent, false)
         return DayViewHolder(view, onClick)
     }
 

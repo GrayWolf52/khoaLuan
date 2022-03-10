@@ -10,12 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KLTN">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".ActivityMain"
+            android:exported="true"
+            android:theme="@style/Theme.KLTN.NoAcitonBar">
         </activity>
         <activity
-            android:name=".LoginActivity"
-            android:exported="true">
+            android:name=".ActivityLogin"
+            android:exported="true"
+            android:theme="@style/Theme.KLTN.NoAcitonBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
