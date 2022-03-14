@@ -1,11 +1,13 @@
 package com.example.kltn
 
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -19,8 +21,13 @@ class FragmentHome : Fragment() {
     private var recyclerViewEvent : RecyclerView? = null
     lateinit var dayViewModel: DayViewModel
     private var lbMonth: TextView? = null
+    private lateinit var btnBack: TextView
+    private lateinit var btnNext: TextView
+    private lateinit var btnAddEvent: Button
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
+    var countMonth = 0
+    val now = Date()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,12 +37,17 @@ class FragmentHome : Fragment() {
         recyclerView = view?.findViewById(R.id.recyclerView)
         recyclerViewEvent = view?.findViewById(R.id.recyclerViewEvent)
         lbMonth = view?.findViewById(R.id.lbMonth)
+        btnNext = view.findViewById(R.id.btnNext)
+        btnAddEvent = view.findViewById(R.id.btnAddEvent)
+        btnAddEvent.setOnClickListener {
+            val intent = Intent(this.requireActivity(), ActivityEditEvent::class.java)
+            startActivity(intent)
+        }
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day)}
         eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event)}
         recyclerView!!.adapter = dayAdapter
         recyclerViewEvent!!.adapter = eventAdapter
         dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context)).get(DayViewModel::class.java)
-        var countMonth = 1;
         dayViewModel.listDay.observe(this.requireActivity(), Observer {
             it?.let {
                 dayAdapter.submitList(it as MutableList<DayModel>)
@@ -46,23 +58,25 @@ class FragmentHome : Fragment() {
                 eventAdapter.submitList(it as MutableList<EventModel>)
             }
         })
-        lbMonth!!.setOnClickListener({
-            val now = Date()
+        btnBack = view.findViewById(R.id.btnBack)
+        btnBack.setOnClickListener {
+            countMonth--
+            lbMonth!!.text = ((now.month + countMonth) % 12 + 1).toString() + "/" + (now.year + ((now.month + countMonth) / 12) + 1900)
+            dayViewModel.setMonth((now.month + countMonth) % 12 + 1, now.year + ((now.month + countMonth) / 12) + 1900)
+        }
+        btnNext.setOnClickListener {
             countMonth++
-            dayViewModel.insertMonth(now.month + countMonth, now.year + 1900)
-        })
-        val now = Date()
-        dayViewModel.insertMonth(now.month + countMonth, now.year + 1900)
+            lbMonth!!.text = ((now.month + countMonth) % 12 + 1).toString() + "/" + (now.year + ((now.month + countMonth) / 12) + 1900)
+            dayViewModel.setMonth((now.month + countMonth) % 12 + 1, now.year + ((now.month + countMonth) / 12) + 1900)
+        }
+        lbMonth!!.text = (now.month + 1).toString() + "/" + (now.year + 1900)
+        dayViewModel.setMonth(now.month + countMonth, now.year + 1900)
         return view
     }
     fun adapterEventOnClick(view: View?, event: EventModel) {
 
     }
     fun adapterDayOnClick(view: View?, day: DayModel) {
-        if (day.date != null && !day.status1) {
-            dayViewModel.insertEvent(day.date, 1, "Sự kiện")
-            return
-        }
-
+        if (day.date == null) return;
     }
 }

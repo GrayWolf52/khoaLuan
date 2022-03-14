@@ -31,7 +31,7 @@ class DayViewModel : ViewModel() {
         }
     }
 
-    fun insertMonth(month: Int, year: Int) {
+    fun setMonth(month: Int, year: Int) {
         val listDayOfMonth = ArrayList<DayModel?>();
         var date = Date(year - 1900, month - 1, 1)
         var dayOfMonth = 1
@@ -55,15 +55,7 @@ class DayViewModel : ViewModel() {
         for (i in dayOfWeek - 1 until 7) {
             listDayOfMonth.add(DayModel(++autoId, null))
         }
-        var updatedList = _listDay.value?.toMutableList()
-        try {
-            if (updatedList == null) _listDay.postValue(listDayOfMonth)
-            else {
-                updatedList!!.addAll(listDayOfMonth)
-                _listDay.postValue(updatedList!!)
-            }
-        } catch (ex: Exception) {
-        }
+        _listDay.postValue(listDayOfMonth!!)
     }
     fun updateStatus1(id: Int, value: Boolean) {
         var updatedList = listDay.value?.toMutableList() ?: return
@@ -90,7 +82,12 @@ class DayViewModel : ViewModel() {
         try {
             if (updatedList == null) _listEvent.postValue(listOf<EventModel?>(EventModel(++autoEventId, date, type, name)))
             else {
-                updatedList!!.add(EventModel(++autoEventId, date, type, name))
+                var n = updatedList.count()
+                for (i in 0 until n + 1) {
+                    if (i < n && updatedList[i]!!.date <= date) continue
+                    updatedList!!.add(i, EventModel(++autoEventId, date, type, name))
+                    break
+                }
                 _listEvent.postValue(updatedList!!)
             }
             var currentListDay = listDay.value?.toMutableList()
@@ -107,6 +104,7 @@ class DayViewModel : ViewModel() {
                         break
                     }
                 }
+                _listDay.postValue(currentListDay)
             }
         } catch (ex: Exception) {
         }

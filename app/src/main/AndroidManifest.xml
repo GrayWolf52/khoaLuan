@@ -24,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".ActivityEditEvent"
+            android:exported="true"
+            android:theme="@style/Theme.KLTN.NoAcitonBar">
+        </activity>
     </application>
 
 </manifest>
