@@ -4,12 +4,18 @@ import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
+import androidx.core.widget.doBeforeTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kltn.models.UserModel
+import com.example.kltn.services.UserService
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.time.hours
 
 class ActivityEditEvent : AppCompatActivity() {
@@ -20,7 +26,11 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var txtEditEventEndDate: TextView
     private lateinit var txtEditEventParticipant: AutoCompleteTextView
     private lateinit var recyclerViewParticipant: RecyclerView
-    private var listParticipant = ArrayList<String>()
+    private lateinit var selectedParticipantAdapter: AdapterParticipant
+    private var listParticipant = ArrayList<UserModel>()
+    private val _participants: ArrayList<UserModel> = ArrayList<UserModel>()
+    private val _participants2: ArrayList<UserModel> = ArrayList<UserModel>()
+    private var participants: ArrayList<String> = ArrayList<String>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
@@ -82,40 +92,77 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventEndTime.text = timeToString(calendarNext.get(Calendar.HOUR_OF_DAY), calendarNext.get(Calendar.MINUTE))
         txtEditEventEndDate.text = dateToString(calendarNext.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR))
 
-        var selectedParticipantAdapter = AdapterParticipant { view, participant -> deleteParticipant(view, participant) }
+        selectedParticipantAdapter = AdapterParticipant { view, participant -> deleteParticipant(view, participant) }
         recyclerViewParticipant.adapter = selectedParticipantAdapter
-        val participants = arrayOf("Người tham dự 1", "Người tham dự 2", "0123456789", "0987654321")
         val participantAdapter: ArrayAdapter<String> = ArrayAdapter<String>(this, android.R.layout.select_dialog_item, participants)
         txtEditEventParticipant.threshold = 2
         txtEditEventParticipant.setAdapter(participantAdapter)
         txtEditEventParticipant.setOnItemClickListener {parent, view, position, id ->
+            Log.d("Debug:", "select item")
+            Log.d("Debug:", _participants2.count().toString())
+            listParticipant.add(_participants2[position])
+            selectedParticipantAdapter.submitList(listParticipant.toMutableList())
             txtEditEventParticipant.setText("")
             txtEditEventParticipant.clearFocus()
-            listParticipant.add("")
-            selectedParticipantAdapter.submitList(listParticipant.toMutableList())
+        }
+        txtEditEventParticipant.doBeforeTextChanged { text, start, count, after ->
+            _participants2.clear()
+            for (item in _participants) _participants2.add(item)
+        }
+        txtEditEventParticipant.doAfterTextChanged {
+            Log.d("Debug:", "doAfterTextChanged")
+            if (it.toString().length >= txtEditEventParticipant.threshold) {
+                var selectedParticipant = ArrayList<Int>()
+                for (item in listParticipant) {
+                    if (selectedParticipant.contains(item.id)) continue
+                    selectedParticipant.add(item.id)
+                }
+                var searchParticipants = UserService.SearchWithout(
+                    it.toString(),
+                    selectedParticipant
+                ) as ArrayList<UserModel>
+                _participants.clear()
+                for (item in searchParticipants) _participants.add(item)
+                participantAdapter.clear()
+                for (user in _participants) {
+                    participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                }
+
+                participantAdapter.notifyDataSetChanged()
+            }
+            Log.d("Debug:", _participants.count().toString())
         }
     }
-    fun deleteParticipant(view: View?, string: String) {
-
+    fun deleteParticipant(view: View?, participant: UserModel) {
+        var newList = listParticipant.filter { !(it.id == participant.id) }
+        listParticipant.clear()
+        for (item in newList) listParticipant.add(item)
+        selectedParticipantAdapter.submitList(listParticipant.toMutableList())
     }
     fun timeToString(hourOfDay: Int, minute: Int): String {
         var time = "";
         if (hourOfDay < 10) time += "0";
         time += hourOfDay.toString()
-        time += ":"
+        time += "h"
         if (minute < 10) time += "0"
         time += minute.toString()
         return time
     }
     fun dateToString(dayOfMonth: Int, month: Int, year: Int): String {
-        var date = "";
-        if (dayOfMonth < 10) date += "0";
-        date += dayOfMonth.toString()
-        date += "/"
-        if (month < 9) date += "0"
-        date += (month + 1).toString()
-        date += "/"
-        date += year.toString()
-        return date
+        var dateText = "";
+        val date = Date(year, month, dayOfMonth)
+        val cal = Calendar.getInstance()
+        cal.setTime(date)
+        var dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == 1) dateText = "Chủ nhật, "
+        else dateText = "Thứ " + dayOfWeek.toString() + ", "
+        if (dayOfMonth < 10) dateText += "0";
+        dateText += dayOfMonth.toString()
+        dateText += "/"
+        if (month < 9) dateText += "0"
+        dateText += (month + 1).toString()
+        dateText += "/"
+        dateText += year.toString()
+        return dateText
     }
 }

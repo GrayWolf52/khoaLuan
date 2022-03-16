@@ -1,29 +1,24 @@
 package com.example.kltn
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
-import android.content.res.Resources
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import kotlin.time.days
 
-class EventAdapter(private val onClick: (View?, EventModel) -> Unit) :
-    ListAdapter<EventModel, EventAdapter.EventViewHolder>(EventDiffCallback) {
+class EventAdapter(private val onClick: (View?, EventItem) -> Unit) :
+    ListAdapter<EventItem, EventAdapter.EventViewHolder>(EventDiffCallback) {
 
-    class EventViewHolder(itemView: View, val onClick: (View?, EventModel) -> Unit) :
+    class EventViewHolder(itemView: View, val onClick: (View?, EventItem) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val lbEventDay: TextView = itemView.findViewById<TextView>(R.id.lbEventDay)
         private val lbEventMonth: TextView = itemView.findViewById<TextView>(R.id.lbEventMonth)
         private val lbEventStatus: TextView = itemView.findViewById<TextView>(R.id.lbEventStatus)
         private val lbEventName: TextView = itemView.findViewById<TextView>(R.id.lbEventName)
-        private lateinit var eventModel: EventModel
+        private lateinit var eventModel: EventItem
 
         init {
             itemView.setOnClickListener {
@@ -34,7 +29,7 @@ class EventAdapter(private val onClick: (View?, EventModel) -> Unit) :
         }
 
         @SuppressLint("ResourceAsColor")
-        fun bind(event: EventModel) {
+        fun bind(event: EventItem) {
             eventModel = event
 
             if (event.date != null) {
@@ -66,12 +61,12 @@ class EventAdapter(private val onClick: (View?, EventModel) -> Unit) :
         holder.bind(day)
     }
 }
-object EventDiffCallback : DiffUtil.ItemCallback<EventModel>() {
-    override fun areItemsTheSame(oldItem: EventModel, newItem: EventModel): Boolean {
+object EventDiffCallback : DiffUtil.ItemCallback<EventItem>() {
+    override fun areItemsTheSame(oldItem: EventItem, newItem: EventItem): Boolean {
         return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: EventModel, newItem: EventModel): Boolean {
+    override fun areContentsTheSame(oldItem: EventItem, newItem: EventItem): Boolean {
         return (oldItem.type == newItem.type && oldItem.name == newItem.name)
     }
 }

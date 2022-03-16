@@ -114,7 +114,7 @@
                             android:id="@+id/txtEditEventStartTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="7"
+                            android:layout_weight="3"
                             android:editable="false"
                             android:ems="10"
                             android:textAlignment="center"
@@ -124,7 +124,7 @@
                             android:id="@+id/txtEditEventStartDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="3"
+                            android:layout_weight="1"
                             android:editable="false"
                             android:ems="10"
                             android:textAlignment="center"
@@ -142,7 +142,7 @@
                             android:id="@+id/txtEditEventEndTime"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="7"
+                            android:layout_weight="3"
                             android:editable="false"
                             android:ems="10"
                             android:textAlignment="center"
@@ -152,13 +152,20 @@
                             android:id="@+id/txtEditEventEndDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="3"
+                            android:layout_weight="1"
                             android:editable="false"
                             android:ems="10"
                             android:textAlignment="center"
                             tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
                     </LinearLayout>
+
+                    <CheckBox
+                        android:id="@+id/chkEditEventLoop"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Lặp lại" />
 
                 </LinearLayout>
             </LinearLayout>

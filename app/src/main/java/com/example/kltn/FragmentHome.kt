@@ -2,14 +2,12 @@ package com.example.kltn
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
@@ -55,7 +53,7 @@ class FragmentHome : Fragment() {
         })
         dayViewModel.listEvent.observe(this.requireActivity(), Observer {
             it?.let {
-                eventAdapter.submitList(it as MutableList<EventModel>)
+                eventAdapter.submitList(it as MutableList<EventItem>)
             }
         })
         btnBack = view.findViewById(R.id.btnBack)
@@ -73,7 +71,7 @@ class FragmentHome : Fragment() {
         dayViewModel.setMonth(now.month + countMonth, now.year + 1900)
         return view
     }
-    fun adapterEventOnClick(view: View?, event: EventModel) {
+    fun adapterEventOnClick(view: View?, event: EventItem) {
 
     }
     fun adapterDayOnClick(view: View?, day: DayModel) {

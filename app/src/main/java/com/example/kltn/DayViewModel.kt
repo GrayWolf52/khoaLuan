@@ -12,8 +12,8 @@ class DayViewModel : ViewModel() {
     private val _listDay = MutableLiveData<List<DayModel?>>()
     val listDay: LiveData<List<DayModel?>>
         get() = _listDay
-    private val _listEvent = MutableLiveData<List<EventModel?>>()
-    val listEvent: LiveData<List<EventModel?>>
+    private val _listEvent = MutableLiveData<List<EventItem?>>()
+    val listEvent: LiveData<List<EventItem?>>
         get() = _listEvent
 
     private var autoId: Int = 0
@@ -80,12 +80,12 @@ class DayViewModel : ViewModel() {
     fun insertEvent(date: Date, type: Int, name: String) {
         var updatedList = listEvent.value?.toMutableList()
         try {
-            if (updatedList == null) _listEvent.postValue(listOf<EventModel?>(EventModel(++autoEventId, date, type, name)))
+            if (updatedList == null) _listEvent.postValue(listOf<EventItem?>(EventItem(++autoEventId, date, type, name)))
             else {
                 var n = updatedList.count()
                 for (i in 0 until n + 1) {
                     if (i < n && updatedList[i]!!.date <= date) continue
-                    updatedList!!.add(i, EventModel(++autoEventId, date, type, name))
+                    updatedList!!.add(i, EventItem(++autoEventId, date, type, name))
                     break
                 }
                 _listEvent.postValue(updatedList!!)
