@@ -58,7 +58,7 @@ class UserService {
 
             var users = listOf(user1, user2, user3, user4, user5, user6, user7, user8, user9, user10)
             var filterUsers = users.filter { !exclusions.contains(it.id) }
-            filterUsers = filterUsers.filter { it.username.contains(prefix) || (it.lastname + " " + it.firstname).contains(prefix) || it.phone.contains(prefix) }
+            filterUsers = filterUsers.filter { it.username.equals(prefix) || (it.lastname + " " + it.firstname).equals(prefix) || it.phone.equals(prefix) || it.username.contains(prefix) || (it.lastname + " " + it.firstname).contains(prefix) || it.phone.contains(prefix) }
             filterUsers = filterUsers.sortedWith(compareBy({ it.username }, { it.firstname }, { it.lastname }))
             if (filterUsers.count() > 3) filterUsers = filterUsers.subList(0, 3)
             var result = ArrayList<UserModel>()
