@@ -1,13 +1,10 @@
 package com.example.kltn
 
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
@@ -17,7 +14,6 @@ import com.example.kltn.models.UserModel
 import com.example.kltn.services.UserService
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.time.hours
 
 class ActivityEditEvent : AppCompatActivity() {
     private lateinit var btnEditEventBack: TextView
@@ -41,7 +37,7 @@ class ActivityEditEvent : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
-        btnEditEventBack = findViewById(R.id.btnEditEventBack)
+        btnEditEventBack = findViewById(R.id.btnStaffScheduleBack)
         txtEditEventStartTime = findViewById(R.id.txtEditEventStartTime)
         txtEditEventStartDate = findViewById(R.id.txtEditEventStartDate)
         txtEditEventEndTime = findViewById(R.id.txtEditEventEndTime)

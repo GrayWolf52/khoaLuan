@@ -5,28 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@android:color/holo_blue_dark"
+        android:background="@color/purple_500"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/btnEditEventBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="6dp"
-            android:text="Back"
-            android:textColor="@color/white"
-            android:textSize="24dp">
+            android:id="@+id/btnStaffScheduleBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/left_arrow"
+            android:backgroundTint="@color/white"
+            android:textSize="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
         </TextView>
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/linearLayout4"
@@ -118,28 +120,99 @@
                     android:layout_weight="1"
                     android:text="TextView" />
             </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llExtendedInfor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin thêm:" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TextView" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin thêm:" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TextView" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="100dp"
+                        android:layout_height="wrap_content"
+                        android:text="Thông tin thêm:" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="TextView" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/lbExtendInfor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:text="Xem thêm"
+                android:textColor="@android:color/holo_blue_light">
+
+            </TextView>
         </LinearLayout>
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout5"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linerLayout1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:orientation="horizontal"
         android:background="@drawable/border_bottom"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
         <TextView
             android:id="@+id/btnBack"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/left_arrow"
             android:gravity="center_vertical"
-            android:text="prev"
             android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="RtlCompat" />
 
         <TextView
@@ -149,17 +222,29 @@
             android:layout_weight="1"
             android:text="2 / 2022"
             android:textAlignment="center"
-            android:textSize="20sp" />
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnNext"
+            app:layout_constraintStart_toEndOf="@+id/btnBack"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/btnNext"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/right_arrow"
             android:gravity="center_vertical"
-            android:text="next"
             android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:ignore="RtlCompat" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:layout_width="0dp"
@@ -167,11 +252,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout5">
+        app:layout_constraintTop_toBottomOf="@+id/linerLayout1">
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcvStaffSchedule"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"/>
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -23,6 +23,7 @@ class FragmentGroup: Fragment() {
         rcvGroup = view.findViewById(R.id.rcvGroup)
         groupAdapter = AdapterGroup { view, group -> onGroupClicked(group) }
         rcvGroup.adapter = groupAdapter
+        listGroup.clear()
         for (group in GroupService.get())
             listGroup.add(group)
         groupAdapter.submitList(listGroup)
@@ -30,7 +31,7 @@ class FragmentGroup: Fragment() {
     }
 
     fun onGroupClicked(group: GroupModel) {
-        var intent = Intent(this.requireActivity(), ActivityStaffSchedule::class.java).apply {
+        var intent = Intent(this.requireActivity(), ActivityMember::class.java).apply {
             putExtra("GroupId", group.id)
         }
         startActivity(intent)

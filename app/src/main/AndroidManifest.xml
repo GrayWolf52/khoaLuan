@@ -30,6 +30,11 @@
             android:theme="@style/Theme.KLTN.NoAcitonBar">
         </activity>
         <activity
+            android:name=".ActivityMember"
+            android:exported="true"
+            android:theme="@style/Theme.KLTN.NoAcitonBar">
+        </activity>
+        <activity
             android:name=".ActivityStaffSchedule"
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar">

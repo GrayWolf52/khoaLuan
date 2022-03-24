@@ -5,20 +5,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.kltn.services.EventService
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DayViewModel : ViewModel() {
+class DayViewModel() : ViewModel() {
+    public var userId: Int = 0
     private val _listDay = MutableLiveData<List<DayModel?>>()
     val listDay: LiveData<List<DayModel?>>
         get() = _listDay
     private val _listEvent = MutableLiveData<List<EventItem?>>()
     val listEvent: LiveData<List<EventItem?>>
         get() = _listEvent
-
     private var autoId: Int = 0
     private var autoEventId: Int = 0
-
     fun insertDay(day: DayModel?) {
         var updatedList = listDay.value?.toMutableList()
         try {
@@ -30,7 +30,6 @@ class DayViewModel : ViewModel() {
         } catch (ex: Exception) {
         }
     }
-
     fun setMonth(month: Int, year: Int) {
         val listDayOfMonth = ArrayList<DayModel?>();
         var date = Date(year - 1900, month - 1, 1)
@@ -55,7 +54,27 @@ class DayViewModel : ViewModel() {
         for (i in dayOfWeek - 1 until 7) {
             listDayOfMonth.add(DayModel(++autoId, null))
         }
+
+        var events = ArrayList<EventItem?>()
+        var listEvent = EventService.get(userId, month, year)
+        for (event in listEvent) {
+            events.add(EventItem(1, event.startDate, 1, event.title))
+            for (day in listDayOfMonth) {
+                if (day == null || day!!.date == null) continue
+                var cal1 = Calendar.getInstance()
+                var cal2 = Calendar.getInstance()
+                cal1.setTime(day.date)
+                cal2.setTime(event.startDate)
+                if (cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
+                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                    && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                )
+                    day.status2 = true
+            }
+        }
         _listDay.postValue(listDayOfMonth!!)
+        _listEvent.postValue(events!!)
+
     }
     fun updateStatus1(id: Int, value: Boolean) {
         var updatedList = listDay.value?.toMutableList() ?: return

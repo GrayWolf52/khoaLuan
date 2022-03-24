@@ -6,12 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.ViewModelProviders
+import com.example.kltn.models.EventModel
+import com.example.kltn.services.EventService
 import java.util.*
 
 class FragmentHome : Fragment() {
@@ -21,7 +22,7 @@ class FragmentHome : Fragment() {
     private var lbMonth: TextView? = null
     private lateinit var btnBack: TextView
     private lateinit var btnNext: TextView
-    private lateinit var btnAddEvent: Button
+    private lateinit var btnAddEvent: TextView
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
     var countMonth = 0
@@ -36,7 +37,7 @@ class FragmentHome : Fragment() {
         recyclerViewEvent = view?.findViewById(R.id.recyclerViewEvent)
         lbMonth = view?.findViewById(R.id.lbMonth)
         btnNext = view.findViewById(R.id.btnNext)
-        btnAddEvent = view.findViewById(R.id.btnAddEvent)
+        btnAddEvent = view.findViewById(R.id.btnAddGroup)
         btnAddEvent.setOnClickListener {
             val intent = Intent(this.requireActivity(), ActivityEditEvent::class.java)
             startActivity(intent)
@@ -56,6 +57,7 @@ class FragmentHome : Fragment() {
                 eventAdapter.submitList(it as MutableList<EventItem>)
             }
         })
+        dayViewModel.userId = 1
         btnBack = view.findViewById(R.id.btnBack)
         btnBack.setOnClickListener {
             countMonth--
