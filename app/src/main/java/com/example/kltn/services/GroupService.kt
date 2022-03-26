@@ -17,5 +17,9 @@ class GroupService {
             member.lastname = "Nguyễn Văn"
             return listOf<UserModel>(member)
         }
+
+        fun create(name: String): Boolean {
+            return true
+        }
     }
 }

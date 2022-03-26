@@ -11,8 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.ViewModelProviders
-import com.example.kltn.models.EventModel
-import com.example.kltn.services.EventService
 import java.util.*
 
 class FragmentHome : Fragment() {
@@ -25,8 +23,7 @@ class FragmentHome : Fragment() {
     private lateinit var btnAddEvent: TextView
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
-    var countMonth = 0
-    val now = Date()
+    private val calendar = Calendar.getInstance()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,8 +32,8 @@ class FragmentHome : Fragment() {
         var view = inflater.inflate(R.layout.fragment_home, container, false);
         recyclerView = view?.findViewById(R.id.recyclerView)
         recyclerViewEvent = view?.findViewById(R.id.recyclerViewEvent)
-        lbMonth = view?.findViewById(R.id.lbMonth)
-        btnNext = view.findViewById(R.id.btnNext)
+        lbMonth = view?.findViewById(R.id.lbStaffScheduleMonth)
+        btnNext = view.findViewById(R.id.btnStaffScheduleNext)
         btnAddEvent = view.findViewById(R.id.btnAddGroup)
         btnAddEvent.setOnClickListener {
             val intent = Intent(this.requireActivity(), ActivityEditEvent::class.java)
@@ -58,19 +55,16 @@ class FragmentHome : Fragment() {
             }
         })
         dayViewModel.userId = 1
-        btnBack = view.findViewById(R.id.btnBack)
+        btnBack = view.findViewById(R.id.btnStaffSchedulePrevious)
         btnBack.setOnClickListener {
-            countMonth--
-            lbMonth!!.text = ((now.month + countMonth) % 12 + 1).toString() + "/" + (now.year + ((now.month + countMonth) / 12) + 1900)
-            dayViewModel.setMonth((now.month + countMonth) % 12 + 1, now.year + ((now.month + countMonth) / 12) + 1900)
+            calendar.add(Calendar.MONTH, -1)
+            refreshEvent()
         }
         btnNext.setOnClickListener {
-            countMonth++
-            lbMonth!!.text = ((now.month + countMonth) % 12 + 1).toString() + "/" + (now.year + ((now.month + countMonth) / 12) + 1900)
-            dayViewModel.setMonth((now.month + countMonth) % 12 + 1, now.year + ((now.month + countMonth) / 12) + 1900)
+            calendar.add(Calendar.MONTH, 1)
+            refreshEvent()
         }
-        lbMonth!!.text = (now.month + 1).toString() + "/" + (now.year + 1900)
-        dayViewModel.setMonth(now.month + countMonth, now.year + 1900)
+        refreshEvent()
         return view
     }
     fun adapterEventOnClick(view: View?, event: EventItem) {
@@ -78,5 +72,11 @@ class FragmentHome : Fragment() {
     }
     fun adapterDayOnClick(view: View?, day: DayModel) {
         if (day.date == null) return;
+    }
+    fun refreshEvent() {
+        var month = calendar.get(Calendar.MONTH) + 1
+        var year = calendar.get(Calendar.YEAR)
+        lbMonth!!.text = month.toString() + " / " + year.toString()
+        dayViewModel.setMonth(month, year)
     }
 }

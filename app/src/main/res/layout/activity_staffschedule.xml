@@ -201,7 +201,7 @@
         app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
         <TextView
-            android:id="@+id/btnBack"
+            android:id="@+id/btnStaffSchedulePrevious"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
@@ -216,7 +216,7 @@
             tools:ignore="RtlCompat" />
 
         <TextView
-            android:id="@+id/lbMonth"
+            android:id="@+id/lbStaffScheduleMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -226,12 +226,12 @@
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnNext"
-            app:layout_constraintStart_toEndOf="@+id/btnBack"
+            app:layout_constraintEnd_toStartOf="@+id/btnStaffScheduleNext"
+            app:layout_constraintStart_toEndOf="@+id/btnStaffSchedulePrevious"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/btnNext"
+            android:id="@+id/btnStaffScheduleNext"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
