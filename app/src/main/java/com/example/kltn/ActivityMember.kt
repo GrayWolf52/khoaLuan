@@ -12,18 +12,22 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doBeforeTextChanged
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kltn.fragment.FragmentMember
 import com.example.kltn.models.UserModel
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserService
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ActivityMember  : AppCompatActivity () {
-    private lateinit var recylerViewMember: RecyclerView
     private lateinit var btnMemberBack: TextView
     private lateinit var btnMemberAdd: TextView
-    private lateinit var adapterMember: AdapterMember
     private val selectedMember = ArrayList<UserModel>()
-    private val selectedMemberAdapter = AdapterParticipant { view, member -> deleteMember(view, member)}
+    private val selectedMemberAdapter = AdapterAddMember { view, member -> deleteMember(view, member)}
+    private lateinit var fragmentMember: FragmentMember
+    private lateinit var fragmentSchedule: FragmentSchedule
+
     private var groupId: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,14 +35,10 @@ class ActivityMember  : AppCompatActivity () {
         var bundle = intent.extras
         if (bundle != null)
             groupId = bundle!!.getInt("GroupId")
-        recylerViewMember = findViewById(R.id.recyclerViewMember)
         btnMemberBack = findViewById(R.id.btnStaffScheduleBack)
         btnMemberBack.setOnClickListener {
             finish()
         }
-        adapterMember = AdapterMember{ view, user -> onMemberClicked(user) }
-        recylerViewMember.adapter = adapterMember
-        adapterMember.submitList(GroupService.getMember(groupId))
         btnMemberAdd = findViewById(R.id.btnMemberAdd)
         btnMemberAdd.setOnClickListener {
             try {
@@ -112,6 +112,28 @@ class ActivityMember  : AppCompatActivity () {
             catch (ex: Exception) {
                 Toast.makeText(this, ex.toString(), Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val fragmentManager: FragmentManager = supportFragmentManager
+        fragmentMember = FragmentMember()
+        fragmentSchedule = FragmentSchedule()
+        var fragmentBundle = Bundle()
+        bundle!!.putInt("groupId", groupId)
+        fragmentMember.arguments = fragmentBundle
+        fragmentSchedule.arguments = fragmentBundle
+
+        fragmentManager.beginTransaction().add(R.id.fragmentGroupContainer, fragmentSchedule, "Lịch").commit()
+        var navbar = findViewById<BottomNavigationView>(R.id.groupNavBar)
+        navbar.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_4  -> {
+                    fragmentManager.beginTransaction().replace(R.id.fragmentGroupContainer,  fragmentSchedule, "Lịch").commit();
+                }
+                R.id.nav_5 -> {
+                    fragmentManager.beginTransaction().replace(R.id.fragmentGroupContainer, fragmentMember, "Thành viên").commit();
+                }
+            }
+            true
         }
     }
 

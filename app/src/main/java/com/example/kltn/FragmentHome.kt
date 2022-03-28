@@ -16,7 +16,7 @@ import java.util.*
 class FragmentHome : Fragment() {
     private var recyclerView : RecyclerView? = null
     private var recyclerViewEvent : RecyclerView? = null
-    lateinit var dayViewModel: DayViewModel
+    private lateinit var dayViewModel: DayViewModel
     private var lbMonth: TextView? = null
     private lateinit var btnBack: TextView
     private lateinit var btnNext: TextView
@@ -32,8 +32,8 @@ class FragmentHome : Fragment() {
         var view = inflater.inflate(R.layout.fragment_home, container, false);
         recyclerView = view?.findViewById(R.id.recyclerView)
         recyclerViewEvent = view?.findViewById(R.id.recyclerViewEvent)
-        lbMonth = view?.findViewById(R.id.lbStaffScheduleMonth)
-        btnNext = view.findViewById(R.id.btnStaffScheduleNext)
+        lbMonth = view?.findViewById(R.id.lbGroupScheduleMonth)
+        btnNext = view.findViewById(R.id.btnGroupSchuduleNext)
         btnAddEvent = view.findViewById(R.id.btnAddGroup)
         btnAddEvent.setOnClickListener {
             val intent = Intent(this.requireActivity(), ActivityEditEvent::class.java)
@@ -55,7 +55,7 @@ class FragmentHome : Fragment() {
             }
         })
         dayViewModel.userId = 1
-        btnBack = view.findViewById(R.id.btnStaffSchedulePrevious)
+        btnBack = view.findViewById(R.id.btnGroupSchudulePrevious)
         btnBack.setOnClickListener {
             calendar.add(Calendar.MONTH, -1)
             refreshEvent()

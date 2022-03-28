@@ -23,6 +23,7 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var txtEditEventEndDate: TextView
     private lateinit var txtEditEventParticipant: AutoCompleteTextView
     private lateinit var recyclerViewParticipant: RecyclerView
+    private lateinit var spPosition: Spinner
     private lateinit var selectedParticipantAdapter: AdapterParticipant
     private lateinit var spnEditEventLoop: Spinner
     private lateinit var chkEditEventLoop: CheckBox
@@ -156,6 +157,10 @@ class ActivityEditEvent : AppCompatActivity() {
             if (chkEditEventLoop.isChecked) spnEditEventLoop.visibility = View.VISIBLE
             else spnEditEventLoop.visibility = View.GONE
         }
+        spPosition = findViewById(R.id.spPosition)
+        var positions = ArrayList<String>()
+        positions.add("Vai trò 1")
+        spPosition.adapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, positions)
         refreshLoopType()
     }
     fun refreshLoopType() {

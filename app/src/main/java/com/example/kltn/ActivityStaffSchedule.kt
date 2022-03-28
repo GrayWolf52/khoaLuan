@@ -1,8 +1,6 @@
 package com.example.kltn
 
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.os.RecoverySystem
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -33,13 +31,13 @@ class ActivityStaffSchedule : AppCompatActivity() {
         }
         llExtendedInfor = findViewById(R.id.llExtendedInfor)
         lbExtendInfor = findViewById(R.id.lbExtendInfor)
-        lbStaffScheduleMonth = findViewById(R.id.lbStaffScheduleMonth)
-        btnStaffSchedulePrevious = findViewById(R.id.btnStaffSchedulePrevious)
+        lbStaffScheduleMonth = findViewById(R.id.lbGroupScheduleMonth)
+        btnStaffSchedulePrevious = findViewById(R.id.btnGroupSchudulePrevious)
         btnStaffSchedulePrevious.setOnClickListener {
             calendar.add(Calendar.MONTH, -1)
             refreshEvent()
         }
-        btnStaffScheduleNext = findViewById(R.id.btnStaffScheduleNext)
+        btnStaffScheduleNext = findViewById(R.id.btnGroupSchuduleNext)
         btnStaffScheduleNext.setOnClickListener {
             calendar.add(Calendar.MONTH, 1)
             refreshEvent()
@@ -55,7 +53,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
                 llExtendedInfor.visibility = View.GONE
             }
         }
-        rcvStaffSchedule = findViewById(R.id.rcvStaffSchedule)
+        rcvStaffSchedule = findViewById(R.id.rcvGroupSchedule)
         eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event)}
         rcvStaffSchedule.adapter = eventAdapter
         refreshEvent()

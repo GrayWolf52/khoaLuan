@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_4"
+        android:enabled="true"
+        android:icon="@drawable/icon_group"
+        android:title="Lịch"></item>
+    <item
+        android:id="@+id/nav_5"
+        android:enabled="true"
+        android:icon="@drawable/icon_user"
+        android:title="Thành viên"></item>
+</menu>

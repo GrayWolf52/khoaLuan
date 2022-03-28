@@ -26,6 +26,12 @@
             tools:ignore="SpeakableTextPresentCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <Spinner
+        android:id="@+id/spView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout10" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linerLayout1"
         android:layout_width="0dp"
@@ -34,10 +40,10 @@
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout10">
+        app:layout_constraintTop_toBottomOf="@+id/spView">
 
         <TextView
-            android:id="@+id/btnStaffSchedulePrevious"
+            android:id="@+id/btnGroupSchudulePrevious"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
@@ -52,7 +58,7 @@
             tools:ignore="RtlCompat" />
 
         <TextView
-            android:id="@+id/lbStaffScheduleMonth"
+            android:id="@+id/lbGroupScheduleMonth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -62,12 +68,12 @@
             android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnStaffScheduleNext"
-            app:layout_constraintStart_toEndOf="@+id/btnStaffSchedulePrevious"
+            app:layout_constraintEnd_toStartOf="@+id/btnGroupSchuduleNext"
+            app:layout_constraintStart_toEndOf="@+id/btnGroupSchudulePrevious"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/btnStaffScheduleNext"
+            android:id="@+id/btnGroupSchuduleNext"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginTop="8dp"
