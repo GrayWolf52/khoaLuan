@@ -1,7 +1,9 @@
 package com.example.kltn
 
+import android.R.attr.data
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -11,12 +13,19 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doBeforeTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.UserModel
+import com.example.kltn.services.EventService
+import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class ActivityEditEvent : AppCompatActivity() {
     private lateinit var btnEditEventBack: TextView
+    private lateinit var btnSaveEvent: Button
+    private lateinit var btnEditEventEdit: TextView
+    private lateinit var btnEditEventCancel: Button
+    private lateinit var txtEditEventTitle: TextView
+    private lateinit var txtEditEventDescription: TextView
     private lateinit var txtEditEventStartTime: TextView
     private lateinit var txtEditEventStartDate: TextView
     private lateinit var txtEditEventEndTime: TextView
@@ -34,10 +43,20 @@ class ActivityEditEvent : AppCompatActivity() {
     private val _participants2: ArrayList<UserModel> = ArrayList<UserModel>()
     private var participants: ArrayList<String> = ArrayList<String>()
     private val listLoopType = ArrayList<String>()
+    private var userId: Int = 0
+    private var eventId: Int = 0
     private lateinit var loopAdaper: ArrayAdapter<String>
     override fun onCreate(savedInstanceState: Bundle?) {
+        var bundle = intent.extras
+        userId = bundle!!.getInt("UserId")
+        eventId = bundle!!.getInt("EventId")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
+        btnSaveEvent = findViewById(R.id.btnSaveEvent)
+        btnEditEventCancel = findViewById(R.id.btnEditEventCancel)
+        btnEditEventEdit = findViewById(R.id.btnEditEventEdit)
+        txtEditEventTitle = findViewById(R.id.txtEditEventTitle)
+        txtEditEventDescription = findViewById(R.id.txtEditEventDescription)
         btnEditEventBack = findViewById(R.id.btnStaffScheduleBack)
         txtEditEventStartTime = findViewById(R.id.txtEditEventStartTime)
         txtEditEventStartDate = findViewById(R.id.txtEditEventStartDate)
@@ -115,8 +134,6 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventParticipant.threshold = 2
         txtEditEventParticipant.setAdapter(participantAdapter)
         txtEditEventParticipant.setOnItemClickListener {parent, view, position, id ->
-            Log.d("Debug:", "select item")
-            Log.d("Debug:", _participants2.count().toString())
             listParticipant.add(_participants2[position])
             selectedParticipantAdapter.submitList(listParticipant.toMutableList())
             txtEditEventParticipant.setText("")
@@ -127,27 +144,25 @@ class ActivityEditEvent : AppCompatActivity() {
             for (item in _participants) _participants2.add(item)
         }
         txtEditEventParticipant.doAfterTextChanged {
-            Log.d("Debug:", "doAfterTextChanged")
             if (it.toString().length >= txtEditEventParticipant.threshold) {
                 var selectedParticipant = ArrayList<Int>()
                 for (item in listParticipant) {
                     if (selectedParticipant.contains(item.id)) continue
                     selectedParticipant.add(item.id)
                 }
-                var searchParticipants = UserService.SearchWithout(
-                    it.toString(),
-                    selectedParticipant
-                ) as ArrayList<UserModel>
-                _participants.clear()
-                for (item in searchParticipants) _participants.add(item)
-                participantAdapter.clear()
-                for (user in _participants) {
-                    participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                var resultSearchUser = UserService.SearchWithout(it.toString(),selectedParticipant)
+                if (resultSearchUser.first.length > 0) {
+                    Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
                 }
-
+                else if (resultSearchUser.second != null) {
+                    for (item in resultSearchUser.second!!) _participants.add(item)
+                    participantAdapter.clear()
+                    for (user in _participants) {
+                        participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                    }
+                }
                 participantAdapter.notifyDataSetChanged()
             }
-            Log.d("Debug:", _participants.count().toString())
         }
 
         loopAdaper = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listLoopType)
@@ -158,10 +173,32 @@ class ActivityEditEvent : AppCompatActivity() {
             else spnEditEventLoop.visibility = View.GONE
         }
         spPosition = findViewById(R.id.spPosition)
-        var positions = ArrayList<String>()
-        positions.add("Vai trò 1")
-        spPosition.adapter = ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, positions)
-        refreshLoopType()
+        btnSaveEvent.setOnClickListener {
+            var recurrenceType = 0
+            if (chkEditEventLoop.isChecked) recurrenceType = (spnEditEventLoop.selectedItemPosition + 1)
+            Thread({
+                var msg = EventService.update(eventId, txtEditEventTitle.text.toString(), txtEditEventDescription.text.toString(), calendarStart.time, calendarEnd.time, recurrenceType, (spPosition.selectedItem as Item).id, listParticipant.map{ it.id}, userId)
+                if (msg.length > 0) {
+                    runOnUiThread(Runnable {
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    })
+                }
+                else {
+                    runOnUiThread(Runnable {
+                        changeUIStatus(false)
+                    })
+                }
+            }).start()
+        }
+        btnEditEventEdit.setOnClickListener {
+            changeUIStatus(true)
+        }
+        btnEditEventCancel.setOnClickListener {
+            loadEvent()
+        }
+        loadUserGroup()
+        if (eventId > 0) loadEvent()
+        else refreshLoopType()
     }
     fun refreshLoopType() {
         listLoopType.clear()
@@ -204,5 +241,79 @@ class ActivityEditEvent : AppCompatActivity() {
         dateText += "/"
         dateText += year.toString()
         return dateText
+    }
+    fun loadUserGroup() {
+        Thread({
+            var resultUserGroup = UserGroupService.GetForUser(userId)
+            if (resultUserGroup.first.length > 0) {
+                Toast.makeText(this, resultUserGroup.first, Toast.LENGTH_SHORT).show()
+            }
+            else {
+                try {
+                    var positions = ArrayList<Item>()
+                    for (userGroup in resultUserGroup.second!!) {
+                        positions.add(
+                            Item(
+                                userGroup.groupId,
+                                userGroup.role?.name + " - " + userGroup.group?.name
+                            )
+                        )
+                    }
+                    val dataAdapter =
+                        ArrayAdapter<Item>(this, android.R.layout.simple_spinner_item, positions)
+                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    runOnUiThread(Runnable {
+                        spPosition.setAdapter(dataAdapter)
+                    })
+                }
+                catch (ex: Exception) {
+                    var a = ex
+                }
+            }
+        }).start()
+
+    }
+    fun changeUIStatus(isEdit: Boolean) {
+        txtEditEventTitle.isEnabled = false
+        txtEditEventDescription.isEnabled = false
+        txtEditEventStartTime.isEnabled = false
+        txtEditEventStartDate.isEnabled = false
+        txtEditEventEndTime.isEnabled = false
+        txtEditEventEndDate.isEnabled = false
+
+        if (isEdit) {
+            btnEditEventEdit.visibility = View.GONE
+            btnSaveEvent.visibility = View.VISIBLE
+            btnEditEventEdit.visibility = View.VISIBLE
+        }
+        else {
+            btnSaveEvent.visibility = View.VISIBLE
+            btnEditEventBack.visibility = View.GONE
+            btnEditEventEdit.visibility = View.VISIBLE
+        }
+    }
+    fun loadEvent() {
+        var resultEvent = EventService.getById(eventId)
+        if (resultEvent.first.length > 0) {
+            Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
+            finish()
+        }
+        else {
+            var event = resultEvent.second
+            txtEditEventTitle.text = event?.title
+            txtEditEventDescription.text = event?.description
+            calendarStart.time = event?.startDate
+            calendarEnd.time = event?.endDate
+            if (event?.loopType!! > 0) {
+                chkEditEventLoop.isChecked = true
+                spnEditEventLoop.visibility = View.VISIBLE
+                spnEditEventLoop.setSelection(event?.loopType - 1)
+            }
+            else {
+                chkEditEventLoop.isChecked = false
+                spnEditEventLoop.visibility = View.GONE
+            }
+        }
+        changeUIStatus(false)
     }
 }

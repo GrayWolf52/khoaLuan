@@ -1,30 +1,27 @@
 package com.example.kltn.services
 
-import android.util.Log
 import com.example.kltn.Common
 import com.example.kltn.models.EventModel
-import com.example.kltn.models.UserModel
+import com.example.kltn.models.UserGroupModel
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.URLEncoder
-import java.util.ArrayList
 
-class UserService {
+class UserGroupService {
     companion object {
-        fun SearchWithout(prefix: String, exclusions: List<Int>): Triple<String, Array<UserModel>?, Int> {
-            var gson = Gson()
+        fun GetForUser(userId: Int): Triple<String, Array<UserGroupModel>?, Int> {
             var client = OkHttpClient()
+            var gson = Gson()
             val request = Request.Builder()
-                .url(Common.API_HOST + "api/Users/Search?prefix=" + URLEncoder.encode(prefix, "utf-8") + "&exclusions=" + URLEncoder.encode(exclusions.joinToString(",")))
+                .url(Common.API_HOST + "api/UserGroup/GetForUser/" + userId)
                 .build()
             try {
                 var response = client.newCall(request).execute()
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    var users:Array<UserModel> = gson.fromJson(responseBody, (ArrayList<UserModel>()).toTypedArray().javaClass)
-                    return Triple("",users , 0)
+                    var userGroups:Array<UserGroupModel> = gson.fromJson(responseBody, (ArrayList<UserGroupModel>()).toTypedArray().javaClass)
+                    return Triple("",userGroups , 0)
                 }
                 else if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {

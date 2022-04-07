@@ -1,6 +1,7 @@
 package com.example.kltn
 
 import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,13 +11,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class DayViewModel() : ViewModel() {
-    public var userId: Int = 0
     private val _listDay = MutableLiveData<List<DayModel?>>()
     val listDay: LiveData<List<DayModel?>>
         get() = _listDay
     private val _listEvent = MutableLiveData<List<EventItem?>>()
     val listEvent: LiveData<List<EventItem?>>
         get() = _listEvent
+    private val _message = MutableLiveData<String>()
+    val message: LiveData<String>
+        get() = _message
     private var autoId: Int = 0
     private var autoEventId: Int = 0
     fun insertDay(day: DayModel?) {
@@ -30,7 +33,7 @@ class DayViewModel() : ViewModel() {
         } catch (ex: Exception) {
         }
     }
-    fun setMonth(month: Int, year: Int) {
+    fun load(userId: Int, groupId: Int, month: Int, year: Int) {
         val listDayOfMonth = ArrayList<DayModel?>();
         var date = Date(year - 1900, month - 1, 1)
         var dayOfMonth = 1
@@ -56,21 +59,28 @@ class DayViewModel() : ViewModel() {
         }
 
         var events = ArrayList<EventItem?>()
-        var listEvent = EventService.get(userId, month, year)
-        for (event in listEvent) {
-            events.add(EventItem(1, event.startDate, 1, event.title))
-            for (day in listDayOfMonth) {
-                if (day == null || day!!.date == null) continue
-                var cal1 = Calendar.getInstance()
-                var cal2 = Calendar.getInstance()
-                cal1.setTime(day.date)
-                cal2.setTime(event.startDate)
-                if (cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
-                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
-                    && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
-                )
-                    day.status2 = true
-            }
+        var resultEvent = EventService.get(userId, groupId, month, year)
+        if (resultEvent.first.length > 0) {
+            _message.postValue(resultEvent.first)
+        }
+        else {
+            var listEvent = resultEvent.second
+            if (listEvent != null)
+                for (event in listEvent) {
+                    events.add(EventItem(1, event.startTime, 1, event.title))
+                    for (day in listDayOfMonth) {
+                        if (day == null || day!!.date == null) continue
+                        var cal1 = Calendar.getInstance()
+                        var cal2 = Calendar.getInstance()
+                        cal1.setTime(day.date)
+                        cal2.setTime(event.startTime)
+                        if (cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
+                            && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                            && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                        )
+                            day.status2 = true
+                    }
+                }
         }
         _listDay.postValue(listDayOfMonth!!)
         _listEvent.postValue(events!!)

@@ -9,13 +9,20 @@ class ActivityMain : AppCompatActivity() {
     private lateinit var fragmentHome: FragmentHome
     private lateinit var fragmentGroup: FragmentGroup
     private lateinit var fragmentAccount: FragmentAccount
+    private var userId: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
+        var bundle = intent.extras
+        if (bundle != null)
+            userId = bundle!!.getInt("UserId")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val fragmentManager: FragmentManager = supportFragmentManager
         fragmentHome = FragmentHome()
+        fragmentHome.arguments = bundle
         fragmentGroup = FragmentGroup()
+        fragmentGroup.arguments = bundle
         fragmentAccount = FragmentAccount()
+        fragmentAccount.arguments = bundle
         fragmentManager.beginTransaction().add(R.id.fragmentContainer, fragmentHome, "Home").commit()
         var navbar = findViewById<BottomNavigationView>(R.id.mainNavBar)
         navbar.setOnNavigationItemSelectedListener {

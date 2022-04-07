@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.services.EventService
@@ -22,6 +23,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
     private var autoId = 0
     private val calendar = Calendar.getInstance()
     private val userId = 1
+    private val groupId = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_staffschedule)
@@ -74,21 +76,28 @@ class ActivityStaffSchedule : AppCompatActivity() {
             listDayOfMonth.add(DayModel(++autoId, null))
         }
         var events = ArrayList<EventItem?>()
-        var listEvent = EventService.get(userId, month, year)
-        for (event in listEvent) {
-            events.add(EventItem(1, event.startDate, 1, event.title))
-            for (day in listDayOfMonth) {
-                if (day == null || day!!.date == null) continue
-                var cal1 = Calendar.getInstance()
-                var cal2 = Calendar.getInstance()
-                cal1.setTime(day.date)
-                cal2.setTime(event.startDate)
-                if (cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
-                    && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
-                    && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
-                )
-                    day.status2 = true
-            }
+        var resultEvent = EventService.get(userId, groupId, month, year)
+        if (resultEvent.first.length > 0) {
+            Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
+        }
+        else {
+            var listEvent = resultEvent.second
+            if (listEvent != null)
+                for (event in listEvent!!) {
+                    events.add(EventItem(1, event.startTime, 1, event.title))
+                    for (day in listDayOfMonth) {
+                        if (day == null || day!!.date == null) continue
+                        var cal1 = Calendar.getInstance()
+                        var cal2 = Calendar.getInstance()
+                        cal1.setTime(day.date)
+                        cal2.setTime(event.startTime)
+                        if (cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH)
+                            && cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH)
+                            && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
+                        )
+                            day.status2 = true
+                    }
+                }
         }
         eventAdapter.submitList(events.toMutableList())
     }
