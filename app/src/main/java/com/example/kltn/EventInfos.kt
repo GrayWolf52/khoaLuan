@@ -10,6 +10,6 @@ class EventInfos {
     var endTime: Date = Date()
     var recurrenceType: Int = 0
     var groupId: Int = 0
-    var creatorId: Int = 0
+    var creator: UserInfos = UserInfos()
     var participants: ArrayList<UserInfos> = ArrayList<UserInfos>()
 }

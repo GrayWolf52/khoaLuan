@@ -6,12 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.ViewModelProviders
+import com.example.kltn.services.UserGroupService
 import java.util.*
 
 class FragmentHome : Fragment() {
@@ -22,10 +22,12 @@ class FragmentHome : Fragment() {
     private lateinit var btnBack: TextView
     private lateinit var btnNext: TextView
     private lateinit var btnAddEvent: TextView
+    private lateinit var spView: Spinner
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
     private val calendar = Calendar.getInstance()
     private var userId = 0
+    private var groupId = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -47,6 +49,17 @@ class FragmentHome : Fragment() {
             b.putInt("EventId", 0)
             intent.putExtras(b)
             startActivity(intent)
+        }
+        spView = view.findViewById(R.id.spView)
+        spView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                groupId = (spView.selectedItem as Item).id
+                refreshEvent()
+            }
+            override fun onNothingSelected(parent: AdapterView<out Adapter>?) {
+                groupId = 0
+                refreshEvent()
+            }
         }
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day)}
         eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event)}
@@ -77,11 +90,15 @@ class FragmentHome : Fragment() {
             calendar.add(Calendar.MONTH, 1)
             refreshEvent()
         }
+        loadUserGroup()
         refreshEvent()
         return view
     }
     fun adapterEventOnClick(view: View?, event: EventItem) {
-
+        var intent = Intent(context, ActivityEditEvent::class.java)
+        intent.putExtra("UserId", userId)
+        intent.putExtra("EventId", event.id)
+        startActivity(intent)
     }
     fun adapterDayOnClick(view: View?, day: DayModel) {
         if (day.date == null) return;
@@ -91,7 +108,42 @@ class FragmentHome : Fragment() {
         var year = calendar.get(Calendar.YEAR)
         lbMonth!!.text = month.toString() + " / " + year.toString()
         Thread({
-            dayViewModel.load(userId, 0, month, year)
+            dayViewModel.load(userId, groupId, month, year)
         }).start()
+    }
+    fun loadUserGroup() {
+        Thread({
+            var resultUserGroup = UserGroupService.GetForUser(userId)
+            if (resultUserGroup.first.length > 0) {
+                Toast.makeText(context, resultUserGroup.first, Toast.LENGTH_SHORT).show()
+            }
+            else {
+                try {
+                    var positions = ArrayList<Item>()
+                    positions.add(Item(0, "Tất cả"))
+                    for (userGroup in resultUserGroup.second!!) {
+                        positions.add(
+                            Item(
+                                userGroup.groupId,
+                                userGroup.group.let {
+                                    if (it == null) ""
+                                    it!!.name
+                                }
+                            )
+                        )
+                    }
+                    val dataAdapter =
+                        ArrayAdapter<Item>(requireContext(), android.R.layout.simple_spinner_item, positions)
+                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    activity?.runOnUiThread(Runnable {
+                        spView.setAdapter(dataAdapter)
+                    })
+                }
+                catch (ex: Exception) {
+                    var a = ex
+                }
+            }
+        }).start()
+
     }
 }

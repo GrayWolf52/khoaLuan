@@ -30,7 +30,9 @@
         android:id="@+id/spView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout10" />
+        android:minHeight="48dp"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout10"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linerLayout1"

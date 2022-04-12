@@ -18,7 +18,6 @@ import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import java.util.*
 
-
 class ActivityEditEvent : AppCompatActivity() {
     private lateinit var btnEditEventBack: TextView
     private lateinit var btnSaveEvent: Button
@@ -274,46 +273,57 @@ class ActivityEditEvent : AppCompatActivity() {
 
     }
     fun changeUIStatus(isEdit: Boolean) {
-        txtEditEventTitle.isEnabled = false
-        txtEditEventDescription.isEnabled = false
-        txtEditEventStartTime.isEnabled = false
-        txtEditEventStartDate.isEnabled = false
-        txtEditEventEndTime.isEnabled = false
-        txtEditEventEndDate.isEnabled = false
-
+        spPosition.isEnabled = isEdit
+        txtEditEventTitle.isEnabled = isEdit
+        txtEditEventDescription.isEnabled = isEdit
+        txtEditEventStartTime.isEnabled = isEdit
+        txtEditEventStartDate.isEnabled = isEdit
+        txtEditEventEndTime.isEnabled = isEdit
+        txtEditEventEndDate.isEnabled = isEdit
+        chkEditEventLoop.isEnabled = isEdit
         if (isEdit) {
             btnEditEventEdit.visibility = View.GONE
             btnSaveEvent.visibility = View.VISIBLE
             btnEditEventEdit.visibility = View.VISIBLE
+            txtEditEventParticipant.visibility = View.VISIBLE
         }
         else {
-            btnSaveEvent.visibility = View.VISIBLE
+            btnSaveEvent.visibility = View.GONE
             btnEditEventBack.visibility = View.GONE
             btnEditEventEdit.visibility = View.VISIBLE
+            txtEditEventParticipant.visibility = View.GONE
         }
     }
     fun loadEvent() {
-        var resultEvent = EventService.getById(eventId)
-        if (resultEvent.first.length > 0) {
-            Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
-            finish()
-        }
-        else {
-            var event = resultEvent.second
-            txtEditEventTitle.text = event?.title
-            txtEditEventDescription.text = event?.description
-            calendarStart.time = event?.startDate
-            calendarEnd.time = event?.endDate
-            if (event?.loopType!! > 0) {
-                chkEditEventLoop.isChecked = true
-                spnEditEventLoop.visibility = View.VISIBLE
-                spnEditEventLoop.setSelection(event?.loopType - 1)
+        Thread({
+            var resultEvent = EventService.getById(eventId)
+            if (resultEvent.first.length > 0) {
+                runOnUiThread(Runnable {
+                    Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
+                    finish()
+                })
             }
             else {
-                chkEditEventLoop.isChecked = false
-                spnEditEventLoop.visibility = View.GONE
+                var event = resultEvent.second
+                txtEditEventTitle.text = event?.title
+                txtEditEventDescription.text = event?.description
+                calendarStart.time = event?.startTime
+                calendarEnd.time = event?.endTime
+                refreshLoopType()
+                if (event?.loopType!! > 0) {
+                    chkEditEventLoop.isChecked = true
+                    spnEditEventLoop.visibility = View.VISIBLE
+                    spnEditEventLoop.setSelection(event?.loopType - 1)
+                }
+                else {
+                    chkEditEventLoop.isChecked = false
+                    spnEditEventLoop.visibility = View.GONE
+                }
+
             }
-        }
-        changeUIStatus(false)
+            runOnUiThread(Runnable {
+                changeUIStatus(false)
+            })
+        }).start()
     }
 }

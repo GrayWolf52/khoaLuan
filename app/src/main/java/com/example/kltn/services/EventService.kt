@@ -1,18 +1,14 @@
 package com.example.kltn.services
 
-import android.content.Intent
 import com.example.kltn.*
 import com.example.kltn.models.EventModel
-import com.example.kltn.models.GroupModel
-import com.example.kltn.models.UserModel
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import com.google.gson.*
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import java.util.*
+
 
 class EventService {
     companion object {
@@ -53,7 +49,8 @@ class EventService {
             event.endTime = endTime
             event.recurrenceType = recurrenceType
             event.groupId = groupId
-            event.creatorId = creatorId
+            event.creator = UserInfos()
+            event.creator.Id = creatorId
             for (participant in participants) {
                 var u = UserInfos()
                 u.Id = participant
@@ -61,7 +58,6 @@ class EventService {
             }
             var Json = MediaType.parse("application/json; charset=utf-8")
             var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
-            var a = gson.toJson(event)
             var requestBody = RequestBody.create(Json, gson.toJson(event))
             var client = OkHttpClient()
             val request = Request.Builder()
@@ -81,7 +77,7 @@ class EventService {
             }
         }
         fun getById(eventId: Int): Triple<String, EventModel?, Int> {
-            var gson = Gson()
+            val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
             var client = OkHttpClient()
             val request = Request.Builder()
                 .url(Common.API_HOST + "api/Event/" + eventId)
