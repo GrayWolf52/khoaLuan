@@ -12,26 +12,27 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.GroupModel
 import com.example.kltn.services.GroupService
+import com.example.kltn.services.UserGroupService
 
 class FragmentGroup: Fragment() {
     private lateinit var btnAddGroup: TextView
     private lateinit var rcvGroup: RecyclerView
     private lateinit var groupAdapter: AdapterGroup
     private val listGroup = ArrayList<GroupModel>()
+    private var userId: Int = 0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        var bundle = arguments
+        if (bundle != null)
+            userId = bundle!!.getInt("UserId")
         var view = inflater.inflate(R.layout.fragment_group, container, false)
         rcvGroup = view.findViewById(R.id.rcvGroup)
         btnAddGroup = view.findViewById(R.id.btnAddGroup)
         groupAdapter = AdapterGroup { view, group -> onGroupClicked(group) }
         rcvGroup.adapter = groupAdapter
-        listGroup.clear()
-        for (group in GroupService.get())
-            listGroup.add(group)
-        groupAdapter.submitList(listGroup)
         btnAddGroup.setOnClickListener {
             try {
                 var dialog = Dialog(requireContext(), R.style.DialogTheme)
@@ -44,14 +45,29 @@ class FragmentGroup: Fragment() {
                     dialog.dismiss()
                 }
                 btnAddGroupSave.setOnClickListener {
-                    var result = GroupService.create(txtAddGroupName.text.toString())
-                    if (result) {
-                        Toast.makeText(requireContext(), "Tạo nhóm thành công.", Toast.LENGTH_SHORT).show()
-                        dialog.dismiss()
-                    }
-                    else {
-                        Toast.makeText(requireContext(), "Tạo nhóm không thành công. Vui lòng thử lại sau.", Toast.LENGTH_SHORT).show()
-                    }
+                    Thread({
+                        var result = GroupService.create(userId, txtAddGroupName.text.toString())
+                        if (result.first.length == 0) {
+                            activity?.runOnUiThread(Runnable {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Tạo nhóm thành công.",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            })
+                            dialog.dismiss()
+                            var intent =
+                                Intent(this.requireActivity(), ActivityMember::class.java).apply {
+                                    putExtra("GroupId", result.second)
+                                }
+                            startActivity(intent)
+                        } else {
+                            activity?.runOnUiThread(Runnable {
+                                Toast.makeText(requireContext(), result.first, Toast.LENGTH_SHORT).show()
+                            })
+
+                        }
+                    }).start()
                 }
                 var window = dialog.window
                 var wlp = window?.attributes
@@ -64,6 +80,7 @@ class FragmentGroup: Fragment() {
                 Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
             }
         }
+        load()
         return view
     }
 
@@ -72,5 +89,23 @@ class FragmentGroup: Fragment() {
             putExtra("GroupId", group.id)
         }
         startActivity(intent)
+    }
+    fun load() {
+        Thread({
+            var result = UserGroupService.GetForUser(userId)
+            if (result.first.length == 0) {
+                if (result.second != null) {
+                    activity?.runOnUiThread(Runnable {
+                        groupAdapter.submitList(result.second!!.filter { x -> x.group != null }
+                            .map { x -> x.group })
+                    })
+                }
+            }
+            else {
+                activity?.runOnUiThread(Runnable {
+                    Toast.makeText(context, result.first, Toast.LENGTH_SHORT).show()
+                })
+            }
+        }).start()
     }
 }

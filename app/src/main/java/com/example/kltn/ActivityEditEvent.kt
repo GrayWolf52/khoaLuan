@@ -193,7 +193,9 @@ class ActivityEditEvent : AppCompatActivity() {
             changeUIStatus(true)
         }
         btnEditEventCancel.setOnClickListener {
-            loadEvent()
+            runOnUiThread(Runnable {
+                changeUIStatus(false)
+            })
         }
         loadUserGroup()
         if (eventId > 0) loadEvent()
@@ -282,14 +284,14 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventEndDate.isEnabled = isEdit
         chkEditEventLoop.isEnabled = isEdit
         if (isEdit) {
-            btnEditEventEdit.visibility = View.GONE
             btnSaveEvent.visibility = View.VISIBLE
-            btnEditEventEdit.visibility = View.VISIBLE
+            btnEditEventCancel.visibility = View.VISIBLE
+            btnEditEventEdit.visibility = View.GONE
             txtEditEventParticipant.visibility = View.VISIBLE
         }
         else {
             btnSaveEvent.visibility = View.GONE
-            btnEditEventBack.visibility = View.GONE
+            btnEditEventCancel.visibility = View.GONE
             btnEditEventEdit.visibility = View.VISIBLE
             txtEditEventParticipant.visibility = View.GONE
         }
