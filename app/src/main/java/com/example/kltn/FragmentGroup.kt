@@ -87,6 +87,7 @@ class FragmentGroup: Fragment() {
     fun onGroupClicked(group: GroupModel) {
         var intent = Intent(this.requireActivity(), ActivityMember::class.java).apply {
             putExtra("GroupId", group.id)
+            putExtra("UserId", userId)
         }
         startActivity(intent)
     }
