@@ -26,7 +26,7 @@ class FragmentHome : Fragment() {
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
     private val calendar = Calendar.getInstance()
-    private var userId = 0
+    private var userId = -1
     private var groupId = 0
     override fun onCreateView(
         inflater: LayoutInflater,

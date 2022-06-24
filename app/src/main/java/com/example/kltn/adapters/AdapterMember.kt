@@ -8,28 +8,26 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kltn.models.GroupModel
-import com.example.kltn.models.UserModel
 
-class AdapterMember(private val onClick: (View?, UserModel) -> Unit) :
-    ListAdapter<UserModel, AdapterMember.MemberViewHolder>(MemberDiffCallback) {
+class AdapterMember(private val onClick: (View?, UserGroupInfos) -> Unit) :
+    ListAdapter<UserGroupInfos, AdapterMember.MemberViewHolder>(MemberDiffCallback) {
 
-    class MemberViewHolder(itemView: View, val onClick: (View?, UserModel) -> Unit) :
+    class MemberViewHolder(itemView: View, val onClick: (View?, UserGroupInfos) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val btnGroup: TextView = itemView.findViewById<Button>(R.id.btnMember)
-        private lateinit var user: UserModel
+        private lateinit var user: UserGroupInfos
 
         init {
             btnGroup.setOnClickListener {
                 user.let {
-                    onClick(itemView, it)
+                    onClick(itemView,it)
                 }
             }
         }
 
-        fun bind(u: UserModel) {
+        fun bind(u: UserGroupInfos) {
             user = u
-            btnGroup.text = u.username + " - " + u.lastname + " " + u.firstname
+            btnGroup.text = u.user.userName + " - " + u.user.lastName + " " + u.user.firstName
         }
     }
 
@@ -44,12 +42,12 @@ class AdapterMember(private val onClick: (View?, UserModel) -> Unit) :
         holder.bind(u)
     }
 }
-object MemberDiffCallback : DiffUtil.ItemCallback<UserModel>() {
-    override fun areItemsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.id == newItem.id
+object MemberDiffCallback : DiffUtil.ItemCallback<UserGroupInfos>() {
+    override fun areItemsTheSame(oldItem: UserGroupInfos, newItem: UserGroupInfos): Boolean {
+        return oldItem.group.id == newItem.group.id && oldItem.user.id == newItem.user.id
     }
 
-    override fun areContentsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.username == newItem.username && oldItem.firstname == newItem.firstname && oldItem.lastname == newItem.lastname
+    override fun areContentsTheSame(oldItem: UserGroupInfos, newItem: UserGroupInfos): Boolean {
+        return oldItem.user.userName == newItem.user.userName && oldItem.user.firstName == newItem.user.firstName && oldItem.user.lastName == newItem.user.lastName
     }
 }

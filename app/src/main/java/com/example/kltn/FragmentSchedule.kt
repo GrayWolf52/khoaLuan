@@ -24,7 +24,7 @@ class FragmentSchedule : Fragment() {
     lateinit var dayViewModel: DayViewModel
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
-    private var userId = 0
+    private var userId = -1
     private var groupId = 0
     private val calendar = Calendar.getInstance()
     override fun onCreateView(
@@ -58,6 +58,7 @@ class FragmentSchedule : Fragment() {
 
         recyclerViewEvent = view.findViewById(R.id.recyclerViewEvent)
         eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event) }
+        recyclerViewEvent!!.adapter = eventAdapter
 
         dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context)).get(DayViewModel::class.java)
         dayViewModel.listDay.observe(this.requireActivity(), Observer {
@@ -96,7 +97,7 @@ class FragmentSchedule : Fragment() {
         var year = calendar.get(Calendar.YEAR)
         lbGroupScheduleMonth!!.text = month.toString() + " / " + year.toString()
         Thread({
-            dayViewModel.load(userId, groupId, month, year)
+            dayViewModel.load(0, groupId, month, year)
         }).start()
     }
 }

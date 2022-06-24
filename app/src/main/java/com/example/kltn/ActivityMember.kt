@@ -118,7 +118,7 @@ class ActivityMember  : AppCompatActivity () {
         fragmentMember = FragmentMember()
         fragmentSchedule = FragmentSchedule()
         var fragmentBundle = Bundle()
-        bundle!!.putInt("groupId", groupId)
+        fragmentBundle.putInt("groupId", groupId)
         fragmentMember.arguments = fragmentBundle
         fragmentSchedule.arguments = fragmentBundle
 

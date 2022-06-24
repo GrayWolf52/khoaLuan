@@ -1,29 +1,51 @@
 package com.example.kltn.services
 
-import com.example.kltn.Common
-import com.example.kltn.GroupInfos
+import com.example.kltn.*
 import com.example.kltn.models.GroupModel
 import com.example.kltn.models.UserModel
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import java.util.ArrayList
 
 class GroupService {
     companion object {
-        fun getMember(id: Int): List<UserModel> {
-            var member = UserModel(1, "user1")
-            member.firstname = "A"
-            member.lastname = "Nguyễn Văn"
-            return listOf<UserModel>(member)
+        fun getMember(id: Int): Triple<String, Array<UserGroupInfos>?, Int> {
+            var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
+            var client = OkHttpClient()
+            val request = Request.Builder()
+                .url(Common.API_HOST + "api/UserGroup/GetAllMember/" + id)
+                .build()
+            try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) {
+                    var usergroups:Array<UserGroupInfos> = gson.fromJson(responseBody, (ArrayList<UserGroupInfos>()).toTypedArray().javaClass)
+                    return Triple("",usergroups , 0)
+                }
+                else if (statusCode == 400) {
+                    if (responseBody == null || responseBody == "") {
+                        return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+                    }
+                    return Triple(responseBody, null, 0)
+                }
+                else {
+                    return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+                }
+            } catch (ex: Exception) {
+                return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+            }
         }
 
         fun create(userId: Int, name: String): Triple<String, Int, Int> {
             var Json = MediaType.parse("application/json; charset=utf-8")
             var group = GroupInfos()
-            group.Name = name
-            group.Creator.Id = userId
+            group.name = name
+            group.creator.id = userId
             var gson = Gson()
             var client = OkHttpClient()
             var requestBody = RequestBody.create(Json, gson.toJson(group))

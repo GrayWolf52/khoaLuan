@@ -13,7 +13,7 @@ import java.util.*
 class EventService {
     companion object {
         fun get(userId: Int, groupId: Int, month: Int, year: Int): Triple<String, Array<EventInfos>?, Int> {
-            if (userId == 0) return Triple("", null, 0)
+            if (userId == -1) return Triple("", null, 0)
             var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
             var client = OkHttpClient()
             val request = Request.Builder()
@@ -50,10 +50,10 @@ class EventService {
             event.recurrenceType = recurrenceType
             event.groupId = groupId
             event.creator = UserInfos()
-            event.creator.Id = creatorId
+            event.creator.id = creatorId
             for (participant in participants) {
                 var u = UserInfos()
-                u.Id = participant
+                u.id = participant
                 event.participants.add(u)
             }
             var Json = MediaType.parse("application/json; charset=utf-8")

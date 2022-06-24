@@ -1,10 +1,10 @@
 package com.example.kltn
 
 class UserInfos {
-    var Id: Int = 0
-    var UserName: String = ""
-    var FirstName: String = ""
-    var LastName: String = ""
-    var Phone: String = ""
-    var Address: String = ""
+    var id: Int = 0
+    var userName: String = ""
+    var firstName: String = ""
+    var lastName: String = ""
+    var phone: String = ""
+    var address: String = ""
 }
