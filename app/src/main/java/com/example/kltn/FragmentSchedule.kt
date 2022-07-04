@@ -3,6 +3,7 @@ package com.example.kltn
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kltn.utils.Constants
 import java.util.*
 
 class FragmentSchedule : Fragment() {
@@ -34,8 +36,9 @@ class FragmentSchedule : Fragment() {
     ): View? {
         var bundle = arguments
         if (bundle != null) {
-            userId = bundle!!.getInt("UserId")
-            groupId = bundle!!.getInt("GroupId")
+            userId = bundle!!.getInt(Constants.USER_ID)
+            groupId = bundle!!.getInt(Constants.GROUD_ID)
+            Log.d("FragmentSchedule", "groupId = $groupId")
         }
 
         var view = inflater.inflate(R.layout.fragment_schedule, container, false)
@@ -60,7 +63,8 @@ class FragmentSchedule : Fragment() {
         eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event) }
         recyclerViewEvent!!.adapter = eventAdapter
 
-        dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context)).get(DayViewModel::class.java)
+        dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context))
+            .get(DayViewModel::class.java)
         dayViewModel.listDay.observe(this.requireActivity(), Observer {
             it?.let {
                 dayAdapter.submitList(it as MutableList<DayModel>)
@@ -82,22 +86,31 @@ class FragmentSchedule : Fragment() {
         return view
     }
 
-    fun adapterDayOnClick(view: View?, day: DayModel) {
+    override fun onResume() {
+        super.onResume()
+        refreshEvent()
+    }
+
+    private fun adapterDayOnClick(view: View?, day: DayModel) {
         if (day.date == null) return
     }
 
-    fun adapterEventOnClick(view: View?, event: EventItem) {
+    private fun adapterEventOnClick(view: View?, event: EventItem) {
         var intent = Intent(context, ActivityEditEvent::class.java)
-        intent.putExtra("UserId", userId)
-        intent.putExtra("EventId", event.id)
+        Log.d("adapterEventOnClick", "")
+        intent.putExtra(Constants.USER_ID, userId)
+        intent.putExtra(Constants.EVENT_ID, event.id)
+        intent.putExtra(Constants.GROUD_ID, groupId)
+        intent.putExtra(Constants.IS_ADD_EVENT_GROUP, true)
         startActivity(intent)
     }
-    fun refreshEvent() {
+
+    private fun refreshEvent() {
         var month = calendar.get(Calendar.MONTH) + 1
         var year = calendar.get(Calendar.YEAR)
-        lbGroupScheduleMonth!!.text = month.toString() + " / " + year.toString()
-        Thread({
+        lbGroupScheduleMonth!!.text = "$month / $year"
+        Thread {
             dayViewModel.load(0, groupId, month, year)
-        }).start()
+        }.start()
     }
 }

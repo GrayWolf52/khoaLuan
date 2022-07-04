@@ -3,6 +3,7 @@ package com.example.kltn
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
+import com.example.kltn.utils.Constants
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ActivityMain : AppCompatActivity() {
@@ -13,7 +14,7 @@ class ActivityMain : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         var bundle = intent.extras
         if (bundle != null)
-            userId = bundle!!.getInt("UserId")
+            userId = bundle!!.getInt(Constants.USER_ID)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val fragmentManager: FragmentManager = supportFragmentManager

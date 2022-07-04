@@ -33,6 +33,7 @@ class DayViewModel() : ViewModel() {
         } catch (ex: Exception) {
         }
     }
+
     fun load(userId: Int, groupId: Int, month: Int, year: Int) {
         val listDayOfMonth = ArrayList<DayModel?>();
         var date = Date(year - 1900, month - 1, 1)
@@ -62,12 +63,11 @@ class DayViewModel() : ViewModel() {
         var resultEvent = EventService.get(userId, groupId, month, year)
         if (resultEvent.first.length > 0) {
             _message.postValue(resultEvent.first)
-        }
-        else {
+        } else {
             var listEvent = resultEvent.second
             if (listEvent != null)
                 for (event in listEvent) {
-                    events.add(EventItem(event.id, event.startTime, 1, event.title))
+                    events.add(EventItem(event.id, event.startTime, 1, event.title, event.groupId))
                     for (day in listDayOfMonth) {
                         if (day == null || day!!.date == null) continue
                         var cal1 = Calendar.getInstance()
@@ -86,6 +86,7 @@ class DayViewModel() : ViewModel() {
         _listEvent.postValue(events!!)
 
     }
+
     fun updateStatus1(id: Int, value: Boolean) {
         var updatedList = listDay.value?.toMutableList() ?: return
         try {
@@ -106,15 +107,28 @@ class DayViewModel() : ViewModel() {
             var a = 1
         }
     }
-    fun insertEvent(date: Date, type: Int, name: String) {
+
+    fun insertEvent(date: Date, type: Int, name: String, groupId: Int) {
         var updatedList = listEvent.value?.toMutableList()
         try {
-            if (updatedList == null) _listEvent.postValue(listOf<EventItem?>(EventItem(++autoEventId, date, type, name)))
+            if (updatedList == null) _listEvent.postValue(
+                listOf<EventItem?>(
+                    EventItem(
+                        ++autoEventId,
+                        date,
+                        type,
+                        name, groupId
+                    )
+                )
+            )
             else {
                 var n = updatedList.count()
                 for (i in 0 until n + 1) {
                     if (i < n && updatedList[i]!!.date <= date) continue
-                    updatedList!!.add(i, EventItem(++autoEventId, date, type, name))
+                    updatedList!!.add(
+                        i,
+                        EventItem(++autoEventId, date, type, name, groupId = groupId)
+                    )
                     break
                 }
                 _listEvent.postValue(updatedList!!)
@@ -138,6 +152,7 @@ class DayViewModel() : ViewModel() {
         } catch (ex: Exception) {
         }
     }
+
     fun updateStatus2(id: Int, value: Boolean) {
         var updatedList = listDay.value?.toMutableList() ?: return
         try {
@@ -159,8 +174,8 @@ class DayViewModel() : ViewModel() {
     }
 }
 
-class DayViewModelFactory(private val context: Context): ViewModelProvider.Factory {
-    override fun<T: ViewModel?> create(modelClass: Class<T>): T {
+class DayViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(DayViewModel::class.java)) {
             var model: DayViewModel = DayViewModel()
             return model as T

@@ -1,6 +1,10 @@
 package com.example.kltn.services
 
+import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.kltn.*
+import com.example.kltn.extensions.toLiveData
 import com.example.kltn.models.EventModel
 import com.google.gson.*
 import okhttp3.MediaType
@@ -25,6 +29,7 @@ class EventService {
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
                     var events:Array<EventInfos> = gson.fromJson(responseBody, (ArrayList<EventInfos>()).toTypedArray().javaClass)
+                    Log.d("events", "events = $events")
                     return Triple("",events , 0)
                 }
                 else if (statusCode == 400) {
@@ -40,7 +45,18 @@ class EventService {
                 return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
             }
         }
-        fun update(eventId: Int, title: String, description: String, startTime: Date, endTime: Date, recurrenceType: Int, groupId: Int, participants: List<Int>, creatorId: Int): String {
+
+        fun update(
+            eventId: Int,
+            title: String,
+            description: String,
+            startTime: Date,
+            endTime: Date,
+            recurrenceType: Int,
+            groupId: Int,
+            participants: List<Int>,
+            creatorId: Int,
+        ): String {
             var event = EventInfos()
             event.id = eventId
             event.title = title
@@ -64,18 +80,19 @@ class EventService {
                 .url(Common.API_HOST + "api/Event/InsertOrUpdate")
                 .post(requestBody)
                 .build()
-            try {
+            return try {
                 var response = client.newCall(request).execute()
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
-                if (statusCode == 200) return ""
-                else if (statusCode == 400 && responseBody != null) return responseBody
-                else if (statusCode == 401) return "Phiên đăng nhập của bạn đã hết hạn.";
-                else return "Đã xảy ra lỗi. Vui lòng thử lại sau."
+                if (statusCode == 200) ""
+                else if (statusCode == 400 && responseBody != null) responseBody
+                else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
+                else "Đã xảy ra lỗi. Vui lòng thử lại sau."
             } catch (ex: Exception) {
-                return "Đã xảy ra lỗi. Vui lòng thử lại sau.";
+                "Đã xảy ra lỗi. Vui lòng thử lại sau.";
             }
         }
+
         fun getById(eventId: Int): Triple<String, EventModel?, Int> {
             val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
             var client = OkHttpClient()
@@ -87,16 +104,14 @@ class EventService {
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    var event:EventModel = gson.fromJson(responseBody, EventModel::class.java)
-                    return Triple("",event , 0)
-                }
-                else if (statusCode == 400) {
+                    var event: EventModel = gson.fromJson(responseBody, EventModel::class.java)
+                    return Triple("", event, 0)
+                } else if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {
                         return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
                     }
                     return Triple(responseBody, null, 0)
-                }
-                else {
+                } else {
                     return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
                 }
             } catch (ex: Exception) {

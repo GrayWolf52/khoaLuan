@@ -84,7 +84,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
             var listEvent = resultEvent.second
             if (listEvent != null)
                 for (event in listEvent!!) {
-                    events.add(EventItem(1, event.startTime, 1, event.title))
+                    events.add(EventItem(1, event.startTime, 1, event.title, event.groupId))
                     for (day in listDayOfMonth) {
                         if (day == null || day!!.date == null) continue
                         var cal1 = Calendar.getInstance()

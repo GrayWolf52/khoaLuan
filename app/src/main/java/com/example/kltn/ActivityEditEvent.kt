@@ -16,6 +16,7 @@ import com.example.kltn.models.UserModel
 import com.example.kltn.services.EventService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
+import com.example.kltn.utils.Constants
 import java.util.*
 
 class ActivityEditEvent : AppCompatActivity() {
@@ -44,11 +45,15 @@ class ActivityEditEvent : AppCompatActivity() {
     private val listLoopType = ArrayList<String>()
     private var userId: Int = 0
     private var eventId: Int = 0
+    private var groupId: Int = -1
+    private var isEventGroup = false
     private lateinit var loopAdaper: ArrayAdapter<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         var bundle = intent.extras
-        userId = bundle!!.getInt("UserId")
-        eventId = bundle!!.getInt("EventId")
+        userId = bundle!!.getInt(Constants.USER_ID)
+        eventId = bundle!!.getInt(Constants.EVENT_ID)
+        groupId = bundle?.getInt(Constants.GROUD_ID)
+        isEventGroup = bundle?.getBoolean(Constants.IS_ADD_EVENT_GROUP)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
         btnSaveEvent = findViewById(R.id.btnSaveEvent)
@@ -71,74 +76,108 @@ class ActivityEditEvent : AppCompatActivity() {
         calendarStart = Calendar.getInstance()
         calendarEnd = Calendar.getInstance()
         calendarEnd.add(Calendar.HOUR, 1)
-        val startDatePicker = object: DatePickerDialog.OnDateSetListener {
-            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        val startDatePicker =
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+
                 txtEditEventStartDate.text = dateToString(dayOfMonth, month, year)
                 calendarStart.set(Calendar.YEAR, year)
                 calendarStart.set(Calendar.MONTH, month)
                 calendarStart.set(Calendar.DAY_OF_MONTH, dayOfMonth)
                 refreshLoopType()
             }
-        }
-        val endDatePicker = object: DatePickerDialog.OnDateSetListener {
-            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        val endDatePicker =
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 txtEditEventEndDate.text = dateToString(dayOfMonth, month, year)
                 calendarEnd.set(Calendar.YEAR, year)
                 calendarEnd.set(Calendar.MONTH, month)
                 calendarEnd.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             }
-        }
         txtEditEventStartDate.setOnClickListener {
-            val startDatePickerDialog = DatePickerDialog(this, startDatePicker, calendarStart.get(Calendar.YEAR), calendarStart.get(Calendar.MONTH), calendarStart.get(Calendar.DAY_OF_MONTH))
+            val startDatePickerDialog = DatePickerDialog(
+                this,
+                startDatePicker,
+                calendarStart.get(Calendar.YEAR),
+                calendarStart.get(Calendar.MONTH),
+                calendarStart.get(Calendar.DAY_OF_MONTH)
+            )
             startDatePickerDialog.show()
         }
         txtEditEventEndDate.setOnClickListener {
-            val endDatePickerDialog = DatePickerDialog(this, endDatePicker, calendarEnd.get(Calendar.YEAR), calendarEnd.get(Calendar.MONTH), calendarEnd.get(Calendar.DAY_OF_MONTH))
+            val endDatePickerDialog = DatePickerDialog(
+                this,
+                endDatePicker,
+                calendarEnd.get(Calendar.YEAR),
+                calendarEnd.get(Calendar.MONTH),
+                calendarEnd.get(Calendar.DAY_OF_MONTH)
+            )
             endDatePickerDialog.show()
         }
 
-        val startTimePicker = object: TimePickerDialog.OnTimeSetListener {
-            override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+        val startTimePicker =
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
                 txtEditEventStartTime.text = timeToString(hourOfDay, minute)
                 calendarStart.set(Calendar.HOUR_OF_DAY, hourOfDay)
                 calendarStart.set(Calendar.MINUTE, minute)
                 refreshLoopType();
             }
-        }
-        val endTimePicker = object: TimePickerDialog.OnTimeSetListener {
-            override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-                txtEditEventEndTime.text = timeToString(hourOfDay, minute)
-                calendarEnd.set(Calendar.HOUR_OF_DAY, hourOfDay)
-                calendarEnd.set(Calendar.MINUTE, minute)
-            }
+        val endTimePicker = TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+            txtEditEventEndTime.text = timeToString(hourOfDay, minute)
+            calendarEnd.set(Calendar.HOUR_OF_DAY, hourOfDay)
+            calendarEnd.set(Calendar.MINUTE, minute)
         }
         txtEditEventStartTime.setOnClickListener {
-            val startTimePickerDialog = TimePickerDialog(this, startTimePicker, calendarStart.get(Calendar.HOUR_OF_DAY), calendarStart.get(Calendar.MINUTE), true)
+            val startTimePickerDialog = TimePickerDialog(
+                this,
+                startTimePicker,
+                calendarStart.get(Calendar.HOUR_OF_DAY),
+                calendarStart.get(Calendar.MINUTE),
+                true
+            )
             startTimePickerDialog.show()
         }
         txtEditEventEndTime.setOnClickListener {
-            val endTimePickerDialog = TimePickerDialog(this, endTimePicker, calendarEnd.get(Calendar.HOUR_OF_DAY), calendarEnd.get(Calendar.MINUTE), true)
+            val endTimePickerDialog = TimePickerDialog(
+                this,
+                endTimePicker,
+                calendarEnd.get(Calendar.HOUR_OF_DAY),
+                calendarEnd.get(Calendar.MINUTE),
+                true
+            )
             endTimePickerDialog.show()
         }
 
-        txtEditEventStartTime.text = timeToString(calendarStart.get(Calendar.HOUR_OF_DAY), calendarStart.get(Calendar.MINUTE))
-        txtEditEventStartDate.text = dateToString(calendarStart.get(Calendar.DAY_OF_MONTH), calendarStart.get(Calendar.MONTH), calendarStart.get(Calendar.YEAR))
+        txtEditEventStartTime.text = timeToString(
+            calendarStart.get(Calendar.HOUR_OF_DAY),
+            calendarStart.get(Calendar.MINUTE)
+        )
+        txtEditEventStartDate.text = dateToString(
+            calendarStart.get(Calendar.DAY_OF_MONTH),
+            calendarStart.get(Calendar.MONTH),
+            calendarStart.get(Calendar.YEAR)
+        )
 
-        txtEditEventEndTime.text = timeToString(calendarEnd.get(Calendar.HOUR_OF_DAY), calendarEnd.get(Calendar.MINUTE))
-        txtEditEventEndDate.text = dateToString(calendarEnd.get(Calendar.DAY_OF_MONTH), calendarEnd.get(Calendar.MONTH), calendarEnd.get(Calendar.YEAR))
+        txtEditEventEndTime.text =
+            timeToString(calendarEnd.get(Calendar.HOUR_OF_DAY), calendarEnd.get(Calendar.MINUTE))
+        txtEditEventEndDate.text = dateToString(
+            calendarEnd.get(Calendar.DAY_OF_MONTH),
+            calendarEnd.get(Calendar.MONTH),
+            calendarEnd.get(Calendar.YEAR)
+        )
 
-        selectedParticipantAdapter = AdapterParticipant { view, participant -> deleteParticipant(view, participant) }
+        selectedParticipantAdapter =
+            AdapterParticipant { view, participant -> deleteParticipant(view, participant) }
         recyclerViewParticipant.adapter = selectedParticipantAdapter
-        val participantAdapter: ArrayAdapter<String> = ArrayAdapter<String>(this, android.R.layout.select_dialog_item, participants)
+        val participantAdapter: ArrayAdapter<String> =
+            ArrayAdapter<String>(this, android.R.layout.select_dialog_item, participants)
         txtEditEventParticipant.threshold = 2
         txtEditEventParticipant.setAdapter(participantAdapter)
-        txtEditEventParticipant.setOnItemClickListener {parent, view, position, id ->
+        txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
             listParticipant.add(_participants2[position])
             selectedParticipantAdapter.submitList(listParticipant.toMutableList())
             txtEditEventParticipant.setText("")
             txtEditEventParticipant.clearFocus()
         }
-        txtEditEventParticipant.doBeforeTextChanged { text, start, count, after ->
+        txtEditEventParticipant.doBeforeTextChanged { _, _, _, _ ->
             _participants2.clear()
             for (item in _participants) _participants2.add(item)
         }
@@ -149,11 +188,10 @@ class ActivityEditEvent : AppCompatActivity() {
                     if (selectedParticipant.contains(item.id)) continue
                     selectedParticipant.add(item.id)
                 }
-                var resultSearchUser = UserService.SearchWithout(it.toString(),selectedParticipant)
-                if (resultSearchUser.first.length > 0) {
+                var resultSearchUser = UserService.SearchWithout(it.toString(), selectedParticipant)
+                if (resultSearchUser.first.isNotEmpty()) {
                     Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
-                }
-                else if (resultSearchUser.second != null) {
+                } else if (resultSearchUser.second != null) {
                     for (item in resultSearchUser.second!!) _participants.add(item)
                     participantAdapter.clear()
                     for (user in _participants) {
@@ -174,20 +212,33 @@ class ActivityEditEvent : AppCompatActivity() {
         spPosition = findViewById(R.id.spPosition)
         btnSaveEvent.setOnClickListener {
             var recurrenceType = 0
-            if (chkEditEventLoop.isChecked) recurrenceType = (spnEditEventLoop.selectedItemPosition + 1)
-            Thread({
-                var msg = EventService.update(eventId, txtEditEventTitle.text.toString(), txtEditEventDescription.text.toString(), calendarStart.time, calendarEnd.time, recurrenceType, (spPosition.selectedItem as Item).id, listParticipant.map{ it.id}, userId)
-                if (msg.length > 0) {
-                    runOnUiThread(Runnable {
+            if (chkEditEventLoop.isChecked) recurrenceType =
+                (spnEditEventLoop.selectedItemPosition + 1)
+            Thread {
+                Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
+                Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
+                val idgroup = if (userId == 0) groupId else (spPosition.selectedItem as Item).id
+                var msg = EventService.update(
+                    eventId = eventId,
+                    title = txtEditEventTitle.text.toString(),
+                    description = txtEditEventDescription.text.toString(),
+                    startTime = calendarStart.time,
+                    endTime = calendarEnd.time,
+                    recurrenceType = recurrenceType,
+                    groupId = idgroup,
+                    creatorId = userId,
+                    participants = listParticipant.map { it.id },
+                )
+                if (msg.isNotEmpty()) {
+                    runOnUiThread {
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                    })
-                }
-                else {
-                    runOnUiThread(Runnable {
+                    }
+                } else {
+                    runOnUiThread {
                         changeUIStatus(false)
-                    })
+                    }
                 }
-            }).start()
+            }.start()
         }
         btnEditEventEdit.setOnClickListener {
             changeUIStatus(true)
@@ -201,22 +252,30 @@ class ActivityEditEvent : AppCompatActivity() {
         if (eventId > 0) loadEvent()
         else refreshLoopType()
     }
-    fun refreshLoopType() {
+
+    private fun refreshLoopType() {
         listLoopType.clear()
         var dayOfWeek = calendarStart.get(Calendar.DAY_OF_WEEK)
-        listLoopType.add("Mỗi " + timeToString(calendarStart.get(Calendar.HOUR_OF_DAY), calendarStart.get(Calendar.MINUTE)) + " hằng ngày")
+        listLoopType.add(
+            "Mỗi " + timeToString(
+                calendarStart.get(Calendar.HOUR_OF_DAY),
+                calendarStart.get(Calendar.MINUTE)
+            ) + " hằng ngày"
+        )
         if (dayOfWeek == 1) listLoopType.add("Mỗi chủ nhật hằng tuần")
-        else listLoopType.add("Mỗi thứ " + dayOfWeek.toString() + " hằng tuần")
+        else listLoopType.add("Mỗi thứ $dayOfWeek hằng tuần")
         var dayOfMonth = calendarStart.get(Calendar.DAY_OF_MONTH)
-        listLoopType.add("Mỗi ngày " + dayOfMonth + " hằng tháng")
+        listLoopType.add("Mỗi ngày $dayOfMonth hằng tháng")
         loopAdaper.notifyDataSetChanged()
     }
-    fun deleteParticipant(view: View?, participant: UserModel) {
+
+    private fun deleteParticipant(view: View?, participant: UserModel) {
         var newList = listParticipant.filter { !(it.id == participant.id) }
         listParticipant.clear()
         for (item in newList) listParticipant.add(item)
         selectedParticipantAdapter.submitList(listParticipant.toMutableList())
     }
+
     fun timeToString(hourOfDay: Int, minute: Int): String {
         var time = "";
         if (hourOfDay < 10) time += "0";
@@ -226,6 +285,7 @@ class ActivityEditEvent : AppCompatActivity() {
         time += minute.toString()
         return time
     }
+
     fun dateToString(dayOfMonth: Int, month: Int, year: Int): String {
         var dateText = "";
         val date = Date(year - 1900, month, dayOfMonth)
@@ -244,37 +304,59 @@ class ActivityEditEvent : AppCompatActivity() {
         return dateText
     }
     fun loadUserGroup() {
-        Thread({
+        Thread {
             var resultUserGroup = UserGroupService.GetForUser(userId)
             if (resultUserGroup.first.length > 0) {
                 Toast.makeText(this, resultUserGroup.first, Toast.LENGTH_SHORT).show()
-            }
-            else {
+            } else {
                 try {
                     var positions = ArrayList<Item>()
-                    for (userGroup in resultUserGroup.second!!) {
-                        positions.add(
-                            Item(
-                                userGroup.groupId,
-                                userGroup.role?.name + " - " + userGroup.group?.name
+                    if (!isEventGroup) {
+                        Log.d("isEventGroup", "isEventGroup = $isEventGroup and groupId = $groupId")
+                        for (userGroup in resultUserGroup.second!!) {
+                            positions.add(
+                                Item(
+                                    userGroup.groupId,
+                                    userGroup.role?.name + " - " + userGroup.group?.name
+                                )
                             )
-                        )
+                        }
+                    } else {
+                        Log.d("isEventGroup", "isEventGroup = $isEventGroup and groupId = $groupId")
+                        resultUserGroup.second?.let { result ->
+                            Log.d("resultUserGroup", " resultUserGroup = ${result.size}")
+                            result.findLast {
+                                it.groupId == groupId
+                            }?.let {
+                                Log.d(
+                                    "isEventGroup",
+                                    "isEventGroup = $isEventGroup and name = ${it.group?.name}"
+                                )
+                                positions.add(
+                                    Item(
+                                        it.groupId,
+                                        it.role?.name + " - " + it.group?.name
+                                    )
+                                )
+                            }
+                        }
                     }
+
                     val dataAdapter =
                         ArrayAdapter<Item>(this, android.R.layout.simple_spinner_item, positions)
                     dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     runOnUiThread(Runnable {
                         spPosition.setAdapter(dataAdapter)
                     })
-                }
-                catch (ex: Exception) {
+                } catch (ex: Exception) {
                     var a = ex
                 }
             }
-        }).start()
+        }.start()
 
     }
-    fun changeUIStatus(isEdit: Boolean) {
+
+    private fun changeUIStatus(isEdit: Boolean) {
         spPosition.isEnabled = isEdit
         txtEditEventTitle.isEnabled = isEdit
         txtEditEventDescription.isEnabled = isEdit
@@ -288,36 +370,39 @@ class ActivityEditEvent : AppCompatActivity() {
             btnEditEventCancel.visibility = View.VISIBLE
             btnEditEventEdit.visibility = View.GONE
             txtEditEventParticipant.visibility = View.VISIBLE
-        }
-        else {
+        } else {
             btnSaveEvent.visibility = View.GONE
             btnEditEventCancel.visibility = View.GONE
             btnEditEventEdit.visibility = View.VISIBLE
             txtEditEventParticipant.visibility = View.GONE
         }
     }
-    fun loadEvent() {
-        Thread({
+
+    private fun loadEvent() {
+        Log.d("loadEvent", "loadEvent")
+        Thread {
             var resultEvent = EventService.getById(eventId)
             if (resultEvent.first.length > 0) {
                 runOnUiThread(Runnable {
                     Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
                     finish()
                 })
-            }
-            else {
+            } else {
                 var event = resultEvent.second
                 txtEditEventTitle.text = event?.title
                 txtEditEventDescription.text = event?.description
                 calendarStart.time = event?.startTime
+                txtEditEventStartTime.text = timeToString(calendarStart.get(Calendar.HOUR_OF_DAY), calendarStart.get(Calendar.MINUTE))
+                txtEditEventStartDate.text = dateToString(calendarStart.get(Calendar.DAY_OF_MONTH), calendarStart.get(Calendar.MONTH), calendarStart.get(Calendar.YEAR))
                 calendarEnd.time = event?.endTime
+                txtEditEventEndTime.text = timeToString(calendarEnd.get(Calendar.HOUR_OF_DAY), calendarEnd.get(Calendar.MINUTE))
+                txtEditEventEndDate.text = dateToString(calendarEnd.get(Calendar.DAY_OF_MONTH), calendarEnd.get(Calendar.MONTH), calendarEnd.get(Calendar.YEAR))
                 refreshLoopType()
                 if (event?.loopType!! > 0) {
                     chkEditEventLoop.isChecked = true
                     spnEditEventLoop.visibility = View.VISIBLE
                     spnEditEventLoop.setSelection(event?.loopType - 1)
-                }
-                else {
+                } else {
                     chkEditEventLoop.isChecked = false
                     spnEditEventLoop.visibility = View.GONE
                 }
@@ -326,6 +411,6 @@ class ActivityEditEvent : AppCompatActivity() {
             runOnUiThread(Runnable {
                 changeUIStatus(false)
             })
-        }).start()
+        }.start()
     }
 }

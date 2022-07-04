@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.kltn.utils.Constants
 import com.google.gson.Gson
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -51,7 +52,7 @@ class ActivityLogin : AppCompatActivity() {
             var responseBody = response.body()?.string()
             if (statusCode == 200) {
                 val intent = Intent(this, ActivityMain::class.java).apply {
-                    putExtra("UserId", responseBody!!.toInt());
+                    putExtra(Constants.USER_ID, responseBody!!.toInt());
                 }
                 startActivity(intent)
             }

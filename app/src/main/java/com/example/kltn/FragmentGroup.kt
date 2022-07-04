@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.GroupModel
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
+import com.example.kltn.utils.Constants
 
 class FragmentGroup: Fragment() {
     private lateinit var btnAddGroup: TextView
@@ -27,7 +28,7 @@ class FragmentGroup: Fragment() {
     ): View? {
         var bundle = arguments
         if (bundle != null)
-            userId = bundle!!.getInt("UserId")
+            userId = bundle!!.getInt(Constants.USER_ID)
         var view = inflater.inflate(R.layout.fragment_group, container, false)
         rcvGroup = view.findViewById(R.id.rcvGroup)
         btnAddGroup = view.findViewById(R.id.btnAddGroup)
@@ -35,7 +36,7 @@ class FragmentGroup: Fragment() {
         rcvGroup.adapter = groupAdapter
         btnAddGroup.setOnClickListener {
             try {
-                var dialog = Dialog(requireContext(), R.style.DialogTheme)
+                var dialog = Dialog(requireContext())
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 dialog.setContentView(R.layout.dialog_addgroup)
                 var btnAddGroupClose = dialog.findViewById<Button>(R.id.btnAddGroupClose)
@@ -45,10 +46,10 @@ class FragmentGroup: Fragment() {
                     dialog.dismiss()
                 }
                 btnAddGroupSave.setOnClickListener {
-                    Thread({
+                    Thread {
                         var result = GroupService.create(userId, txtAddGroupName.text.toString())
                         if (result.first.length == 0) {
-                            activity?.runOnUiThread(Runnable {
+                            activity?.runOnUiThread(Runnable  {
                                 Toast.makeText(
                                     requireContext(),
                                     "Tạo nhóm thành công.",
@@ -56,18 +57,21 @@ class FragmentGroup: Fragment() {
                                 ).show()
                             })
                             dialog.dismiss()
+                            load()
                             var intent =
                                 Intent(this.requireActivity(), ActivityMember::class.java).apply {
-                                    putExtra("GroupId", result.second)
+                                    putExtra(Constants.GROUD_ID, result.second)
+                                    putExtra(Constants.USER_ID, userId)
                                 }
                             startActivity(intent)
                         } else {
                             activity?.runOnUiThread(Runnable {
-                                Toast.makeText(requireContext(), result.first, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(requireContext(), result.first, Toast.LENGTH_SHORT)
+                                    .show()
                             })
 
                         }
-                    }).start()
+                    }.start()
                 }
                 var window = dialog.window
                 var wlp = window?.attributes
@@ -86,13 +90,13 @@ class FragmentGroup: Fragment() {
 
     fun onGroupClicked(group: GroupModel) {
         var intent = Intent(this.requireActivity(), ActivityMember::class.java).apply {
-            putExtra("GroupId", group.id)
-            putExtra("UserId", userId)
+            putExtra(Constants.GROUD_ID, group.id)
+            putExtra(Constants.USER_ID, userId)
         }
         startActivity(intent)
     }
     fun load() {
-        Thread({
+        Thread {
             var result = UserGroupService.GetForUser(userId)
             if (result.first.length == 0) {
                 if (result.second != null) {
@@ -101,12 +105,11 @@ class FragmentGroup: Fragment() {
                             .map { x -> x.group })
                     })
                 }
-            }
-            else {
+            } else {
                 activity?.runOnUiThread(Runnable {
                     Toast.makeText(context, result.first, Toast.LENGTH_SHORT).show()
                 })
             }
-        }).start()
+        }.start()
     }
 }

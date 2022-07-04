@@ -1,5 +1,6 @@
 package com.example.kltn.services
 
+import android.util.Log
 import com.example.kltn.Common
 import com.example.kltn.models.EventModel
 import com.example.kltn.models.UserGroupModel
@@ -21,6 +22,7 @@ class UserGroupService {
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
                     var userGroups:Array<UserGroupModel> = gson.fromJson(responseBody, (ArrayList<UserGroupModel>()).toTypedArray().javaClass)
+                    Log.d("userGroups", " userGroups size = ${userGroups.size}")
                     return Triple("",userGroups , 0)
                 }
                 else if (statusCode == 400) {

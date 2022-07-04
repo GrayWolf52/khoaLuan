@@ -1,6 +1,7 @@
 package com.example.kltn
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,6 +34,7 @@ class EventAdapter(private val onClick: (View?, EventItem) -> Unit) :
             eventModel = event
 
             if (event.date != null) {
+                Log.d("bind", " bind = ${event.date.date}")
                 lbEventDay.setText(event.date.date.toString())
                 lbEventMonth.setText("Thg " + (event.date.month + 1).toString())
                 lbEventName.setText(event.name)
@@ -67,6 +69,6 @@ object EventDiffCallback : DiffUtil.ItemCallback<EventItem>() {
     }
 
     override fun areContentsTheSame(oldItem: EventItem, newItem: EventItem): Boolean {
-        return (oldItem.type == newItem.type && oldItem.name == newItem.name)
+        return (oldItem.type == newItem.type && oldItem.name == newItem.name && oldItem.date == newItem.date)
     }
 }
