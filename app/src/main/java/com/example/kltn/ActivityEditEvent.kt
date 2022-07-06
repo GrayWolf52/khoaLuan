@@ -188,17 +188,20 @@ class ActivityEditEvent : AppCompatActivity() {
                     if (selectedParticipant.contains(item.id)) continue
                     selectedParticipant.add(item.id)
                 }
-                var resultSearchUser = UserService.SearchWithout(it.toString(), selectedParticipant)
-                if (resultSearchUser.first.isNotEmpty()) {
-                    Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
-                } else if (resultSearchUser.second != null) {
-                    for (item in resultSearchUser.second!!) _participants.add(item)
-                    participantAdapter.clear()
-                    for (user in _participants) {
-                        participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                Thread {
+                    var resultSearchUser =
+                        UserService.SearchWithout(it.toString(), selectedParticipant)
+                    if (resultSearchUser.first.isNotEmpty()) {
+                        Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
+                    } else if (resultSearchUser.second != null) {
+                        for (item in resultSearchUser.second!!) _participants.add(item)
+                        participantAdapter.clear()
+                        for (user in _participants) {
+                            participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                        }
                     }
-                }
-                participantAdapter.notifyDataSetChanged()
+                    participantAdapter.notifyDataSetChanged()
+                }.start()
             }
         }
 

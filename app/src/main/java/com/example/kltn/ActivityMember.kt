@@ -10,6 +10,7 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doBeforeTextChanged
 import androidx.fragment.app.FragmentManager
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.fragment.FragmentMember
 import com.example.kltn.models.UserModel
 import com.example.kltn.services.GroupService
+import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import com.example.kltn.utils.Constants
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -26,7 +28,9 @@ class ActivityMember : AppCompatActivity() {
     private lateinit var btnMemberAdd: TextView
     private val selectedMember = ArrayList<UserModel>()
     private val selectedMemberAdapter =
-        AdapterAddMember { view, member -> deleteMember(view, member) }
+        AdapterAddMember({ view, member -> deleteMember(view, member) }, { position, member ->
+            updateRolesUser(position, member)
+        })
     private lateinit var fragmentMember: FragmentMember
     private lateinit var fragmentSchedule: FragmentSchedule
 
@@ -95,7 +99,7 @@ class ActivityMember : AppCompatActivity() {
     }
 
     private fun addMemberForGroup() {
-        var dialog = Dialog(this, R.style.DialogTheme)
+        var dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setContentView(R.layout.dialog_addmember)
         var btnAddMemberClose = dialog.findViewById<Button>(R.id.btnAddMemberClose)
@@ -109,54 +113,56 @@ class ActivityMember : AppCompatActivity() {
             ArrayAdapter<String>(this, android.R.layout.select_dialog_item, ArrayList<String>())
         txtAddMemberSearch.setAdapter(memberAdapter)
         txtAddMemberSearch.threshold = 2
-        txtAddMemberSearch.setOnItemClickListener { parent, view, position, id ->
+        txtAddMemberSearch.setOnItemClickListener { _, _, position, _ ->
             selectedMember.add(listResultMember2[position])
             selectedMemberAdapter.submitList(selectedMember.toMutableList())
             txtAddMemberSearch.setText("")
             txtAddMemberSearch.clearFocus()
         }
-        txtAddMemberSearch.doBeforeTextChanged { text, start, count, after ->
+        txtAddMemberSearch.doBeforeTextChanged { _, _, _, _ ->
             listResultMember2.clear()
             for (item in listResultMember) listResultMember2.add(item)
         }
         txtAddMemberSearch.doAfterTextChanged {
             Log.d("Debug:", "doAfterTextChanged")
             if (it.toString().length >= txtAddMemberSearch.threshold) {
-                var selectedUsers = ArrayList<Int>()
-                for (item in selectedMember) {
-                    if (selectedUsers.contains(item.id)) continue
-                    selectedUsers.add(item.id)
-                }
-                var searchParticipants = UserService.SearchWithout(
-                    it.toString(),
-                    selectedUsers
-                ) as ArrayList<UserModel>
-                listResultMember.clear()
-                for (item in searchParticipants) listResultMember.add(item)
-                memberAdapter.clear()
-                for (user in listResultMember) {
-                    memberAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
-                }
+                Thread {
+                    var selectedUsers = ArrayList<Int>()
+                    for (item in selectedMember) {
+                        if (selectedUsers.contains(item.id)) continue
+                        selectedUsers.add(item.id)
+                    }
+                    var a = UserService.SearchWithout(
+                        it.toString(),
+                        selectedUsers
+                    )
+                    var searchParticipants = a.second?.let {
+                        it.toCollection(ArrayList<UserModel>())
+                    }
+                    listResultMember.clear()
+                    searchParticipants?.let {
+                        for (item in it) listResultMember.add(item)
+                    }
+                    memberAdapter.clear()
+                    for (user in listResultMember) {
+                        memberAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                    }
 
-                memberAdapter.notifyDataSetChanged()
+                    memberAdapter.notifyDataSetChanged()
+                }.start()
             }
         }
         btnAddMemberClose.setOnClickListener {
             dialog.dismiss()
         }
         btnAddMemberSave.setOnClickListener {
-            var result = true
-            if (result) {
-                Toast.makeText(this, "Gửi lời mời tham gia nhóm thành công.", Toast.LENGTH_SHORT)
-                    .show()
+            Thread {
+                val resultAddUser = UserGroupService.addUser(selectedMember, groupId)
+                runOnUiThread {
+                    Toast.makeText(this, resultAddUser.first, Toast.LENGTH_SHORT).show()
+                }
                 dialog.dismiss()
-            } else {
-                Toast.makeText(
-                    this,
-                    "Gửi lời mời tham gia nhóm không thành công. Vui lòng thử lại sau.",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
+            }.start()
         }
         var window = dialog.window
         var wlp = window?.attributes
@@ -192,13 +198,17 @@ class ActivityMember : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun deleteMember(view: View?, user: UserModel) {
+    private fun deleteMember(view: View?, user: UserModel) {
         var newList = selectedMember.filter { !(it.id == user.id) }
         selectedMember.clear()
         for (item in newList) selectedMember.add(item)
         selectedMemberAdapter.submitList(selectedMember.toMutableList())
     }
 
+    private fun updateRolesUser(position: Int, user: UserModel) {
+        selectedMember[position].roles = user.roles
+        selectedMemberAdapter.submitList(selectedMember.toMutableList())
+    }
 
     companion object {
         private const val TAB_1 = 0

@@ -33,15 +33,15 @@ class FragmentMember : Fragment() {
         rcvMember = view.findViewById(R.id.rcvMember)
         adapterMember = AdapterMember{ view, user -> onMemberClicked(user) }
         rcvMember.adapter = adapterMember
-        Thread({
+        Thread {
             var result = GroupService.getMember(groupId)
-            activity?.runOnUiThread({
-                if (result.first.length > 0)
-                    Toast.makeText(context, result.first, Toast.LENGTH_SHORT).show()
+            activity?.runOnUiThread {
+                if (result.first.isNotEmpty())
+                    Toast.makeText(context, result.first , Toast.LENGTH_SHORT).show()
                 else
                     adapterMember.submitList(result.second!!.toMutableList())
-            })
-        }).start()
+            }
+        }.start()
         return view
     }
     fun onMemberClicked(user: UserGroupInfos) {

@@ -3,6 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/activity_editevent.xml" value="0.23333333333333334" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/activity_member.xml" value="0.24444444444444444" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/activity_staffschedule.xml" value="0.234375" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/dialog_addgroup.xml" value="0.25" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/dialog_addmember.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/fragment_group.xml" value="0.25" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/fragment_home.xml" value="0.234375" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/fragment_schedule.xml" value="0.234375" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/item_addmember.xml" value="0.234375" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/layout/item_schedule.xml" value="0.234375" />
+        <entry key="..\:/AndroidStudioProject/khoaLuan/app/src/main/res/menu/group_menu.xml" value="0.24444444444444444" />
         <entry key="..\:/KLTN/app/src/main/res/layout/activity_login.xml" value="0.27447916666666666" />
         <entry key="..\:/KLTN/app/src/main/res/layout/activity_main.xml" value="0.264" />
         <entry key="..\:/KLTN/app/src/main/res/layout/activity_test.xml" value="0.2604166666666667" />
