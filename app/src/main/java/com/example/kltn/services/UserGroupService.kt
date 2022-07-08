@@ -1,6 +1,7 @@
 package com.example.kltn.services
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.example.kltn.Common
 import com.example.kltn.models.EventModel
 import com.example.kltn.models.UserGroupModel
@@ -13,6 +14,7 @@ import okhttp3.RequestBody
 
 class UserGroupService {
     companion object {
+        var loadDataAgain = MutableLiveData(false)
         fun GetForUser(userId: Int): Triple<String, Array<UserGroupModel>?, Int> {
             var client = OkHttpClient()
             var gson = Gson()
@@ -43,6 +45,39 @@ class UserGroupService {
             }
         }
 
+/*
+
+        fun GetForAll(groupId: Int): Triple<String, Array<UserGroupModel>?, Int> {
+            var client = OkHttpClient()
+            var gson = Gson()
+            val request = Request.Builder()
+                .url(Common.API_HOST + "api/UserGroup/GetAllMember/" + groupId)
+                .build()
+            try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) {
+                    var userGroups: Array<UserGroupModel> = gson.fromJson(
+                        responseBody,
+                        (ArrayList<UserGroupModel>()).toTypedArray().javaClass
+                    )
+                    Log.d("userGroups", " userGroups size = ${userGroups.size}")
+                    return Triple("", userGroups, 0)
+                } else if (statusCode == 400) {
+                    if (responseBody == null || responseBody == "") {
+                        return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+                    }
+                    return Triple(responseBody, null, 0)
+                } else {
+                    return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+                }
+            } catch (ex: Exception) {
+                return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+            }
+        }
+*/
+
         fun addUser(selectedMember: ArrayList<UserModel>, groupId: Int): Triple<String, Int, Int> {
             Log.d("TAG", "addUser: groupid = $groupId ")
             var Json = MediaType.parse("application/json; charset=utf-8")
@@ -63,6 +98,7 @@ class UserGroupService {
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
                     Log.d("TAG", "addUser:success ")
+                    loadDataAgain.postValue(true)
                     return Triple("Gửi lời mời tham gia nhóm thành công.", 0, 0)
                 }
                 if (statusCode == 400) {

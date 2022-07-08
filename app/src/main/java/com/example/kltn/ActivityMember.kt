@@ -3,6 +3,8 @@ package com.example.kltn
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -10,18 +12,17 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doBeforeTextChanged
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.fragment.FragmentMember
 import com.example.kltn.models.UserModel
-import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import com.example.kltn.utils.Constants
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class ActivityMember : AppCompatActivity() {
     private lateinit var btnMemberBack: TextView
@@ -143,11 +144,14 @@ class ActivityMember : AppCompatActivity() {
                     searchParticipants?.let {
                         for (item in it) listResultMember.add(item)
                     }
-                    memberAdapter.clear()
-                    for (user in listResultMember) {
-                        memberAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                    runOnUiThread {
+                        memberAdapter.clear()
                     }
-
+                    Handler(Looper.getMainLooper()).post {
+                        for (user in listResultMember) {
+                            memberAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                        }
+                    }
                     memberAdapter.notifyDataSetChanged()
                 }.start()
             }
