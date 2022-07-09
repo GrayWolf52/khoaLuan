@@ -3,19 +3,23 @@ package com.example.kltn
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.GroupModel
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.utils.Constants
+import kotlinx.coroutines.*
+import java.lang.Runnable
 
-class FragmentGroup: Fragment() {
+class FragmentGroup : Fragment() {
     private lateinit var btnAddGroup: TextView
     private lateinit var rcvGroup: RecyclerView
     private lateinit var groupAdapter: AdapterGroup
@@ -32,7 +36,10 @@ class FragmentGroup: Fragment() {
         var view = inflater.inflate(R.layout.fragment_group, container, false)
         rcvGroup = view.findViewById(R.id.rcvGroup)
         btnAddGroup = view.findViewById(R.id.btnAddGroup)
-        groupAdapter = AdapterGroup { view, group -> onGroupClicked(group) }
+        groupAdapter = AdapterGroup({ _, group -> onGroupClicked(group) }, {
+            Log.d("TAG", "long click delete group : ")
+            deleteGroup(it.id)
+        })
         rcvGroup.adapter = groupAdapter
         btnAddGroup.setOnClickListener {
             try {
@@ -48,8 +55,8 @@ class FragmentGroup: Fragment() {
                 btnAddGroupSave.setOnClickListener {
                     Thread {
                         var result = GroupService.create(userId, txtAddGroupName.text.toString())
-                        if (result.first.length == 0) {
-                            activity?.runOnUiThread(Runnable  {
+                        if (result.first.isEmpty()) {
+                            activity?.runOnUiThread(Runnable {
                                 Toast.makeText(
                                     requireContext(),
                                     "Tạo nhóm thành công.",
@@ -65,10 +72,10 @@ class FragmentGroup: Fragment() {
                                 }
                             startActivity(intent)
                         } else {
-                            activity?.runOnUiThread(Runnable {
+                            activity?.runOnUiThread {
                                 Toast.makeText(requireContext(), result.first, Toast.LENGTH_SHORT)
                                     .show()
-                            })
+                            }
 
                         }
                     }.start()
@@ -78,9 +85,11 @@ class FragmentGroup: Fragment() {
                 wlp?.gravity = Gravity.BOTTOM
                 window?.attributes = wlp
                 dialog.show()
-                dialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT)
-            }
-            catch (ex: Exception) {
+                dialog.window!!.setLayout(
+                    WindowManager.LayoutParams.MATCH_PARENT,
+                    WindowManager.LayoutParams.MATCH_PARENT
+                )
+            } catch (ex: Exception) {
                 Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
             }
         }
@@ -88,27 +97,44 @@ class FragmentGroup: Fragment() {
         return view
     }
 
-    fun onGroupClicked(group: GroupModel) {
+    private fun onGroupClicked(group: GroupModel) {
         var intent = Intent(this.requireActivity(), ActivityMember::class.java).apply {
             putExtra(Constants.GROUD_ID, group.id)
             putExtra(Constants.USER_ID, userId)
         }
         startActivity(intent)
     }
-    fun load() {
+
+    private fun deleteGroup(idGroup: Int) {
+        Log.d("TAG", "deleteGroup: id group = $idGroup")
+        viewLifecycleOwner.lifecycleScope.launch {
+            Log.d("TAG", "deleteGroup: id group = $idGroup")
+            GlobalScope.launch(Dispatchers.IO) {
+                // do background task
+                var result = GroupService.deleteGroup(idGroup)
+                load()
+                withContext(Dispatchers.Main) {
+                    // update UI
+                    Toast.makeText(context, result.first, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun load() {
         Thread {
             var result = UserGroupService.GetForUser(userId)
-            if (result.first.length == 0) {
+            if (result.first.isEmpty()) {
                 if (result.second != null) {
-                    activity?.runOnUiThread(Runnable {
+                    activity?.runOnUiThread {
                         groupAdapter.submitList(result.second!!.filter { x -> x.group != null }
                             .map { x -> x.group })
-                    })
+                    }
                 }
             } else {
-                activity?.runOnUiThread(Runnable {
+                val runOnUiThread = activity?.runOnUiThread {
                     Toast.makeText(context, result.first, Toast.LENGTH_SHORT).show()
-                })
+                }
             }
         }.start()
     }

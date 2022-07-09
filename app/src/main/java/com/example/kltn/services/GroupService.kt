@@ -1,10 +1,13 @@
 package com.example.kltn.services
 
+import android.util.Log
 import com.example.kltn.*
 import com.example.kltn.models.GroupModel
 import com.example.kltn.models.UserModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,20 +27,52 @@ class GroupService {
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    var usergroups:Array<UserGroupInfos> = gson.fromJson(responseBody, (ArrayList<UserGroupInfos>()).toTypedArray().javaClass)
-                    return Triple("",usergroups , 0)
-                }
-                else if (statusCode == 400) {
+                    var usergroups: Array<UserGroupInfos> = gson.fromJson(
+                        responseBody,
+                        (ArrayList<UserGroupInfos>()).toTypedArray().javaClass
+                    )
+                    return Triple("", usergroups, 0)
+                } else if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {
                         return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
                     }
                     return Triple(responseBody, null, 0)
-                }
-                else {
+                } else {
                     return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
                 }
             } catch (ex: Exception) {
                 return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+            }
+        }
+
+        fun deleteGroup(idGroup: Int): Triple<String, Int, Int> {
+            Log.d("TAG", "deleteGroup111: id group = $idGroup")
+            var Json = MediaType.parse("application/json; charset=utf-8")
+            var client = OkHttpClient()
+            var request = Request.Builder()
+                .url(Common.API_HOST + "/api/Group/Delete/" + idGroup)
+                .build()
+            try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) {
+                    return Triple("Xóa group thành công !", responseBody!!.toInt(), 0)
+                }
+                if (statusCode == 400) {
+                    if (responseBody == null || responseBody == "") {
+                        return Triple(Common.ERR_MSG, 0, 0)
+                    }
+                    return Triple(responseBody, 0, 0)
+                }
+                if (statusCode == 401) {
+                    return Triple(Common.UNAUTHORIZED, 0, 0)
+                } else {
+                    return Triple(Common.NOT_PERMIT, 0, 0)
+                }
+            } catch (ex: Exception) {
+                Log.d("TAG", "deleteGroup: $ex")
+                return Triple(Common.ERR_MSG, 0, 0)
             }
         }
 
@@ -68,12 +103,10 @@ class GroupService {
                 }
                 if (statusCode == 401) {
                     return Triple(Common.UNAUTHORIZED, 0, 0)
-                }
-                else {
+                } else {
                     return Triple(Common.NOT_PERMIT, 0, 0)
                 }
-            }
-            catch (ex: Exception) {
+            } catch (ex: Exception) {
                 return Triple(Common.ERR_MSG, 0, 0)
             }
         }

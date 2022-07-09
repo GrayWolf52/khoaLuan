@@ -10,19 +10,25 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.GroupModel
 
-class AdapterGroup(private val onClick: (View?, GroupModel) -> Unit) :
+class AdapterGroup(
+    private val onClick: (View?, GroupModel) -> Unit,
+    private val onClickDelete: (GroupModel) -> Unit
+) :
     ListAdapter<GroupModel, AdapterGroup.GroupViewHolder>(GroupDiffCallback) {
 
-    class GroupViewHolder(itemView: View, val onClick: (View?, GroupModel) -> Unit) :
+    class GroupViewHolder(itemView: View, val onClick: (View?, GroupModel) -> Unit, val onClickDelete: ( GroupModel) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val btnGroup: TextView = itemView.findViewById<Button>(R.id.btnGroup)
         private lateinit var group: GroupModel
 
         init {
             btnGroup.setOnClickListener {
-                group.let {
-                    onClick(itemView, it)
-                }
+                onClick(itemView, group)
+            }
+
+            btnGroup.setOnLongClickListener {
+                onClickDelete(group)
+                true
             }
         }
 
@@ -35,7 +41,7 @@ class AdapterGroup(private val onClick: (View?, GroupModel) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_group, parent, false)
-        return GroupViewHolder(view, onClick)
+        return GroupViewHolder(view, onClick, onClickDelete)
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
@@ -43,6 +49,7 @@ class AdapterGroup(private val onClick: (View?, GroupModel) -> Unit) :
         holder.bind(group)
     }
 }
+
 object GroupDiffCallback : DiffUtil.ItemCallback<GroupModel>() {
     override fun areItemsTheSame(oldItem: GroupModel, newItem: GroupModel): Boolean {
         return oldItem.id == newItem.id
