@@ -14,9 +14,14 @@ import androidx.core.widget.doBeforeTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.UserModel
 import com.example.kltn.services.EventService
+import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import com.example.kltn.utils.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 
 class ActivityEditEvent : AppCompatActivity() {
@@ -188,20 +193,42 @@ class ActivityEditEvent : AppCompatActivity() {
                     if (selectedParticipant.contains(item.id)) continue
                     selectedParticipant.add(item.id)
                 }
-                Thread {
+                GlobalScope.launch(Dispatchers.IO) {
+                    // do background task
                     var resultSearchUser =
                         UserService.SearchWithout(it.toString(), selectedParticipant)
-                    if (resultSearchUser.first.isNotEmpty()) {
-                        Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
-                    } else if (resultSearchUser.second != null) {
-                        for (item in resultSearchUser.second!!) _participants.add(item)
-                        participantAdapter.clear()
-                        for (user in _participants) {
-                            participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                    withContext(Dispatchers.Main) {
+                        // update UI
+                        if (resultSearchUser.first.isNotEmpty()) {
+                            Toast.makeText(
+                                this@ActivityEditEvent,
+                                resultSearchUser.first,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else if (resultSearchUser.second != null) {
+                            for (item in resultSearchUser.second!!) _participants.add(item)
+                            participantAdapter.clear()
+                            for (user in _participants) {
+                                participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                            }
                         }
+                        participantAdapter.notifyDataSetChanged()
                     }
-                    participantAdapter.notifyDataSetChanged()
-                }.start()
+                }
+                /* Thread {
+                     var resultSearchUser =
+                         UserService.SearchWithout(it.toString(), selectedParticipant)
+                     if (resultSearchUser.first.isNotEmpty()) {
+                         Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
+                     } else if (resultSearchUser.second != null) {
+                         for (item in resultSearchUser.second!!) _participants.add(item)
+                         participantAdapter.clear()
+                         for (user in _participants) {
+                             participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                         }
+                     }
+                     participantAdapter.notifyDataSetChanged()
+                 }.start()*/
             }
         }
 
@@ -306,6 +333,7 @@ class ActivityEditEvent : AppCompatActivity() {
         dateText += year.toString()
         return dateText
     }
+
     fun loadUserGroup() {
         Thread {
             var resultUserGroup = UserGroupService.GetForUser(userId)
@@ -395,11 +423,25 @@ class ActivityEditEvent : AppCompatActivity() {
                 txtEditEventTitle.text = event?.title
                 txtEditEventDescription.text = event?.description
                 calendarStart.time = event?.startTime
-                txtEditEventStartTime.text = timeToString(calendarStart.get(Calendar.HOUR_OF_DAY), calendarStart.get(Calendar.MINUTE))
-                txtEditEventStartDate.text = dateToString(calendarStart.get(Calendar.DAY_OF_MONTH), calendarStart.get(Calendar.MONTH), calendarStart.get(Calendar.YEAR))
+                txtEditEventStartTime.text = timeToString(
+                    calendarStart.get(Calendar.HOUR_OF_DAY),
+                    calendarStart.get(Calendar.MINUTE)
+                )
+                txtEditEventStartDate.text = dateToString(
+                    calendarStart.get(Calendar.DAY_OF_MONTH),
+                    calendarStart.get(Calendar.MONTH),
+                    calendarStart.get(Calendar.YEAR)
+                )
                 calendarEnd.time = event?.endTime
-                txtEditEventEndTime.text = timeToString(calendarEnd.get(Calendar.HOUR_OF_DAY), calendarEnd.get(Calendar.MINUTE))
-                txtEditEventEndDate.text = dateToString(calendarEnd.get(Calendar.DAY_OF_MONTH), calendarEnd.get(Calendar.MONTH), calendarEnd.get(Calendar.YEAR))
+                txtEditEventEndTime.text = timeToString(
+                    calendarEnd.get(Calendar.HOUR_OF_DAY),
+                    calendarEnd.get(Calendar.MINUTE)
+                )
+                txtEditEventEndDate.text = dateToString(
+                    calendarEnd.get(Calendar.DAY_OF_MONTH),
+                    calendarEnd.get(Calendar.MONTH),
+                    calendarEnd.get(Calendar.YEAR)
+                )
                 refreshLoopType()
                 if (event?.loopType!! > 0) {
                     chkEditEventLoop.isChecked = true

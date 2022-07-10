@@ -1,6 +1,8 @@
 package com.example.kltn
 
+import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -56,13 +58,13 @@ class FragmentGroup : Fragment() {
                     Thread {
                         var result = GroupService.create(userId, txtAddGroupName.text.toString())
                         if (result.first.isEmpty()) {
-                            activity?.runOnUiThread(Runnable {
+                            activity?.runOnUiThread {
                                 Toast.makeText(
                                     requireContext(),
                                     "Tạo nhóm thành công.",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                            })
+                            }
                             dialog.dismiss()
                             load()
                             var intent =
@@ -109,14 +111,26 @@ class FragmentGroup : Fragment() {
         Log.d("TAG", "deleteGroup: id group = $idGroup")
         viewLifecycleOwner.lifecycleScope.launch {
             Log.d("TAG", "deleteGroup: id group = $idGroup")
-            GlobalScope.launch(Dispatchers.IO) {
-                // do background task
-                var result = GroupService.deleteGroup(idGroup)
-                load()
-                withContext(Dispatchers.Main) {
-                    // update UI
-                    Toast.makeText(context, result.first, Toast.LENGTH_LONG).show()
-                }
+            activity?.let {
+                Log.d("TAG", "deleteGroup1111: id group = $idGroup")
+                val builder = AlertDialog.Builder(it)
+                builder.setTitle("Xóa group")
+                    .setMessage("Bạn có chắc chắn muốn xóa group này không?")
+                    .setPositiveButton("Có") { _, _ ->
+                        GlobalScope.launch(Dispatchers.IO) {
+                            // do background task
+                            var result = GroupService.deleteGroup(idGroup)
+                            load()
+                            withContext(Dispatchers.Main) {
+                                // update UI
+                                Toast.makeText(context, result.first, Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }.setNegativeButton("Không") { dialog, _ ->
+                        dialog.cancel()
+                    }
+                builder.create()
+                builder.show()
             }
         }
     }
