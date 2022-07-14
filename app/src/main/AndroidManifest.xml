@@ -11,13 +11,13 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.KLTN">
-        <activity
+       <!-- <activity
             android:name=".ActivityMain"
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar">
-        </activity>
+        </activity>-->
         <activity
-            android:name=".ActivityLogin"
+            android:name=".ActivityMain"
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar">
             <intent-filter>

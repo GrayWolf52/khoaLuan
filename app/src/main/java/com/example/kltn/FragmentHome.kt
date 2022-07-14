@@ -96,7 +96,7 @@ class FragmentHome : Fragment() {
             calendar.add(Calendar.MONTH, 1)
             refreshEvent()
         }
-        loadUserGroup()
+     //   loadUserGroup()
         refreshEvent()
         return view
     }
