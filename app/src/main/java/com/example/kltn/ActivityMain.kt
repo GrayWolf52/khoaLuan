@@ -58,20 +58,21 @@ class ActivityMain : AppCompatActivity() {
         val workerRequest: PeriodicWorkRequest =
             PeriodicWorkRequest.Builder(NotificationWorker::class.java, 1, TimeUnit.MINUTES)
                 .setInputData(workDataOf(Constants.USER_ID to userId)).build()
-// kiểu nó c
+
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork(
-                "sendLog", ExistingPeriodicWorkPolicy.REPLACE, workerRequest)
-        WorkManager.getInstance(this).getWorkInfoByIdLiveData(workerRequest.id).observe(this) {
+                "sendLog", ExistingPeriodicWorkPolicy.REPLACE, workerRequest
+            )
+       /* WorkManager.getInstance(this).getWorkInfoByIdLiveData(workerRequest.id).observe(this) {
             Log.d("TAG", "onWorkerInvitation:111 ${it.state}")
-
+            if (it != null && it.state.isFinished) {
                 Log.d("TAG", "onWorkerInvitation: ")
                 val idUser = it.outputData.getInt(NotificationWorker.ID_USER, 0)
                 val idGroup = it.outputData.getInt(NotificationWorker.ID_GROUP, 0)
                 val name = it.outputData.getString(NotificationWorker.INVITATION)
-                Log.d("TAG", "onWorkerInvitation: $userId $idGroup $name")
-                AcceptGroupNotification(context = this).acceptRequest(idUser, idGroup, name)
+                Log.d("TAG", "onWorkerInvitation: $idUser $idGroup $name")
 
-        }
+            }
+        }*/
     }
 }

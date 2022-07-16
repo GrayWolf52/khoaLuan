@@ -17,20 +17,24 @@ import com.example.kltn.worker.broadcast.AcceptGroupBroadcast
 class AcceptGroupNotification(private var context: Context) {
 
     @SuppressLint("ServiceCast")
-    fun acceptRequest(userId: Int, groupId: Int, groupName: String?) {
+    fun acceptRequest(userId: Int, groupId: Int, groupName: String?, idNotification: Int) {
         Log.d("TAG", "acceptRequest: ")
         val notificationIntent = Intent(context, AcceptGroupBroadcast::class.java)
-        val yesIntent = PendingIntent.getActivity(
+        val yesIntent = PendingIntent.getBroadcast(
             context, 0, notificationIntent.apply {
                 action = Constants.ACTION_YES
                 putExtra(Constants.USER_ID, userId)
                 putExtra(Constants.GROUD_ID, groupId)
+                putExtra(Constants.NOTIFICATION_ID, idNotification)
             },
             PendingIntent.FLAG_UPDATE_CURRENT
         )
-        val noIntent = PendingIntent.getActivity(
+        val noIntent = PendingIntent.getBroadcast(
             context, 0, notificationIntent.apply {
                 action = Constants.ACTION_NO
+                putExtra(Constants.USER_ID, userId)
+                putExtra(Constants.GROUD_ID, groupId)
+                putExtra(Constants.NOTIFICATION_ID, idNotification)
             },
             PendingIntent.FLAG_UPDATE_CURRENT
         )
@@ -40,6 +44,7 @@ class AcceptGroupNotification(private var context: Context) {
             .addAction(R.drawable.alert_dark_frame, "Có", yesIntent)
             .addAction(R.drawable.alert_dark_frame, "Không ", noIntent)
             .setContentIntent(noIntent).setSmallIcon(R.drawable.ic_input_add)
+            .setAutoCancel(true)
 
         // Add as notification
 
@@ -61,6 +66,6 @@ class AcceptGroupNotification(private var context: Context) {
             builder.setChannelId("NOTIFICATION_CHANNEL_ID");
             manager.createNotificationChannel(notificationChannel);
         }
-        manager.notify(System.currentTimeMillis().toInt(), builder.build())
+        manager.notify(idNotification, builder.build())
     }
 }

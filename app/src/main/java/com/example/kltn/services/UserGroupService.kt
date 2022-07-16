@@ -3,15 +3,21 @@ package com.example.kltn.services
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import com.example.kltn.Common
+import com.example.kltn.EventInfos
 import com.example.kltn.UserGroupInfos
+import com.example.kltn.UserInfos
 import com.example.kltn.models.EventModel
 import com.example.kltn.models.UserGroupModel
 import com.example.kltn.models.UserModel
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class UserGroupService {
     companion object {
@@ -48,6 +54,7 @@ class UserGroupService {
 
 
         fun GetInvitation(userId: Int): Triple<String, Array<UserGroupInfos>?, Int> {
+            Log.d("TAG", "GetInvitation: userId = $userId")
             var client = OkHttpClient()
             var gson = Gson()
             val request = Request.Builder()
@@ -76,6 +83,35 @@ class UserGroupService {
                 return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
             }
         }
+
+
+        fun acceptInvitation(
+            userId: Int,
+            groupId: Int
+        ): String {
+            val data = hashMapOf("Key" to userId, "Value" to groupId)
+            var Json = MediaType.parse("application/json; charset=utf-8")
+            var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
+            var requestBody = RequestBody.create(Json, gson.toJson(data))
+            var client = OkHttpClient()
+            val request = Request.Builder()
+                .url(Common.API_HOST + "api/UserGroup/AcceptInvitation")
+                .post(requestBody)
+                .build()
+            return try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) "Tham gia nhom thanh cong"
+                else if (statusCode == 400 && responseBody != null) responseBody
+                else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
+                else "Đã xảy ra lỗi. Vui lòng thử lại sau."
+            } catch (ex: Exception) {
+                Log.e("TAG", "acceptInvitation: Exception = $ex", )
+                "Đã xảy ra lỗi. Vui lòng thử lại sau.";
+            }
+        }
+
 
 /*
 

@@ -11,13 +11,13 @@
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.KLTN">
-       <!-- <activity
+        <activity
             android:name=".ActivityMain"
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar">
-        </activity>-->
+        </activity>
         <activity
-            android:name=".ActivityMain"
+            android:name=".ActivityLogin"
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar">
             <intent-filter>
@@ -41,6 +41,14 @@
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar">
         </activity>
+        <receiver android:name=".worker.broadcast.AcceptGroupBroadcast"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="Action_yes"/>
+                <action android:name="Action_no"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
