@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -15,12 +16,13 @@ class AdapterMember(private val onClick: (View?, UserGroupInfos) -> Unit) :
     class MemberViewHolder(itemView: View, val onClick: (View?, UserGroupInfos) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val btnGroup: TextView = itemView.findViewById<Button>(R.id.btnMember)
+        private val imageStatus: ImageView = itemView.findViewById(R.id.imageStatus)
         private lateinit var user: UserGroupInfos
 
         init {
             btnGroup.setOnClickListener {
                 user.let {
-                    onClick(itemView,it)
+                    onClick(itemView, it)
                 }
             }
         }
@@ -28,6 +30,8 @@ class AdapterMember(private val onClick: (View?, UserGroupInfos) -> Unit) :
         fun bind(u: UserGroupInfos) {
             user = u
             btnGroup.text = u.user.userName + " - " + u.user.lastName + " " + u.user.firstName
+            if (u.isAccepted) imageStatus.setImageResource(R.drawable.check_outline)
+            else imageStatus.setImageResource(R.drawable.close_thick)
         }
     }
 
@@ -42,6 +46,7 @@ class AdapterMember(private val onClick: (View?, UserGroupInfos) -> Unit) :
         holder.bind(u)
     }
 }
+
 object MemberDiffCallback : DiffUtil.ItemCallback<UserGroupInfos>() {
     override fun areItemsTheSame(oldItem: UserGroupInfos, newItem: UserGroupInfos): Boolean {
         return oldItem.group.id == newItem.group.id && oldItem.user.id == newItem.user.id
