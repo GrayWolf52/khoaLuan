@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.fragment.FragmentMember
 import com.example.kltn.models.UserModel
+import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import com.example.kltn.utils.Constants
@@ -25,7 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 
 class ActivityMember : AppCompatActivity() {
-    private lateinit var btnMemberBack: TextView
+    /*private lateinit var btnMemberBack: TextView
     private lateinit var btnMemberAdd: TextView
     private val selectedMember = ArrayList<UserModel>()
     private val selectedMemberAdapter =
@@ -71,7 +72,7 @@ class ActivityMember : AppCompatActivity() {
         val fragmentManager: FragmentManager = supportFragmentManager
         fragmentMember = FragmentMember()
         fragmentSchedule = FragmentSchedule()
-        var fragmentBundle = Bundle()
+       *//* var fragmentBundle = Bundle()
         fragmentBundle.putInt(Constants.USER_ID, userId)
         fragmentBundle.putInt(Constants.GROUD_ID, groupId)
         fragmentBundle.putBoolean(Constants.IS_ADD_EVENT_GROUP, true)
@@ -96,7 +97,7 @@ class ActivityMember : AppCompatActivity() {
                 }
             }
             true
-        }
+        }*//*
     }
 
     private fun addMemberForGroup() {
@@ -217,5 +218,87 @@ class ActivityMember : AppCompatActivity() {
     companion object {
         private const val TAB_1 = 0
         private const val TAB_2 = 1
+    }*/
+
+    private lateinit var rcvMember: RecyclerView
+
+    private var groupId: Int = 0
+    private lateinit var adapterMember: AdapterMember
+    private lateinit var btnMemberBack: TextView
+    private lateinit var btnMemberAdd: TextView
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_member)
+        var bundle = intent.extras
+        if (bundle != null) {
+            groupId = bundle.getInt(Constants.GROUD_ID)
+
+            rcvMember = findViewById(R.id.rcvMember)
+            adapterMember = AdapterMember { view, user -> onMemberClicked(user) }
+            rcvMember.adapter = adapterMember
+            UserGroupService.loadDataAgain.postValue(true)
+            UserGroupService.loadDataAgain.observe(this){
+                if (it){
+                    loadUserGroup()
+                    UserGroupService.loadDataAgain.postValue(false)
+                }
+            }
+        }
+        btnMemberBack = findViewById(R.id.btnStaffScheduleBack)
+        btnMemberBack.setOnClickListener {
+            finish()
+        }
+    }
+    /*override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        var view = inflater.inflate(R.layout.fragment_member, container, false);
+        arguments?.let {
+            groupId = it.getInt(GROUD_ID)
+        }
+        rcvMember = view.findViewById(R.id.rcvMember)
+        adapterMember = AdapterMember { view, user -> onMemberClicked(user) }
+        rcvMember.adapter = adapterMember
+        UserGroupService.loadDataAgain.postValue(true)
+        UserGroupService.loadDataAgain.observe(viewLifecycleOwner){
+            if (it){
+                loadUserGroup()
+                UserGroupService.loadDataAgain.postValue(false)
+            }
+        }
+        return view
+    }
+*/
+    override fun onResume() {
+        super.onResume()
+        Log.d("TAG", "onResume: loading again ")
+        loadUserGroup()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d("TAG", "onPause: ")
+    }
+
+    private fun onMemberClicked(user: UserGroupInfos) {
+        var intent = Intent(this, ActivityStaffSchedule::class.java).apply {
+            putExtra("GroupId", groupId)
+            putExtra("UserId", user.user.id)
+        }
+        startActivity(intent)
+    }
+
+    private fun loadUserGroup() {
+        Thread {
+            var result = GroupService.getMember(groupId)
+            runOnUiThread {
+                if (result.first.isNotEmpty())
+                    Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()
+                else
+                    adapterMember.submitList(result.second!!.toMutableList())
+            }
+        }.start()
     }
 }

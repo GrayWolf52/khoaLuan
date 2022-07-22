@@ -26,6 +26,13 @@ class AcceptGroupBroadcast : BroadcastReceiver() {
                 (p0?.getSystemService(NOTIFICATION_SERVICE) as NotificationManager).cancel(
                     notification
                 )
+                GlobalScope.launch(Dispatchers.IO) {
+                    val dataRepos = UserGroupService.acceptInvitation(userId, groupId, false)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(p0, dataRepos, Toast.LENGTH_LONG).show()
+                    }
+                }
+                Log.d("TAG", "onReceive: $userId && $groupId")
                 Log.d("TAG", "onReceive: $userId && $groupId")
 
             }
@@ -38,7 +45,7 @@ class AcceptGroupBroadcast : BroadcastReceiver() {
                     notification
                 )
                 GlobalScope.launch(Dispatchers.IO) {
-                    val dataRepos = UserGroupService.acceptInvitation(userId, groupId)
+                    val dataRepos = UserGroupService.acceptInvitation(userId, groupId, true)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(p0, dataRepos, Toast.LENGTH_LONG).show()
                     }

@@ -87,9 +87,10 @@ class UserGroupService {
 
         fun acceptInvitation(
             userId: Int,
-            groupId: Int
+            groupId: Int,
+            isAccecpt: Boolean
         ): String {
-            val data = hashMapOf("Key" to userId, "Value" to groupId)
+            val data = hashMapOf("userId" to userId, "groupId" to groupId, "accept" to isAccecpt)
             var Json = MediaType.parse("application/json; charset=utf-8")
             var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
             var requestBody = RequestBody.create(Json, gson.toJson(data))
@@ -107,7 +108,7 @@ class UserGroupService {
                 else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
                 else "Đã xảy ra lỗi. Vui lòng thử lại sau."
             } catch (ex: Exception) {
-                Log.e("TAG", "acceptInvitation: Exception = $ex", )
+                Log.e("TAG", "acceptInvitation: Exception = $ex")
                 "Đã xảy ra lỗi. Vui lòng thử lại sau.";
             }
         }

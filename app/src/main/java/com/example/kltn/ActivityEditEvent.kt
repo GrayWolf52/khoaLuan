@@ -37,7 +37,6 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var txtEditEventEndDate: TextView
     private lateinit var txtEditEventParticipant: AutoCompleteTextView
     private lateinit var recyclerViewParticipant: RecyclerView
-    private lateinit var spPosition: Spinner
     private lateinit var selectedParticipantAdapter: AdapterParticipant
     private lateinit var spnEditEventLoop: Spinner
     private lateinit var chkEditEventLoop: CheckBox
@@ -239,7 +238,6 @@ class ActivityEditEvent : AppCompatActivity() {
             if (chkEditEventLoop.isChecked) spnEditEventLoop.visibility = View.VISIBLE
             else spnEditEventLoop.visibility = View.GONE
         }
-        spPosition = findViewById(R.id.spPosition)
         btnSaveEvent.setOnClickListener {
             var recurrenceType = 0
             if (chkEditEventLoop.isChecked) recurrenceType =
@@ -247,7 +245,6 @@ class ActivityEditEvent : AppCompatActivity() {
             Thread {
                 Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
                 Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
-                val idgroup = if (userId == 0) groupId else (spPosition.selectedItem as Item).id
                 var msg = EventService.update(
                     eventId = eventId,
                     title = txtEditEventTitle.text.toString(),
@@ -255,7 +252,7 @@ class ActivityEditEvent : AppCompatActivity() {
                     startTime = calendarStart.time,
                     endTime = calendarEnd.time,
                     recurrenceType = recurrenceType,
-                    groupId = idgroup,
+                    groupId = groupId,
                     creatorId = userId,
                     participants = listParticipant.map { it.id },
                 )
@@ -334,61 +331,65 @@ class ActivityEditEvent : AppCompatActivity() {
         return dateText
     }
 
-    fun loadUserGroup() {
-        Thread {
+    private fun loadUserGroup() {
+        GlobalScope.launch(Dispatchers.IO) {
             var resultUserGroup = UserGroupService.GetForUser(userId)
-            if (resultUserGroup.first.length > 0) {
-                Toast.makeText(this, resultUserGroup.first, Toast.LENGTH_SHORT).show()
-            } else {
-                try {
-                    var positions = ArrayList<Item>()
-                    if (!isEventGroup) {
-                        Log.d("isEventGroup", "isEventGroup = $isEventGroup and groupId = $groupId")
-                        for (userGroup in resultUserGroup.second!!) {
-                            positions.add(
-                                Item(
-                                    userGroup.groupId,
-                                    userGroup.role?.name + " - " + userGroup.group?.name
-                                )
+            withContext(Dispatchers.Main) {
+                if (resultUserGroup.first.isNotEmpty()) {
+                    Toast.makeText(
+                        this@ActivityEditEvent,
+                        resultUserGroup.first,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    try {
+                        var positions = ArrayList<Item>()
+                        if (!isEventGroup) {
+                            Log.d(
+                                "isEventGroup",
+                                "isEventGroup = $isEventGroup and groupId = $groupId"
                             )
-                        }
-                    } else {
-                        Log.d("isEventGroup", "isEventGroup = $isEventGroup and groupId = $groupId")
-                        resultUserGroup.second?.let { result ->
-                            Log.d("resultUserGroup", " resultUserGroup = ${result.size}")
-                            result.findLast {
-                                it.groupId == groupId
-                            }?.let {
-                                Log.d(
-                                    "isEventGroup",
-                                    "isEventGroup = $isEventGroup and name = ${it.group?.name}"
-                                )
+                            for (userGroup in resultUserGroup.second!!) {
                                 positions.add(
                                     Item(
-                                        it.groupId,
-                                        it.role?.name + " - " + it.group?.name
+                                        userGroup.groupId,
+                                        userGroup.role?.name + " - " + userGroup.group?.name
                                     )
                                 )
                             }
+                        } else {
+                            Log.d(
+                                "isEventGroup",
+                                "isEventGroup = $isEventGroup and groupId = $groupId"
+                            )
+                            resultUserGroup.second?.let { result ->
+                                Log.d("resultUserGroup", " resultUserGroup = ${result.size}")
+                                result.findLast {
+                                    it.groupId == groupId
+                                }?.let {
+                                    Log.d(
+                                        "isEventGroup",
+                                        "isEventGroup = $isEventGroup and name = ${it.group?.name}"
+                                    )
+                                    positions.add(
+                                        Item(
+                                            it.groupId,
+                                            it.role?.name + " - " + it.group?.name
+                                        )
+                                    )
+                                }
+                            }
                         }
+                    } catch (ex: Exception) {
+                        var a = ex
                     }
-
-                    val dataAdapter =
-                        ArrayAdapter<Item>(this, android.R.layout.simple_spinner_item, positions)
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    runOnUiThread(Runnable {
-                        spPosition.setAdapter(dataAdapter)
-                    })
-                } catch (ex: Exception) {
-                    var a = ex
                 }
             }
-        }.start()
+        }
 
     }
 
     private fun changeUIStatus(isEdit: Boolean) {
-        spPosition.isEnabled = isEdit
         txtEditEventTitle.isEnabled = isEdit
         txtEditEventDescription.isEnabled = isEdit
         txtEditEventStartTime.isEnabled = isEdit
@@ -413,11 +414,11 @@ class ActivityEditEvent : AppCompatActivity() {
         Log.d("loadEvent", "loadEvent")
         Thread {
             var resultEvent = EventService.getById(eventId)
-            if (resultEvent.first.length > 0) {
-                runOnUiThread(Runnable {
+            if (resultEvent.first.isNotEmpty()) {
+                runOnUiThread {
                     Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
                     finish()
-                })
+                }
             } else {
                 var event = resultEvent.second
                 txtEditEventTitle.text = event?.title
@@ -453,9 +454,9 @@ class ActivityEditEvent : AppCompatActivity() {
                 }
 
             }
-            runOnUiThread(Runnable {
+            runOnUiThread {
                 changeUIStatus(false)
-            })
+            }
         }.start()
     }
 }

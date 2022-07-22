@@ -50,7 +50,7 @@ class GroupService {
             var Json = MediaType.parse("application/json; charset=utf-8")
             var client = OkHttpClient()
             var request = Request.Builder()
-                .url(Common.API_HOST + "/api/Group/Delete/" + idGroup)
+                .url(Common.API_HOST + "api/Group/Delete/" + idGroup)
                 .build()
             try {
                 var response = client.newCall(request).execute()
@@ -109,6 +109,39 @@ class GroupService {
             } catch (ex: Exception) {
                 return Triple(Common.ERR_MSG, 0, 0)
             }
+        }
+    }
+
+    fun changeNameGroup(idGroup: Int, name: String): Triple<String, Int, Int> {
+        var Json = MediaType.parse("application/json; charset=utf-8")
+       val data = hashMapOf("id" to idGroup, "name" to name)
+        var gson = Gson()
+        var client = OkHttpClient()
+        var requestBody = RequestBody.create(Json, gson.toJson(data))
+        var request = Request.Builder()
+            .url(Common.API_HOST + "api/Group/ChangeName")
+            .post(requestBody)
+            .build()
+        try {
+            var response = client.newCall(request).execute()
+            var statusCode = response.code()
+            var responseBody = response.body()?.string()
+            if (statusCode == 200) {
+                return Triple("Đã đổi tên nhóm thành công", responseBody!!.toInt(), 0)
+            }
+            if (statusCode == 400) {
+                if (responseBody == null || responseBody == "") {
+                    return Triple(Common.ERR_MSG, 0, 0)
+                }
+                return Triple(responseBody, 0, 0)
+            }
+            if (statusCode == 401) {
+                return Triple(Common.UNAUTHORIZED, 0, 0)
+            } else {
+                return Triple(Common.NOT_PERMIT, 0, 0)
+            }
+        } catch (ex: Exception) {
+            return Triple(Common.ERR_MSG, 0, 0)
         }
     }
 }

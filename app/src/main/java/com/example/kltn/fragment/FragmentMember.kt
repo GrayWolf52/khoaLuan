@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doBeforeTextChanged
 import androidx.fragment.app.Fragment
@@ -18,14 +19,35 @@ import com.example.kltn.models.UserModel
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
+import com.example.kltn.utils.Constants
 import com.example.kltn.utils.Constants.GROUD_ID
 
-class FragmentMember : Fragment() {
+class FragmentMember : AppCompatActivity() {
     private lateinit var rcvMember: RecyclerView
 
     private var groupId: Int = 0
     private lateinit var adapterMember: AdapterMember
-    override fun onCreateView(
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.fragment_member)
+        var bundle = intent.extras
+        if (bundle != null) {
+            groupId = bundle.getInt(GROUD_ID)
+
+            rcvMember = findViewById(R.id.rcvMember)
+            adapterMember = AdapterMember { view, user -> onMemberClicked(user) }
+            rcvMember.adapter = adapterMember
+            UserGroupService.loadDataAgain.postValue(true)
+            UserGroupService.loadDataAgain.observe(this){
+                if (it){
+                    loadUserGroup()
+                    UserGroupService.loadDataAgain.postValue(false)
+                }
+            }
+        }
+    }
+    /*override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,7 +68,7 @@ class FragmentMember : Fragment() {
         }
         return view
     }
-
+*/
     override fun onResume() {
         super.onResume()
         Log.d("TAG", "onResume: loading again ")
@@ -59,7 +81,7 @@ class FragmentMember : Fragment() {
     }
 
     private fun onMemberClicked(user: UserGroupInfos) {
-        var intent = Intent(this.context, ActivityStaffSchedule::class.java).apply {
+        var intent = Intent(this, ActivityStaffSchedule::class.java).apply {
             putExtra("GroupId", groupId)
             putExtra("UserId", user.user.id)
         }
@@ -69,9 +91,9 @@ class FragmentMember : Fragment() {
     private fun loadUserGroup() {
         Thread {
             var result = GroupService.getMember(groupId)
-            activity?.runOnUiThread {
+            runOnUiThread {
                 if (result.first.isNotEmpty())
-                    Toast.makeText(context, result.first, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()
                 else
                     adapterMember.submitList(result.second!!.toMutableList())
             }

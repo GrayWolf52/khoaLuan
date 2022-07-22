@@ -2,11 +2,13 @@ package com.example.kltn
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.kltn.utils.Constants
+import com.example.kltn.utils.LoginSharePrefrence
 import com.google.gson.Gson
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -19,19 +21,31 @@ class ActivityLogin : AppCompatActivity() {
     lateinit var txtUsername: EditText
     lateinit var txtPassword: EditText
     lateinit var lbLoginMsg: TextView
+    lateinit var sharePre: LoginSharePrefrence
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         btnLogin = findViewById(R.id.btnLogin)
-        btnLogin.setOnClickListener(){
+        btnLogin.setOnClickListener() {
             lbLoginMsg.text = ""
-            Thread({
+            Thread {
                 login()
-            }).start()
+            }.start()
         }
         txtUsername = findViewById(R.id.txtUsername)
         txtPassword = findViewById(R.id.txtPassword)
         lbLoginMsg = findViewById(R.id.lbLoginMsg)
+
+        sharePre = LoginSharePrefrence(this)
+        sharePre.init()
+        sharePre.getPassword()?.let {
+            Log.d("TAG", "onCreate: getPassword it = $it")
+            txtPassword.setText(it)
+        }
+        sharePre.getUserName()?.let {
+            Log.d("TAG", "onCreate: getUserName it = $it")
+            txtUsername.setText(it)
+        }
     }
 
     private fun login() {
@@ -51,19 +65,21 @@ class ActivityLogin : AppCompatActivity() {
             var statusCode = response.code()
             var responseBody = response.body()?.string()
             if (statusCode == 200) {
+                sharePre.setUserName(a.Username)
+                sharePre.setPassword(a.Password)
                 val intent = Intent(this, ActivityMain::class.java).apply {
                     putExtra(Constants.USER_ID, responseBody!!.toInt());
                 }
+
                 startActivity(intent)
-            }
-            else if (statusCode == 400) {
+            } else if (statusCode == 400) {
                 runOnUiThread(Runnable {
                     lbLoginMsg.text = responseBody
                 })
-            }
-            else {
+            } else {
                 runOnUiThread(Runnable {
-                    lbLoginMsg.text = "Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại sau."
+                    lbLoginMsg.text =
+                        "Đã xảy ra lỗi trong quá trình đăng nhập. Vui lòng thử lại sau."
                 })
             }
         } catch (ex: Exception) {
@@ -72,6 +88,7 @@ class ActivityLogin : AppCompatActivity() {
             })
         }
     }
+
     private fun updateUI(onLoad: Boolean) {
         txtUsername.isEnabled = !onLoad
         txtPassword.isEnabled = !onLoad
