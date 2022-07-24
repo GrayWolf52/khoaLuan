@@ -163,10 +163,10 @@ class UserGroupService {
                 .build()
             try {
                 var response = client.newCall(request).execute()
-                var statusCode = response.code()
+            var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    Log.d("TAG", "addUser:success ")
+                     Log.d("TAG", "addUser:success ")
                     loadDataAgain.postValue(true)
                     return Triple("Gửi lời mời tham gia nhóm thành công.", 0, 0)
                 }

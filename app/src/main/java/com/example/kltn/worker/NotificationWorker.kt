@@ -17,6 +17,7 @@ class NotificationWorker(private val ctx: Context, params: WorkerParameters) : W
         val listInvitation = UserGroupService.GetInvitation(userId)
         Log.d("TAG", "doWork: listInvitation = ${listInvitation.second?.size}")
         listInvitation.second?.forEach {
+            Log.d("TAG", "doWork: id group = ${it.group.id}")
             AcceptGroupNotification(context = ctx).acceptRequest(
                 userId,
                 it.group.id, it.group.name,

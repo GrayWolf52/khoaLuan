@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.*
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.kltn.services.GroupService
@@ -49,15 +50,12 @@ class FragmentAccount : Fragment() {
             var editUserName = dialog.findViewById<EditText>(R.id.txtUsername)
             var editPassword = dialog.findViewById<EditText>(R.id.txtPassword)
             var editResetPassword = dialog.findViewById<EditText>(R.id.edit_reset_password)
+            var txtError = dialog.findViewById<TextView>(R.id.lbLoginMsg)
             val prefrence = context?.let { LoginSharePrefrence(it) }
             prefrence?.init()
 
             prefrence?.getUserName()?.let {
                 editUserName.setText(it)
-            }
-
-            prefrence?.getPassword()?.let {
-                editPassword.setText(it)
             }
             btnClose.setOnClickListener {
                 dialog.dismiss()
@@ -69,17 +67,25 @@ class FragmentAccount : Fragment() {
                     val userName = editUserName.text.toString()
                     val oldPassword = editPassword.text.toString()
                     val newPassword = editResetPassword.text.toString()
-                    var result = UserService.resetPassword(userName, oldPassword, newPassword)
-                    withContext(Dispatchers.Main) {
-                        if (result.equals("Đổi mật khẩu thành công")) {
-                            Toast.makeText(context, result, Toast.LENGTH_LONG).show()
-                            prefrence?.setPassword(newPassword)
-                            dialog.dismiss()
+                    val password = prefrence?.getPassword()
+                    if (password != oldPassword) {
+                        txtError.setText( "Mật khẩu cũ của bạn không đúng!")
+                    }else {
+                        if (oldPassword == newPassword) {
+                            txtError.setText("Mật khẩu mới trùng với mật khẩu cũ!")
                         } else {
-                            Toast.makeText(context, result, Toast.LENGTH_LONG).show()
+                            var result = UserService.resetPassword(userName, oldPassword, newPassword)
+                            withContext(Dispatchers.Main) {
+                                if (result.equals("Đổi mật khẩu thành công")) {
+                                    Toast.makeText(context, result, Toast.LENGTH_LONG).show()
+                                    prefrence?.setPassword(newPassword)
+                                    dialog.dismiss()
+                                } else {
+                                    Toast.makeText(context, result, Toast.LENGTH_LONG).show()
+                                }
+                            }
                         }
                     }
-
                 }
             }
             var window = dialog.window

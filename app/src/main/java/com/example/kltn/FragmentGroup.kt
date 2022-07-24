@@ -2,7 +2,6 @@ package com.example.kltn
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -14,13 +13,16 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kltn.fragment.FragmentMember
 import com.example.kltn.models.GroupModel
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.utils.Constants
-import kotlinx.coroutines.*
-import java.lang.Runnable
+import com.example.kltn.utils.LoginSharePrefrence
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 
 class FragmentGroup : Fragment() {
     private lateinit var btnAddGroup: TextView
@@ -41,7 +43,7 @@ class FragmentGroup : Fragment() {
         btnAddGroup = view.findViewById(R.id.btnAddGroup)
         groupAdapter = AdapterGroup({ _, group -> onGroupClicked(group) }, {
             Log.d("TAG", "long click delete group : ")
-            deleteGroup(it.id)
+            setDialogOption(it.id, it.name)
         })
         rcvGroup.adapter = groupAdapter
         btnAddGroup.setOnClickListener {
@@ -52,35 +54,53 @@ class FragmentGroup : Fragment() {
                 var btnAddGroupClose = dialog.findViewById<Button>(R.id.btnAddGroupClose)
                 var btnAddGroupSave = dialog.findViewById<Button>(R.id.btnAddGroupSave)
                 var txtAddGroupName = dialog.findViewById<EditText>(R.id.txtAddGroupName)
+                val txtError = dialog.findViewById<TextView>(R.id.txtError)
                 btnAddGroupClose.setOnClickListener {
                     dialog.dismiss()
                 }
                 btnAddGroupSave.setOnClickListener {
                     Thread {
-                        var result = GroupService.create(userId, txtAddGroupName.text.toString())
-                        if (result.first.isEmpty()) {
+                        if (txtAddGroupName.text.isEmpty() || txtAddGroupName.text.length < 5) {
                             activity?.runOnUiThread {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Tạo nhóm thành công.",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                txtError.setText(
+                                    "Vui lòng nhập tên cho nhóm. Tên nhóm có độ dài từ 5 kí tự trở lên."
+                                )
                             }
-                            dialog.dismiss()
-                            load()
-                            var intent =
-                                Intent(this.requireActivity(), ActivityMember::class.java).apply {
-                                    putExtra(Constants.GROUD_ID, result.second)
-                                    putExtra(Constants.USER_ID, userId)
-                                }
-                            startActivity(intent)
                         } else {
-                            activity?.runOnUiThread {
-                                Toast.makeText(requireContext(), result.first, Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+                            var result =
+                                GroupService.create(userId, txtAddGroupName.text.toString())
+                            if (result.first.isEmpty()) {
+                                activity?.runOnUiThread {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Tạo nhóm thành công.",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                                dialog.dismiss()
+                                load()
+                                var intent =
+                                    Intent(
+                                        this.requireActivity(),
+                                        ActivityMember::class.java
+                                    ).apply {
+                                        putExtra(Constants.GROUD_ID, result.second)
+                                        putExtra(Constants.USER_ID, userId)
+                                    }
+                                startActivity(intent)
+                            } else {
+                                activity?.runOnUiThread {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        result.first,
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
 
+                            }
                         }
+
                     }.start()
                 }
                 var window = dialog.window
@@ -108,6 +128,81 @@ class FragmentGroup : Fragment() {
         startActivity(intent)
     }
 
+
+    private fun setDialogOption(idGroup: Int, nameGroup: String) {
+        activity?.let {
+            val builder = AlertDialog.Builder(it)
+            builder.setTitle("Tính nắng group")
+                .setMessage("Bạn có xóa hay đổi tên nhóm?")
+                .setPositiveButton("Xóa") { dialog, _ ->
+                    deleteGroup(idGroup)
+                    dialog.cancel()
+                }.setNegativeButton("Đổi tên") { dialog, _ ->
+                    renameGroup(idGroup, nameGroup)
+                    dialog.cancel()
+                }
+            builder.create()
+            builder.show()
+        }
+    }
+
+
+    private fun renameGroup(idGroup: Int, nameGroup: String) {
+        try {
+            var dialog = Dialog(requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.dialog_rename_group)
+            var btnRenameGroup = dialog.findViewById<Button>(R.id.btnAddGroupSave)
+            var btnClose = dialog.findViewById<Button>(R.id.btnAddGroupClose)
+            var txtOldName = dialog.findViewById<EditText>(R.id.edtNameOld)
+            var txtNewName = dialog.findViewById<EditText>(R.id.edtRenameGroup)
+            val txtError = dialog.findViewById<TextView>(R.id.txtError)
+            txtOldName.setText(nameGroup)
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+            btnRenameGroup.setOnClickListener {
+                Thread {
+                    if (txtOldName.text.isEmpty() || txtNewName.text.length < 5) {
+                        activity?.runOnUiThread {
+                            txtError.setText(
+                                "Vui lòng nhập tên mới cho nhóm. Tên nhóm có độ dài từ 5 kí tự trở lên."
+                            )
+                        }
+                    } else {
+                        var result =
+                            GroupService.changeNameGroup(idGroup, txtNewName.text.toString())
+                        if (result.first == "Đã đổi tên nhóm thành công") {
+                            load()
+                            dialog.dismiss()
+                        }
+                        activity?.runOnUiThread {
+                            Toast.makeText(
+                                requireContext(),
+                                result.first,
+                                Toast.LENGTH_SHORT
+                            )
+                                .show()
+                        }
+
+                    }
+
+                }.start()
+            }
+            var window = dialog.window
+            var wlp = window?.attributes
+            wlp?.gravity = Gravity.BOTTOM
+            window?.attributes = wlp
+            dialog.show()
+            dialog.window!!.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.MATCH_PARENT
+            )
+        } catch (ex: Exception) {
+            Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun deleteGroup(idGroup: Int) {
         Log.d("TAG", "deleteGroup: id group = $idGroup")
         viewLifecycleOwner.lifecycleScope.launch {
@@ -124,6 +219,7 @@ class FragmentGroup : Fragment() {
                             load()
                             withContext(Dispatchers.Main) {
                                 // update UI
+                                load()
                                 Toast.makeText(context, result.first, Toast.LENGTH_LONG).show()
                             }
                         }

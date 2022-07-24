@@ -219,14 +219,16 @@ class ActivityMember : AppCompatActivity() {
         private const val TAB_1 = 0
         private const val TAB_2 = 1
     }*/
-
+    private val selectedMember = ArrayList<UserModel>()
+    private val selectedMemberAdapter =
+        AdapterAddMember({ view, member -> deleteMember(view, member) })
     private lateinit var rcvMember: RecyclerView
 
     private var groupId: Int = 0
     private lateinit var adapterMember: AdapterMember
     private lateinit var btnMemberBack: TextView
     private lateinit var btnMemberAdd: TextView
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_member)
         var bundle = intent.extras
@@ -237,8 +239,8 @@ class ActivityMember : AppCompatActivity() {
             adapterMember = AdapterMember { view, user -> onMemberClicked(user) }
             rcvMember.adapter = adapterMember
             UserGroupService.loadDataAgain.postValue(true)
-            UserGroupService.loadDataAgain.observe(this){
-                if (it){
+            UserGroupService.loadDataAgain.observe(this) {
+                if (it) {
                     loadUserGroup()
                     UserGroupService.loadDataAgain.postValue(false)
                 }
@@ -248,7 +250,24 @@ class ActivityMember : AppCompatActivity() {
         btnMemberBack.setOnClickListener {
             finish()
         }
+
+        btnMemberAdd = findViewById(R.id.btnMemberAdd)
+        btnMemberAdd.setOnClickListener {
+            try {
+                addMemberForGroup()
+            } catch (ex: Exception) {
+                Toast.makeText(this, ex.toString(), Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
+    private fun deleteMember(view: View?, user: UserModel) {
+        var newList = selectedMember.filter { !(it.id == user.id) }
+        selectedMember.clear()
+        for (item in newList) selectedMember.add(item)
+        selectedMemberAdapter.submitList(selectedMember.toMutableList())
+    }
+
     /*override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -301,4 +320,88 @@ class ActivityMember : AppCompatActivity() {
             }
         }.start()
     }
+
+
+    private fun addMemberForGroup() {
+        var dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.dialog_addmember)
+        var btnAddMemberClose = dialog.findViewById<Button>(R.id.btnAddMemberClose)
+        var btnAddMemberSave = dialog.findViewById<Button>(R.id.btnAddMemberSave)
+        var txtAddMemberSearch = dialog.findViewById<AutoCompleteTextView>(R.id.txtAddMemberSearch)
+        var rcvAddMember = dialog.findViewById<RecyclerView>(R.id.rcvAddMember)
+        rcvAddMember.adapter = selectedMemberAdapter
+        val listResultMember = ArrayList<UserModel>()
+        val listResultMember2 = ArrayList<UserModel>()
+        val memberAdapter: ArrayAdapter<String> =
+            ArrayAdapter<String>(this, android.R.layout.select_dialog_item, ArrayList<String>())
+        txtAddMemberSearch.setAdapter(memberAdapter)
+        txtAddMemberSearch.threshold = 2
+        txtAddMemberSearch.setOnItemClickListener { _, _, position, _ ->
+            selectedMember.add(listResultMember2[position])
+            selectedMemberAdapter.submitList(selectedMember.toMutableList())
+            txtAddMemberSearch.setText("")
+            txtAddMemberSearch.clearFocus()
+        }
+        txtAddMemberSearch.doBeforeTextChanged { _, _, _, _ ->
+            listResultMember2.clear()
+            for (item in listResultMember) listResultMember2.add(item)
+        }
+        txtAddMemberSearch.doAfterTextChanged {
+            Log.d("Debug:", "doAfterTextChanged")
+            if (it.toString().length >= txtAddMemberSearch.threshold) {
+                Thread {
+                    var selectedUsers = ArrayList<Int>()
+                    for (item in selectedMember) {
+                        if (selectedUsers.contains(item.id)) continue
+                        selectedUsers.add(item.id)
+                    }
+                    var a = UserService.SearchWithout(
+                        it.toString(),
+                        selectedUsers
+                    )
+                    var searchParticipants = a.second?.let {
+                        it.toCollection(ArrayList<UserModel>())
+                    }
+                    listResultMember.clear()
+                    searchParticipants?.let {
+                        for (item in it) listResultMember.add(item)
+                    }
+                    runOnUiThread {
+                        memberAdapter.clear()
+                    }
+                    Handler(Looper.getMainLooper()).post {
+                        for (user in listResultMember) {
+                            memberAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                        }
+                    }
+                    memberAdapter.notifyDataSetChanged()
+                }.start()
+            }
+        }
+        btnAddMemberClose.setOnClickListener {
+            dialog.dismiss()
+        }
+        btnAddMemberSave.setOnClickListener {
+            Thread {
+                val resultAddUser = UserGroupService.addUser(selectedMember, groupId)
+                runOnUiThread {
+                    Toast.makeText(this, resultAddUser.first, Toast.LENGTH_SHORT).show()
+                }
+                dialog.dismiss()
+            }.start()
+        }
+        var window = dialog.window
+        var wlp = window?.attributes
+        wlp?.gravity = Gravity.BOTTOM
+        window?.attributes = wlp
+        selectedMember.clear()
+        selectedMemberAdapter.submitList(selectedMember.toMutableList())
+        dialog.show()
+        dialog.window!!.setLayout(
+            WindowManager.LayoutParams.MATCH_PARENT,
+            WindowManager.LayoutParams.MATCH_PARENT
+        )
+    }
+
 }

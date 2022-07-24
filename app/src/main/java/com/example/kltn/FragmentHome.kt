@@ -24,7 +24,7 @@ class FragmentHome : Fragment() {
     private lateinit var btnBack: TextView
     private lateinit var btnNext: TextView
     private lateinit var btnAddEvent: TextView
-    private lateinit var spView: Spinner
+  /*  private lateinit var spView: Spinner*/
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
     private val calendar = Calendar.getInstance()
@@ -53,7 +53,7 @@ class FragmentHome : Fragment() {
             intent.putExtras(b)
             startActivity(intent)
         }
-        spView = view.findViewById(R.id.spView)
+       /* spView = view.findViewById(R.id.spView)
         spView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
                 groupId = (spView.selectedItem as Item).id
@@ -64,7 +64,7 @@ class FragmentHome : Fragment() {
                 groupId = 0
                 refreshEvent()
             }
-        }
+        }*/
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day) }
         eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event) }
         recyclerView!!.adapter = dayAdapter
@@ -150,16 +150,16 @@ class FragmentHome : Fragment() {
                             )
                         )
                     }
-                    val dataAdapter =
+                 /*   val dataAdapter =
                         ArrayAdapter<Item>(
                             requireContext(),
                             android.R.layout.simple_spinner_item,
                             positions
                         )
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    activity?.runOnUiThread(Runnable {
+                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)*/
+                   /* activity?.runOnUiThread(Runnable {
                         spView.adapter = dataAdapter
-                    })
+                    })*/
                 } catch (ex: Exception) {
                     var a = ex
                 }

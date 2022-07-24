@@ -271,9 +271,10 @@ class ActivityEditEvent : AppCompatActivity() {
             changeUIStatus(true)
         }
         btnEditEventCancel.setOnClickListener {
-            runOnUiThread(Runnable {
+            runOnUiThread {
+                loadEvent()
                 changeUIStatus(false)
-            })
+            }
         }
         loadUserGroup()
         if (eventId > 0) loadEvent()
@@ -414,6 +415,12 @@ class ActivityEditEvent : AppCompatActivity() {
         Log.d("loadEvent", "loadEvent")
         Thread {
             var resultEvent = EventService.getById(eventId)
+            resultEvent.second?.participants?.also {
+                it.forEach {
+                    Log.d("TAG", "loadEvent: user name = ${it.username}")
+                }
+                selectedParticipantAdapter.submitList(it)
+            }
             if (resultEvent.first.isNotEmpty()) {
                 runOnUiThread {
                     Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
