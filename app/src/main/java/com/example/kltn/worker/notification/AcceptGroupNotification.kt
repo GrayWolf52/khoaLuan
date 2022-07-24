@@ -18,10 +18,13 @@ class AcceptGroupNotification(private var context: Context) {
 
     @SuppressLint("ServiceCast")
     fun acceptRequest(userId: Int, groupId: Int, groupName: String?, idNotification: Int) {
-        Log.d("TAG", "acceptRequest: ")
+        Log.d(
+            "TAG",
+            "acceptRequest() called with: userId = $userId, groupId = $groupId, groupName = $groupName, idNotification = $idNotification"
+        )
         val notificationIntent = Intent(context, AcceptGroupBroadcast::class.java)
         val yesIntent = PendingIntent.getBroadcast(
-            context, 0, notificationIntent.apply {
+            context, groupId, notificationIntent.apply {
                 action = Constants.ACTION_YES
                 putExtra(Constants.USER_ID, userId)
                 putExtra(Constants.GROUD_ID, groupId)
@@ -30,7 +33,7 @@ class AcceptGroupNotification(private var context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT
         )
         val noIntent = PendingIntent.getBroadcast(
-            context, 0, notificationIntent.apply {
+            context, groupId, notificationIntent.apply {
                 action = Constants.ACTION_NO
                 putExtra(Constants.USER_ID, userId)
                 putExtra(Constants.GROUD_ID, groupId)
