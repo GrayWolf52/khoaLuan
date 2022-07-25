@@ -56,7 +56,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
             }
         }
         rcvStaffSchedule = findViewById(R.id.rcvGroupSchedule)
-        eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event)}
+        /*eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event)}*/
         rcvStaffSchedule.adapter = eventAdapter
         refreshEvent()
     }

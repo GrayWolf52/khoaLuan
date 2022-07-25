@@ -118,5 +118,36 @@ class EventService {
                 return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
             }
         }
+
+        fun deleteEvent(idEvent: Int) : Triple<String, Int, Int>{
+            Log.d("TAG", "deleteGroup111: id idEvent = $idEvent")
+            var Json = MediaType.parse("application/json; charset=utf-8")
+            var client = OkHttpClient()
+            var request = Request.Builder().delete()
+                .url(Common.API_HOST + "api/Event/" + idEvent)
+                .build()
+            try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) {
+                    return Triple("Xóa event thành công !", 200, 0)
+                }
+                if (statusCode == 400) {
+                    if (responseBody == null || responseBody == "") {
+                        return Triple(Common.ERR_MSG, 0, 0)
+                    }
+                    return Triple(responseBody, 0, 0)
+                }
+                if (statusCode == 401) {
+                    return Triple(Common.UNAUTHORIZED, 0, 0)
+                } else {
+                    return Triple(Common.NOT_PERMIT, 0, 0)
+                }
+            } catch (ex: Exception) {
+                Log.d("TAG", "deleteGroup: $ex")
+                return Triple(Common.ERR_MSG, 0, 0)
+            }
+        }
     }
 }

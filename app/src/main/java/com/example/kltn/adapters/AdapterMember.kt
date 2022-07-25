@@ -10,10 +10,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class AdapterMember(private val onClick: (View?, UserGroupInfos) -> Unit) :
+class AdapterMember(
+    private val onClick: (View?, UserGroupInfos) -> Unit,
+    private val deleteUser: (Int?) -> Unit
+) :
     ListAdapter<UserGroupInfos, AdapterMember.MemberViewHolder>(MemberDiffCallback) {
 
-    class MemberViewHolder(itemView: View, val onClick: (View?, UserGroupInfos) -> Unit) :
+    class MemberViewHolder(
+        itemView: View,
+        val onClick: (View?, UserGroupInfos) -> Unit,
+        val deleteUser: (Int?) -> Unit
+    ) :
         RecyclerView.ViewHolder(itemView) {
         private val btnGroup: TextView = itemView.findViewById<Button>(R.id.btnMember)
         private val imageStatus: ImageView = itemView.findViewById(R.id.imageStatus)
@@ -32,13 +39,17 @@ class AdapterMember(private val onClick: (View?, UserGroupInfos) -> Unit) :
             btnGroup.text = u.user.userName + " - " + u.user.lastName + " " + u.user.firstName
             if (u.isAccepted) imageStatus.setImageResource(R.drawable.check_outline)
             else imageStatus.setImageResource(R.drawable.close_thick)
+
+            imageStatus.setOnClickListener {
+                deleteUser(u.user.id)
+            }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MemberViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_member, parent, false)
-        return MemberViewHolder(view, onClick)
+        return MemberViewHolder(view, onClick, deleteUser)
     }
 
     override fun onBindViewHolder(holder: MemberViewHolder, position: Int) {

@@ -236,7 +236,9 @@ class ActivityMember : AppCompatActivity() {
             groupId = bundle.getInt(Constants.GROUD_ID)
 
             rcvMember = findViewById(R.id.rcvMember)
-            adapterMember = AdapterMember { view, user -> onMemberClicked(user) }
+            adapterMember = AdapterMember( { view, user -> onMemberClicked(user) }, {
+
+            })
             rcvMember.adapter = adapterMember
             UserGroupService.loadDataAgain.postValue(true)
             UserGroupService.loadDataAgain.observe(this) {

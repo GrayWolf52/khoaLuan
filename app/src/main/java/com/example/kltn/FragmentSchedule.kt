@@ -60,7 +60,7 @@ class FragmentSchedule : Fragment() {
         recyclerView!!.adapter = dayAdapter
 
         recyclerViewEvent = view.findViewById(R.id.recyclerViewEvent)
-        eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event) }
+       /* eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event) }*/
         recyclerViewEvent!!.adapter = eventAdapter
 
         dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context))

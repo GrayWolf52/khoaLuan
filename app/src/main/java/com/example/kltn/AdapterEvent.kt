@@ -10,10 +10,17 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class EventAdapter(private val onClick: (View?, EventItem) -> Unit) :
+class EventAdapter(
+    private val onClick: (View?, EventItem) -> Unit,
+    private val deleteEvent: (View?, EventItem) -> Unit
+) :
     ListAdapter<EventItem, EventAdapter.EventViewHolder>(EventDiffCallback) {
 
-    class EventViewHolder(itemView: View, val onClick: (View?, EventItem) -> Unit) :
+    class EventViewHolder(
+        itemView: View,
+        val onClick: (View?, EventItem) -> Unit,
+        val deleteEvent: (View?, EventItem) -> Unit
+    ) :
         RecyclerView.ViewHolder(itemView) {
         private val lbEventDay: TextView = itemView.findViewById<TextView>(R.id.lbEventDay)
         private val lbEventMonth: TextView = itemView.findViewById<TextView>(R.id.lbEventMonth)
@@ -27,6 +34,14 @@ class EventAdapter(private val onClick: (View?, EventItem) -> Unit) :
                     if (eventModel.date != null) onClick(itemView, it)
                 }
             }
+
+            itemView.setOnLongClickListener {
+                eventModel.let {
+                    if (eventModel.date != null) deleteEvent(itemView, it)
+                }
+                true
+            }
+
         }
 
         @SuppressLint("ResourceAsColor")
@@ -55,7 +70,7 @@ class EventAdapter(private val onClick: (View?, EventItem) -> Unit) :
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_event, parent, false)
-        return EventViewHolder(view, onClick)
+        return EventViewHolder(view, onClick, deleteEvent)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
@@ -63,6 +78,7 @@ class EventAdapter(private val onClick: (View?, EventItem) -> Unit) :
         holder.bind(day)
     }
 }
+
 object EventDiffCallback : DiffUtil.ItemCallback<EventItem>() {
     override fun areItemsTheSame(oldItem: EventItem, newItem: EventItem): Boolean {
         return oldItem.id == newItem.id

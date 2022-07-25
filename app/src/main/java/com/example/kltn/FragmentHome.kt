@@ -1,5 +1,6 @@
 package com.example.kltn
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,11 +11,18 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import com.example.kltn.services.EventService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.utils.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
+
 
 class FragmentHome : Fragment() {
     private var recyclerView: RecyclerView? = null
@@ -24,7 +32,8 @@ class FragmentHome : Fragment() {
     private lateinit var btnBack: TextView
     private lateinit var btnNext: TextView
     private lateinit var btnAddEvent: TextView
-  /*  private lateinit var spView: Spinner*/
+
+    /*  private lateinit var spView: Spinner*/
     lateinit var dayAdapter: DayAdapter
     lateinit var eventAdapter: EventAdapter
     private val calendar = Calendar.getInstance()
@@ -53,20 +62,23 @@ class FragmentHome : Fragment() {
             intent.putExtras(b)
             startActivity(intent)
         }
-       /* spView = view.findViewById(R.id.spView)
-        spView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
-                groupId = (spView.selectedItem as Item).id
-                refreshEvent()
-            }
+        /* spView = view.findViewById(R.id.spView)
+         spView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
+                 groupId = (spView.selectedItem as Item).id
+                 refreshEvent()
+             }
 
-            override fun onNothingSelected(parent: AdapterView<out Adapter>?) {
-                groupId = 0
-                refreshEvent()
-            }
-        }*/
+             override fun onNothingSelected(parent: AdapterView<out Adapter>?) {
+                 groupId = 0
+                 refreshEvent()
+             }
+         }*/
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day) }
-        eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event) }
+        eventAdapter =
+            EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
+                deleteEvent(event.id)
+            })
         recyclerView!!.adapter = dayAdapter
         recyclerViewEvent!!.adapter = eventAdapter
         dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context))
@@ -96,7 +108,7 @@ class FragmentHome : Fragment() {
             calendar.add(Calendar.MONTH, 1)
             refreshEvent()
         }
-     //   loadUserGroup()
+        //   loadUserGroup()
         refreshEvent()
         return view
     }
@@ -116,7 +128,9 @@ class FragmentHome : Fragment() {
     fun refreshEvent() {
         var month = calendar.get(Calendar.MONTH) + 1
         var year = calendar.get(Calendar.YEAR)
-        lbMonth!!.text = "$month / $year"
+        activity?.runOnUiThread{
+            lbMonth!!.setText("$month / $year")
+        }
         Thread {
             Log.d("groupid", "goupdId = $groupId")
             //  api trả về chỉ có 1 item nếu truyền vào là userid mà không là số 0
@@ -126,7 +140,7 @@ class FragmentHome : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("FragmentHome","hahahahhh")
+        Log.d("FragmentHome", "hahahahhh")
         refreshEvent()
     }
 
@@ -150,21 +164,52 @@ class FragmentHome : Fragment() {
                             )
                         )
                     }
-                 /*   val dataAdapter =
-                        ArrayAdapter<Item>(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            positions
-                        )
-                    dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)*/
-                   /* activity?.runOnUiThread(Runnable {
-                        spView.adapter = dataAdapter
-                    })*/
+                    /*   val dataAdapter =
+                           ArrayAdapter<Item>(
+                               requireContext(),
+                               android.R.layout.simple_spinner_item,
+                               positions
+                           )
+                       dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)*/
+                    /* activity?.runOnUiThread(Runnable {
+                         spView.adapter = dataAdapter
+                     })*/
                 } catch (ex: Exception) {
                     var a = ex
                 }
             }
         }.start()
 
+    }
+
+
+    private fun deleteEvent(idEvent: Int) {
+        Log.d("TAG", "deleteGroup: id event = $idEvent")
+        viewLifecycleOwner.lifecycleScope.launch {
+            Log.d("TAG", "deleteGroup: id event = $idEvent")
+            activity?.let {
+                Log.d("TAG", "deleteGroup1111:  id event = $idEvent")
+                val builder = AlertDialog.Builder(it)
+                builder.setTitle("Xóa event")
+                    .setMessage("Bạn có chắc chắn muốn xóa event này không?")
+                    .setPositiveButton("Có") { _, _ ->
+                        GlobalScope.launch(Dispatchers.IO) {
+                            // do background task
+                            var result = EventService.deleteEvent(idEvent)
+
+                            withContext(Dispatchers.Main) {
+                                // update UI
+
+                                Toast.makeText(context, result.first, Toast.LENGTH_LONG).show()
+                            }
+                            refreshEvent()
+                        }
+                    }.setNegativeButton("Không") { dialog, _ ->
+                        dialog.cancel()
+                    }
+                builder.create()
+                builder.show()
+            }
+        }
     }
 }
