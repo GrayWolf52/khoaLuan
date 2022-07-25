@@ -1,6 +1,7 @@
 package com.example.kltn
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ class AdapterParticipant (private val onClick: (View?, UserModel) -> Unit) :
             lbParticipantUsername.text = participant.username
             lbParticipantFullName.text = participant.lastname + " " + participant.firstname
             btnDeleteParticipant.setOnClickListener {
+                Log.d("TAG", "bind:btnDeleteParticipant clicked  ")
                 onClick(it, participant)
             }
         }

@@ -3,6 +3,7 @@ package com.example.kltn.services
 import android.util.Log
 import com.example.kltn.Common
 import com.example.kltn.GroupInfos
+import com.example.kltn.models.DataSuggest
 import com.example.kltn.models.EventModel
 import com.example.kltn.models.UserModel
 import com.google.gson.Gson
@@ -19,13 +20,13 @@ class UserService {
         fun SearchWithout(
             prefix: String,
             exclusions: List<Int>
-        ): Triple<String, Array<UserModel>?, Int> {
+        ): Triple<String, Array<DataSuggest>?, Int> {
             Log.d("SearchWithout", "SearchWithout")
             var gson = Gson()
             var client = OkHttpClient()
             val request = Request.Builder()
                 .url(
-                    Common.API_HOST + "api/User/Search?prefix=" + URLEncoder.encode(
+                    Common.API_HOST + "api/UserGroup/Search?prefix=" + URLEncoder.encode(
                         prefix,
                         "utf-8"
                     ) + "&exclusions=" + URLEncoder.encode(exclusions.joinToString(","))
@@ -36,9 +37,9 @@ class UserService {
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    var users: Array<UserModel> = gson.fromJson(
+                    var users: Array<DataSuggest> = gson.fromJson(
                         responseBody,
-                        (ArrayList<UserModel>()).toTypedArray().javaClass
+                        (ArrayList<DataSuggest>()).toTypedArray().javaClass
                     )
                     Log.d("SearchWithout", "SearchWithout users = ${users.size}")
                     return Triple("", users, 0)

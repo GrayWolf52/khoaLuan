@@ -1,24 +1,23 @@
 package com.example.kltn
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.example.kltn.models.UserModel
-import com.example.kltn.utils.Roles
+import com.example.kltn.models.DataSuggest
 
 class AdapterAddMember(
-    private val onClick: (View?, UserModel) -> Unit,
+    private val onClick: (View?, DataSuggest) -> Unit,
 ) :
-    ListAdapter<UserModel, AdapterAddMember.AddMemberViewHolder>(AddMemberDiffCallback) {
+    ListAdapter<DataSuggest, AdapterAddMember.AddMemberViewHolder>(AddMemberDiffCallback) {
 
     class AddMemberViewHolder(
         itemView: View,
-        val onClick: (View?, UserModel) -> Unit,
+        val onClick: (View?, DataSuggest) -> Unit,
     ) :
         RecyclerView.ViewHolder(itemView) {
         private val lbAddMemberUsername: TextView =
@@ -27,7 +26,7 @@ class AdapterAddMember(
             itemView.findViewById<TextView>(R.id.lbAddMemberFullName)
         private val btnAddMemberDelete: Button =
             itemView.findViewById<Button>(R.id.btnAddMemberDelete)
-        private lateinit var user: UserModel
+        private lateinit var user: DataSuggest
 
         init {
             btnAddMemberDelete.setOnClickListener {
@@ -37,10 +36,10 @@ class AdapterAddMember(
             }
         }
 
-        fun bind(holder: AddMemberViewHolder, u: UserModel) {
+        fun bind(holder: AddMemberViewHolder, u: DataSuggest) {
             user = u
-            lbAddMemberUsername.text = u.username
-            lbAddMemberFullName.text = u.lastname + " " + u.firstname
+            lbAddMemberUsername.text = u.shortname
+            lbAddMemberFullName.text = u.fullname
         }
     }
 
@@ -56,12 +55,12 @@ class AdapterAddMember(
     }
 }
 
-object AddMemberDiffCallback : DiffUtil.ItemCallback<UserModel>() {
-    override fun areItemsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.id == newItem.id
+object AddMemberDiffCallback : DiffUtil.ItemCallback<DataSuggest>() {
+    override fun areItemsTheSame(oldItem: DataSuggest, newItem: DataSuggest): Boolean {
+        return oldItem.shortname == newItem.shortname && oldItem.fullname == newItem.fullname && oldItem.type == newItem.type
     }
 
-    override fun areContentsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.username == newItem.username && oldItem.firstname == newItem.firstname && oldItem.lastname == newItem.lastname
+    override fun areContentsTheSame(oldItem: DataSuggest, newItem: DataSuggest): Boolean {
+        return oldItem.shortname == newItem.shortname && oldItem.fullname == newItem.fullname && oldItem.type == newItem.type
     }
 }

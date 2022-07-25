@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.core.widget.doBeforeTextChanged
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kltn.models.DataSuggest
 import com.example.kltn.models.UserModel
 import com.example.kltn.services.EventService
 import com.example.kltn.services.GroupService
@@ -42,9 +43,10 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var chkEditEventLoop: CheckBox
     private lateinit var calendarStart: Calendar
     private lateinit var calendarEnd: Calendar
-    private var listParticipant = ArrayList<UserModel>()
-    private val _participants: ArrayList<UserModel> = ArrayList<UserModel>()
-    private val _participants2: ArrayList<UserModel> = ArrayList<UserModel>()
+    private var listParticipant = ArrayList<DataSuggest>()
+    private val _participants: ArrayList<DataSuggest> = ArrayList<DataSuggest>()
+    private val _participants2: ArrayList<DataSuggest> = ArrayList<DataSuggest>()
+    private val listData = mutableListOf<UserModel>()
     private var participants: ArrayList<String> = ArrayList<String>()
     private val listLoopType = ArrayList<String>()
     private var userId: Int = 0
@@ -169,7 +171,10 @@ class ActivityEditEvent : AppCompatActivity() {
         )
 
         selectedParticipantAdapter =
-            AdapterParticipant { view, participant -> deleteParticipant(view, participant) }
+            AdapterParticipant { view, participant ->
+                Log.d("TAG", "onCreate:AdapterParticipant ")
+                deleteParticipant(view, participant)
+            }
         recyclerViewParticipant.adapter = selectedParticipantAdapter
         val participantAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(this, android.R.layout.select_dialog_item, participants)
@@ -177,7 +182,10 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventParticipant.setAdapter(participantAdapter)
         txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
             listParticipant.add(_participants2[position])
-            selectedParticipantAdapter.submitList(listParticipant.toMutableList())
+            listParticipant.forEach {
+                listData.addAll(it.users)
+            }
+            selectedParticipantAdapter.submitList(listData)
             txtEditEventParticipant.setText("")
             txtEditEventParticipant.clearFocus()
         }
@@ -189,8 +197,11 @@ class ActivityEditEvent : AppCompatActivity() {
             if (it.toString().length >= txtEditEventParticipant.threshold) {
                 var selectedParticipant = ArrayList<Int>()
                 for (item in listParticipant) {
-                    if (selectedParticipant.contains(item.id)) continue
-                    selectedParticipant.add(item.id)
+                    item.users.forEach {
+                        if (!selectedParticipant.contains(it.id)) {
+                            selectedParticipant.add(it.id)
+                        }
+                    }
                 }
                 GlobalScope.launch(Dispatchers.IO) {
                     // do background task
@@ -207,8 +218,11 @@ class ActivityEditEvent : AppCompatActivity() {
                         } else if (resultSearchUser.second != null) {
                             for (item in resultSearchUser.second!!) _participants.add(item)
                             participantAdapter.clear()
-                            for (user in _participants) {
-                                participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
+                            for (user in resultSearchUser.second!!) {
+                                if (user.type == 2) participantAdapter.add(user.shortname + " - " + user.fullname) else
+                                    user.users.forEach {
+                                        participantAdapter.add(it.username + " - " + it.lastname + " " + it.firstname)
+                                    }
                             }
                         }
                         participantAdapter.notifyDataSetChanged()
@@ -245,6 +259,12 @@ class ActivityEditEvent : AppCompatActivity() {
             Thread {
                 Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
                 Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
+                val listId = mutableListOf<Int>()
+                listParticipant.forEach {
+                    it.users.forEach {
+                        listId.add(it.id)
+                    }
+                }
                 var msg = EventService.update(
                     eventId = eventId,
                     title = txtEditEventTitle.text.toString(),
@@ -254,7 +274,7 @@ class ActivityEditEvent : AppCompatActivity() {
                     recurrenceType = recurrenceType,
                     groupId = groupId,
                     creatorId = userId,
-                    participants = listParticipant.map { it.id },
+                    participants = listId,
                 )
                 if (msg.isNotEmpty()) {
                     runOnUiThread {
@@ -298,10 +318,17 @@ class ActivityEditEvent : AppCompatActivity() {
     }
 
     private fun deleteParticipant(view: View?, participant: UserModel) {
-        var newList = listParticipant.filter { !(it.id == participant.id) }
-        listParticipant.clear()
-        for (item in newList) listParticipant.add(item)
-        selectedParticipantAdapter.submitList(listParticipant.toMutableList())
+        Log.d("TAG", "deleteParticipant: ")
+        var newList = listData.filter {
+            Log.d("TAG", "deleteParticipant: ${it.id} and id particapant ${participant.id}")
+            !(it.id == participant.id)
+        }
+        listData.clear()
+        Log.d("TAG", "deleteParticipant: ${newList.size}")
+        listData.addAll(newList)
+        Log.d("TAG", "deleteParticipant:listData ${listData.size}")
+        selectedParticipantAdapter.submitList(listData)
+        selectedParticipantAdapter.notifyDataSetChanged()
     }
 
     fun timeToString(hourOfDay: Int, minute: Int): String {
@@ -418,8 +445,9 @@ class ActivityEditEvent : AppCompatActivity() {
             resultEvent.second?.participants?.also {
                 it.forEach {
                     Log.d("TAG", "loadEvent: user name = ${it.username}")
+                    listData.add(it)
                 }
-                selectedParticipantAdapter.submitList(it)
+                selectedParticipantAdapter.submitList(listData)
             }
             if (resultEvent.first.isNotEmpty()) {
                 runOnUiThread {

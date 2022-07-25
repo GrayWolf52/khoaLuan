@@ -147,13 +147,13 @@ class UserGroupService {
         }
 */
 
-        fun addUser(selectedMember: ArrayList<UserModel>, groupId: Int): Triple<String, Int, Int> {
+        fun addUser(selectedMember: MutableList<Int>, groupId: Int): Triple<String, Int, Int> {
             Log.d("TAG", "addUser: groupid = $groupId ")
             var Json = MediaType.parse("application/json; charset=utf-8")
             var gson = Gson()
             val listData = mutableListOf<HashMap<String, Int>>()
             selectedMember.forEach {
-                listData.add(hashMapOf("Key" to it.id, "Value" to it.roles))
+                listData.add(hashMapOf("Key" to it, "Value" to 0))
             }
             var requestBody = RequestBody.create(Json, gson.toJson(listData))
             var client = OkHttpClient()
