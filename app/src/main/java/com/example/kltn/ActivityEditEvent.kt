@@ -24,6 +24,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ActivityEditEvent : AppCompatActivity() {
     private lateinit var btnEditEventBack: TextView
@@ -44,6 +45,7 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var calendarStart: Calendar
     private lateinit var calendarEnd: Calendar
     private var listParticipant = ArrayList<DataSuggest>()
+    private var listIdParticipanted = ArrayList<Int>()
     private val _participants: ArrayList<DataSuggest> = ArrayList<DataSuggest>()
     private val _participants2: ArrayList<DataSuggest> = ArrayList<DataSuggest>()
     private val listData = mutableListOf<UserModel>()
@@ -183,7 +185,15 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
             listParticipant.add(_participants2[position])
             listParticipant.forEach {
-                listData.addAll(it.users)
+                it.users.forEach { user->
+                    listIdParticipanted.forEach {
+                        if (user.id != it)
+                        {
+                            Log.d("TAG", "onCreate: listIdParticipanted $it usser id = ${user.id}")
+                            listData.add(user)
+                        }
+                    }
+                }
             }
             selectedParticipantAdapter.submitList(listData)
             txtEditEventParticipant.setText("")
@@ -262,7 +272,10 @@ class ActivityEditEvent : AppCompatActivity() {
                 val listId = mutableListOf<Int>()
                 listParticipant.forEach {
                     it.users.forEach {
-                        listId.add(it.id)
+                        for (id in listIdParticipanted) {
+                            if (it.id != id)
+                                listId.add(it.id)
+                        }
                     }
                 }
                 var msg = EventService.update(
@@ -443,9 +456,11 @@ class ActivityEditEvent : AppCompatActivity() {
         Thread {
             var resultEvent = EventService.getById(eventId)
             resultEvent.second?.participants?.also {
+                listIdParticipanted.clear()
                 it.forEach {
                     Log.d("TAG", "loadEvent: user name = ${it.username}")
                     listData.add(it)
+                    listIdParticipanted.add(it.id)
                 }
                 selectedParticipantAdapter.submitList(listData)
             }

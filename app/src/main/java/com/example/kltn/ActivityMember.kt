@@ -28,9 +28,9 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ActivityMember : AppCompatActivity() {
 
-    private val selectedMember = ArrayList<DataSuggest>()
+    private val selectedMember = ArrayList<UserModel>()
     private val selectedMemberAdapter =
-        AdapterAddMember({ view, member -> deleteMember(view, member) })
+        AdapterAddUser({ view, member -> deleteMember(view, member) })
     private lateinit var rcvMember: RecyclerView
 
     private var groupId: Int = 0
@@ -72,11 +72,11 @@ class ActivityMember : AppCompatActivity() {
         }
     }
 
-    private fun deleteMember(view: View?, user: DataSuggest) {
-      /*  var newList = selectedMember.filter { !(it.id == user.id) }
-        selectedMember.clear()
-        for (item in newList) selectedMember.add(item)
-        selectedMemberAdapter.submitList(selectedMember.toMutableList())*/
+    private fun deleteMember(view: View?, user: UserModel) {
+        /*  var newList = selectedMember.filter { !(it.id == user.id) }
+          selectedMember.clear()
+          for (item in newList) selectedMember.add(item)
+          selectedMemberAdapter.submitList(selectedMember.toMutableList())*/
     }
 
     override fun onResume() {
@@ -120,8 +120,8 @@ class ActivityMember : AppCompatActivity() {
         var txtAddMemberSearch = dialog.findViewById<AutoCompleteTextView>(R.id.txtAddMemberSearch)
         var rcvAddMember = dialog.findViewById<RecyclerView>(R.id.rcvAddMember)
         rcvAddMember.adapter = selectedMemberAdapter
-        val listResultMember = ArrayList<DataSuggest>()
-        val listResultMember2 = ArrayList<DataSuggest>()
+        val listResultMember = ArrayList<UserModel>()
+        val listResultMember2 = ArrayList<UserModel>()
         val memberAdapter: ArrayAdapter<String> =
             ArrayAdapter<String>(this, android.R.layout.select_dialog_item, ArrayList<String>())
         txtAddMemberSearch.setAdapter(memberAdapter)
@@ -142,18 +142,16 @@ class ActivityMember : AppCompatActivity() {
                 Thread {
                     var selectedUsers = ArrayList<Int>()
                     for (item in selectedMember) {
-                        item.users.forEach {
-                            if (!selectedUsers.contains(it.id)) {
-                                selectedUsers.add(it.id)
-                            }
+                        if (!selectedUsers.contains(item.id)) {
+                            selectedUsers.add(item.id)
                         }
                     }
-                    var a = UserService.SearchWithout(
+                    var a = UserService.SearchWithoutUser(
                         it.toString(),
                         selectedUsers
                     )
                     var searchParticipants = a.second?.let {
-                        it.toCollection(ArrayList<DataSuggest>())
+                        it.toCollection(ArrayList<UserModel>())
                     }
                     listResultMember.clear()
                     searchParticipants?.let {
@@ -166,10 +164,10 @@ class ActivityMember : AppCompatActivity() {
                     }
                     Handler(Looper.getMainLooper()).post {
                         for (user in listResultMember) {
-                            memberAdapter.add(user.fullname)
+                            memberAdapter.add(user.username + " " + user.firstname + " " + user.lastname)
                         }
                     }
-                    runOnUiThread{
+                    runOnUiThread {
                         memberAdapter.notifyDataSetChanged()
                     }
                 }.start()
@@ -181,9 +179,9 @@ class ActivityMember : AppCompatActivity() {
         btnAddMemberSave.setOnClickListener {
             Thread {
                 val listId = mutableListOf<Int>()
-               selectedMember.forEach {
-                   it.users.forEach { listId.add(it.id) }
-               }
+                selectedMember.forEach {
+                    listId.add(it.id)
+                }
                 val resultAddUser = UserGroupService.addUser(listId, groupId)
                 runOnUiThread {
                     Toast.makeText(this, resultAddUser.first, Toast.LENGTH_SHORT).show()
