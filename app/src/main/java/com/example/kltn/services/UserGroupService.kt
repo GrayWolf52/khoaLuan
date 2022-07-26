@@ -153,7 +153,7 @@ class UserGroupService {
             var gson = Gson()
             val listData = mutableListOf<HashMap<String, Int>>()
             selectedMember.forEach {
-                listData.add(hashMapOf("Key" to it, "Value" to 0))
+                listData.add(hashMapOf("Key" to it, "Value" to 1))
             }
             var requestBody = RequestBody.create(Json, gson.toJson(listData))
             var client = OkHttpClient()

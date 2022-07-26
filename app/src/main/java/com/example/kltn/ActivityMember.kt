@@ -24,6 +24,10 @@ import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import com.example.kltn.utils.Constants
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class ActivityMember : AppCompatActivity() {
@@ -46,7 +50,9 @@ class ActivityMember : AppCompatActivity() {
 
             rcvMember = findViewById(R.id.rcvMember)
             adapterMember = AdapterMember({ view, user -> onMemberClicked(user) }, {
-
+                it?.let {
+                    removeUserGroup(it)
+                }
             })
             rcvMember.adapter = adapterMember
             UserGroupService.loadDataAgain.postValue(true)
@@ -73,10 +79,20 @@ class ActivityMember : AppCompatActivity() {
     }
 
     private fun deleteMember(view: View?, user: UserModel) {
-        /*  var newList = selectedMember.filter { !(it.id == user.id) }
+          var newList = selectedMember.filter { !(it.id == user.id) }
           selectedMember.clear()
           for (item in newList) selectedMember.add(item)
-          selectedMemberAdapter.submitList(selectedMember.toMutableList())*/
+          selectedMemberAdapter.submitList(selectedMember.toMutableList())
+    }
+
+    private fun removeUserGroup(id: Int){
+        GlobalScope.launch(Dispatchers.IO) {
+            val dataRepos = UserGroupService.acceptInvitation(id, groupId, false)
+            withContext(Dispatchers.Main) {
+              /*  Toast.makeText(this@ActivityMember, dataRepos, Toast.LENGTH_LONG).show()*/
+                loadUserGroup()
+            }
+        }
     }
 
     override fun onResume() {
