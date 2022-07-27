@@ -49,7 +49,7 @@ class ActivityMain : AppCompatActivity() {
             }
             true
         }
-        onWorkerInvitation()
+      //  onWorkerInvitation()
     }
 
 

@@ -62,18 +62,6 @@ class FragmentHome : Fragment() {
             intent.putExtras(b)
             startActivity(intent)
         }
-        /* spView = view.findViewById(R.id.spView)
-         spView.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-             override fun onItemSelected(parent: AdapterView<*>, view: View, pos: Int, id: Long) {
-                 groupId = (spView.selectedItem as Item).id
-                 refreshEvent()
-             }
-
-             override fun onNothingSelected(parent: AdapterView<out Adapter>?) {
-                 groupId = 0
-                 refreshEvent()
-             }
-         }*/
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day) }
         eventAdapter =
             EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->

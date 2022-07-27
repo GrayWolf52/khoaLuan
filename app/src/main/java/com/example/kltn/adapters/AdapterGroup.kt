@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -19,6 +20,7 @@ class AdapterGroup(
     class GroupViewHolder(itemView: View, val onClick: (View?, GroupModel) -> Unit, val onClickDelete: ( GroupModel) -> Unit) :
         RecyclerView.ViewHolder(itemView) {
         private val btnGroup: TextView = itemView.findViewById<Button>(R.id.btnGroup)
+        private val selectionGroup: ImageButton = itemView.findViewById(R.id.selectionGroup)
         private lateinit var group: GroupModel
 
         init {
@@ -26,9 +28,12 @@ class AdapterGroup(
                 onClick(itemView, group)
             }
 
-            btnGroup.setOnLongClickListener {
+          /*  btnGroup.setOnLongClickListener {
                 onClickDelete(group)
                 true
+            }*/
+            selectionGroup.setOnClickListener {
+                onClickDelete(group)
             }
         }
 

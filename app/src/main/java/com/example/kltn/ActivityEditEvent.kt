@@ -64,6 +64,155 @@ class ActivityEditEvent : AppCompatActivity() {
         isEventGroup = bundle?.getBoolean(Constants.IS_ADD_EVENT_GROUP)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
+        initView()
+        selectedParticipantAdapter =
+            AdapterParticipant { view, participant ->
+                Log.d("TAG", "onCreate:AdapterParticipant ")
+                deleteParticipant(view, participant)
+            }
+        recyclerViewParticipant.adapter = selectedParticipantAdapter
+        val participantAdapter: ArrayAdapter<String> =
+            ArrayAdapter<String>(this, android.R.layout.select_dialog_item, participants)
+        txtEditEventParticipant.threshold = 2
+        txtEditEventParticipant.setAdapter(participantAdapter)
+        txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
+            Log.d("TAG", "onCreate:txtEditEventParticipant  setOnItemClickListener")
+            listParticipant.add(_participants2[position])
+            val listValue = mutableListOf<UserModel>()
+            for (user in  _participants2[position].users){
+                for (it in listData){
+                    if (user.id != it.id) {
+                        Log.d("TAG", "onCreate: listIdParticipanted $it usser id = ${user.id}")
+                        listValue.add(user)
+                    }
+                }
+                listData.addAll(listValue)
+            }
+
+            Log.d("TAG", "onCreate: listData size = ${listData.size}")
+            selectedParticipantAdapter.submitList(listData)
+            selectedParticipantAdapter.notifyDataSetChanged()
+            txtEditEventParticipant.setText("")
+            txtEditEventParticipant.clearFocus()
+        }
+        txtEditEventParticipant.doBeforeTextChanged { _, _, _, _ ->
+            _participants2.clear()
+            for (item in _participants) _participants2.add(item)
+        }
+        txtEditEventParticipant.doAfterTextChanged {
+            if (it.toString().length >= txtEditEventParticipant.threshold) {
+                var selectedParticipant = ArrayList<Int>()
+                for (item in listParticipant) {
+                    item.users.forEach {
+                        if (!selectedParticipant.contains(it.id)) {
+                            selectedParticipant.add(it.id)
+                        }
+                    }
+                }
+                GlobalScope.launch(Dispatchers.IO) {
+                    // do background task
+                    var resultSearchUser =
+                        UserService.SearchWithout(it.toString(), selectedParticipant)
+                    withContext(Dispatchers.Main) {
+                        // update UI
+                        if (resultSearchUser.first.isNotEmpty()) {
+                            Toast.makeText(
+                                this@ActivityEditEvent,
+                                resultSearchUser.first,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else if (resultSearchUser.second != null) {
+                            for (item in resultSearchUser.second!!) _participants.add(item)
+                            participantAdapter.clear()
+                            for (user in resultSearchUser.second!!) {
+                                if (user.type == 2) participantAdapter.add(user.shortname + " - " + user.fullname) else
+                                    user.users.forEach {
+                                        participantAdapter.add(it.username + " - " + it.lastname + " " + it.firstname)
+                                    }
+                            }
+                        }
+                        participantAdapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        }
+
+        loopAdaper = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listLoopType)
+        spnEditEventLoop.adapter = loopAdaper
+
+        chkEditEventLoop.setOnClickListener {
+            if (chkEditEventLoop.isChecked) spnEditEventLoop.visibility = View.VISIBLE
+            else spnEditEventLoop.visibility = View.GONE
+        }
+        btnSaveEvent.setOnClickListener {
+            var recurrenceType = 0
+            if (chkEditEventLoop.isChecked) recurrenceType =
+                (spnEditEventLoop.selectedItemPosition + 1)
+            Thread {
+                Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
+                Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
+                val listId = mutableListOf<Int>()
+                listParticipant.forEach {
+                    it.users.forEach {
+                        for (id in listIdParticipanted) {
+                            if (it.id != id)
+                                listId.add(it.id)
+                        }
+                    }
+                }
+                var msg = EventService.update(
+                    eventId = eventId,
+                    title = txtEditEventTitle.text.toString(),
+                    description = txtEditEventDescription.text.toString(),
+                    startTime = calendarStart.time,
+                    endTime = calendarEnd.time,
+                    recurrenceType = recurrenceType,
+                    groupId = groupId,
+                    creatorId = userId,
+                    participants = listId,
+                )
+                if (msg.isNotEmpty()) {
+                    runOnUiThread {
+                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    runOnUiThread {
+                        changeUIStatus(false)
+                    }
+                }
+            }.start()
+        }
+        btnEditEventEdit.setOnClickListener {
+            changeUIStatus(true)
+        }
+        btnEditEventCancel.setOnClickListener {
+            runOnUiThread {
+                loadEvent()
+                changeUIStatus(false)
+            }
+        }
+        loadUserGroup()
+        if (eventId > 0) loadEvent()
+        else refreshLoopType()
+    }
+
+    private fun refreshLoopType() {
+        listLoopType.clear()
+        var dayOfWeek = calendarStart.get(Calendar.DAY_OF_WEEK)
+        listLoopType.add(
+            "Mỗi " + timeToString(
+                calendarStart.get(Calendar.HOUR_OF_DAY),
+                calendarStart.get(Calendar.MINUTE)
+            ) + " hằng ngày"
+        )
+        if (dayOfWeek == 1) listLoopType.add("Mỗi chủ nhật hằng tuần")
+        else listLoopType.add("Mỗi thứ $dayOfWeek hằng tuần")
+        var dayOfMonth = calendarStart.get(Calendar.DAY_OF_MONTH)
+        listLoopType.add("Mỗi ngày $dayOfMonth hằng tháng")
+        loopAdaper.notifyDataSetChanged()
+    }
+
+    private fun initView() {
         btnSaveEvent = findViewById(R.id.btnSaveEvent)
         btnEditEventCancel = findViewById(R.id.btnEditEventCancel)
         btnEditEventEdit = findViewById(R.id.btnEditEventEdit)
@@ -171,177 +320,19 @@ class ActivityEditEvent : AppCompatActivity() {
             calendarEnd.get(Calendar.MONTH),
             calendarEnd.get(Calendar.YEAR)
         )
-
-        selectedParticipantAdapter =
-            AdapterParticipant { view, participant ->
-                Log.d("TAG", "onCreate:AdapterParticipant ")
-                deleteParticipant(view, participant)
-            }
-        recyclerViewParticipant.adapter = selectedParticipantAdapter
-        val participantAdapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(this, android.R.layout.select_dialog_item, participants)
-        txtEditEventParticipant.threshold = 2
-        txtEditEventParticipant.setAdapter(participantAdapter)
-        txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
-            listParticipant.add(_participants2[position])
-            listParticipant.forEach {
-                it.users.forEach { user->
-                    listIdParticipanted.forEach {
-                        if (user.id != it)
-                        {
-                            Log.d("TAG", "onCreate: listIdParticipanted $it usser id = ${user.id}")
-                            listData.add(user)
-                        }
-                    }
-                }
-            }
-            selectedParticipantAdapter.submitList(listData)
-            txtEditEventParticipant.setText("")
-            txtEditEventParticipant.clearFocus()
-        }
-        txtEditEventParticipant.doBeforeTextChanged { _, _, _, _ ->
-            _participants2.clear()
-            for (item in _participants) _participants2.add(item)
-        }
-        txtEditEventParticipant.doAfterTextChanged {
-            if (it.toString().length >= txtEditEventParticipant.threshold) {
-                var selectedParticipant = ArrayList<Int>()
-                for (item in listParticipant) {
-                    item.users.forEach {
-                        if (!selectedParticipant.contains(it.id)) {
-                            selectedParticipant.add(it.id)
-                        }
-                    }
-                }
-                GlobalScope.launch(Dispatchers.IO) {
-                    // do background task
-                    var resultSearchUser =
-                        UserService.SearchWithout(it.toString(), selectedParticipant)
-                    withContext(Dispatchers.Main) {
-                        // update UI
-                        if (resultSearchUser.first.isNotEmpty()) {
-                            Toast.makeText(
-                                this@ActivityEditEvent,
-                                resultSearchUser.first,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else if (resultSearchUser.second != null) {
-                            for (item in resultSearchUser.second!!) _participants.add(item)
-                            participantAdapter.clear()
-                            for (user in resultSearchUser.second!!) {
-                                if (user.type == 2) participantAdapter.add(user.shortname + " - " + user.fullname) else
-                                    user.users.forEach {
-                                        participantAdapter.add(it.username + " - " + it.lastname + " " + it.firstname)
-                                    }
-                            }
-                        }
-                        participantAdapter.notifyDataSetChanged()
-                    }
-                }
-                /* Thread {
-                     var resultSearchUser =
-                         UserService.SearchWithout(it.toString(), selectedParticipant)
-                     if (resultSearchUser.first.isNotEmpty()) {
-                         Toast.makeText(this, resultSearchUser.first, Toast.LENGTH_SHORT).show()
-                     } else if (resultSearchUser.second != null) {
-                         for (item in resultSearchUser.second!!) _participants.add(item)
-                         participantAdapter.clear()
-                         for (user in _participants) {
-                             participantAdapter.add(user.username + " - " + user.lastname + " " + user.firstname)
-                         }
-                     }
-                     participantAdapter.notifyDataSetChanged()
-                 }.start()*/
-            }
-        }
-
-        loopAdaper = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, listLoopType)
-        spnEditEventLoop.adapter = loopAdaper
-
-        chkEditEventLoop.setOnClickListener {
-            if (chkEditEventLoop.isChecked) spnEditEventLoop.visibility = View.VISIBLE
-            else spnEditEventLoop.visibility = View.GONE
-        }
-        btnSaveEvent.setOnClickListener {
-            var recurrenceType = 0
-            if (chkEditEventLoop.isChecked) recurrenceType =
-                (spnEditEventLoop.selectedItemPosition + 1)
-            Thread {
-                Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
-                Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
-                val listId = mutableListOf<Int>()
-                listParticipant.forEach {
-                    it.users.forEach {
-                        for (id in listIdParticipanted) {
-                            if (it.id != id)
-                                listId.add(it.id)
-                        }
-                    }
-                }
-                var msg = EventService.update(
-                    eventId = eventId,
-                    title = txtEditEventTitle.text.toString(),
-                    description = txtEditEventDescription.text.toString(),
-                    startTime = calendarStart.time,
-                    endTime = calendarEnd.time,
-                    recurrenceType = recurrenceType,
-                    groupId = groupId,
-                    creatorId = userId,
-                    participants = listId,
-                )
-                if (msg.isNotEmpty()) {
-                    runOnUiThread {
-                        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    runOnUiThread {
-                        changeUIStatus(false)
-                    }
-                }
-            }.start()
-        }
-        btnEditEventEdit.setOnClickListener {
-            changeUIStatus(true)
-        }
-        btnEditEventCancel.setOnClickListener {
-            runOnUiThread {
-                loadEvent()
-                changeUIStatus(false)
-            }
-        }
-        loadUserGroup()
-        if (eventId > 0) loadEvent()
-        else refreshLoopType()
-    }
-
-    private fun refreshLoopType() {
-        listLoopType.clear()
-        var dayOfWeek = calendarStart.get(Calendar.DAY_OF_WEEK)
-        listLoopType.add(
-            "Mỗi " + timeToString(
-                calendarStart.get(Calendar.HOUR_OF_DAY),
-                calendarStart.get(Calendar.MINUTE)
-            ) + " hằng ngày"
-        )
-        if (dayOfWeek == 1) listLoopType.add("Mỗi chủ nhật hằng tuần")
-        else listLoopType.add("Mỗi thứ $dayOfWeek hằng tuần")
-        var dayOfMonth = calendarStart.get(Calendar.DAY_OF_MONTH)
-        listLoopType.add("Mỗi ngày $dayOfMonth hằng tháng")
-        loopAdaper.notifyDataSetChanged()
     }
 
     private fun deleteParticipant(view: View?, participant: UserModel) {
         Log.d("TAG", "deleteParticipant: ")
-        var newList = listData.filter {
+        var newList = listData.findLast {
             Log.d("TAG", "deleteParticipant: ${it.id} and id particapant ${participant.id}")
-            !(it.id == participant.id)
+            (it.id == participant.id)
         }
+        listData.remove(newList)
         listData.clear()
-        Log.d("TAG", "deleteParticipant: ${newList.size}")
-        listData.addAll(newList)
         Log.d("TAG", "deleteParticipant:listData ${listData.size}")
         selectedParticipantAdapter.submitList(listData)
-        selectedParticipantAdapter.notifyDataSetChanged()
+        /*   selectedParticipantAdapter.notifyDataSetChanged()*/
     }
 
     fun timeToString(hourOfDay: Int, minute: Int): String {

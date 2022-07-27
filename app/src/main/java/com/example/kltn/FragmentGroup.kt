@@ -132,7 +132,7 @@ class FragmentGroup : Fragment() {
     private fun setDialogOption(idGroup: Int, nameGroup: String) {
         activity?.let {
             val builder = AlertDialog.Builder(it)
-            builder.setTitle("Tính nắng group")
+            builder.setTitle("Tính năng group")
                 .setMessage("Bạn có xóa hay đổi tên nhóm?")
                 .setPositiveButton("Xóa") { dialog, _ ->
                     deleteGroup(idGroup)
