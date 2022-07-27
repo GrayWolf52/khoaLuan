@@ -45,8 +45,10 @@ class FragmentHome : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         var bundle = arguments
-        if (bundle != null)
+        if (bundle != null) {
             userId = bundle!!.getInt("UserId")
+        }
+
         var view = inflater.inflate(R.layout.fragment_home, container, false);
         recyclerView = view?.findViewById(R.id.recyclerView)
         recyclerViewEvent = view?.findViewById(R.id.recyclerViewEvent)
@@ -122,7 +124,7 @@ class FragmentHome : Fragment() {
         Thread {
             Log.d("groupid", "goupdId = $groupId")
             //  api trả về chỉ có 1 item nếu truyền vào là userid mà không là số 0
-            dayViewModel.load(0, groupId, month, year)
+            dayViewModel.load(userId, groupId, month, year)
         }.start()
     }
 

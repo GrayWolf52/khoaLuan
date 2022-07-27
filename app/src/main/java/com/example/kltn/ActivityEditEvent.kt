@@ -76,11 +76,12 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventParticipant.threshold = 2
         txtEditEventParticipant.setAdapter(participantAdapter)
         txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
-            Log.d("TAG", "onCreate:txtEditEventParticipant  setOnItemClickListener")
+            Log.d("TAG", "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position")
+            Log.d("TAG", "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position")
             listParticipant.add(_participants2[position])
             val listValue = mutableListOf<UserModel>()
-            for (user in  _participants2[position].users){
-                for (it in listData){
+            for (user in _participants2[position].users) {
+                for (it in listData) {
                     if (user.id != it.id) {
                         Log.d("TAG", "onCreate: listIdParticipanted $it usser id = ${user.id}")
                         listValue.add(user)
@@ -462,9 +463,15 @@ class ActivityEditEvent : AppCompatActivity() {
                 }
             } else {
                 var event = resultEvent.second
-                txtEditEventTitle.text = event?.title
-                txtEditEventDescription.text = event?.description
-                calendarStart.time = event?.startTime
+                event?.title?.let {
+                    txtEditEventTitle.setText(it)
+                }
+                event?.description?.let {
+                    txtEditEventDescription.setText(it)
+                }
+                event?.startTime?.let {
+                    calendarStart.time = it
+                }
                 txtEditEventStartTime.text = timeToString(
                     calendarStart.get(Calendar.HOUR_OF_DAY),
                     calendarStart.get(Calendar.MINUTE)
