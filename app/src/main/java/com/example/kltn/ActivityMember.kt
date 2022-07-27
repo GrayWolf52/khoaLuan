@@ -1,5 +1,6 @@
 package com.example.kltn
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
@@ -87,18 +88,28 @@ class ActivityMember : AppCompatActivity() {
     }
 
     private fun removeUserGroup(id: Int) {
-        if (id != userId) {
-            GlobalScope.launch(Dispatchers.IO) {
-                val dataRepos = UserGroupService.acceptInvitation(id, groupId, false)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@ActivityMember, "Xóa user khỏi group thành công!", Toast.LENGTH_LONG).show()
-                    loadUserGroup()
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Xóa user trong group")
+                .setMessage("Bạn có chắc chắn muốn xóa user này không?")
+                .setPositiveButton("Có") { _, _ ->
+                    if (id != userId) {
+                        GlobalScope.launch(Dispatchers.IO) {
+                            val dataRepos = UserGroupService.acceptInvitation(id, groupId, false)
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(this@ActivityMember, "Xóa user khỏi group thành công!", Toast.LENGTH_LONG).show()
+                                loadUserGroup()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "Không thể xóa user này vì user này tạo group", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }.setNegativeButton("Không") { dialog, _ ->
+                    dialog.cancel()
                 }
-            }
-        } else {
-            Toast.makeText(this, "Không thể xóa user này vì user này tạo group", Toast.LENGTH_LONG)
-                .show()
-        }
+            builder.create()
+            builder.show()
+
     }
 
     override fun onResume() {

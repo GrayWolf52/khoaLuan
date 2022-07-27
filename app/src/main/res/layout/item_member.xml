@@ -20,7 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/lightgrey"
-        android:src="@drawable/close_thick"
+        android:src="@drawable/check_outline"
         app:layout_constraintBottom_toBottomOf="@id/btnMember"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="10dp"

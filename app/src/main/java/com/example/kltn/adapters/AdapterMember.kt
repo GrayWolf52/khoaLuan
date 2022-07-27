@@ -37,9 +37,9 @@ class AdapterMember(
         fun bind(u: UserGroupInfos) {
             user = u
             btnGroup.text = u.user.userName + " - " + u.user.lastName + " " + u.user.firstName
-            if (u.isAccepted) imageStatus.setImageResource(R.drawable.check_outline)
+           /* if (u.isAccepted) imageStatus.setImageResource(R.drawable.check_outline)
             else imageStatus.setImageResource(R.drawable.close_thick)
-
+*/
             imageStatus.setOnClickListener {
                 deleteUser(u.user.id)
             }
