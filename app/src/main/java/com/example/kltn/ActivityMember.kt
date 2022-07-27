@@ -38,6 +38,7 @@ class ActivityMember : AppCompatActivity() {
     private lateinit var rcvMember: RecyclerView
 
     private var groupId: Int = 0
+    private var userId: Int = 0
     private lateinit var adapterMember: AdapterMember
     private lateinit var btnMemberBack: TextView
     private lateinit var btnMemberAdd: TextView
@@ -47,7 +48,7 @@ class ActivityMember : AppCompatActivity() {
         var bundle = intent.extras
         if (bundle != null) {
             groupId = bundle.getInt(Constants.GROUD_ID)
-
+            userId = bundle.getInt(Constants.USER_ID)
             rcvMember = findViewById(R.id.rcvMember)
             adapterMember = AdapterMember({ view, user -> onMemberClicked(user) }, {
                 it?.let {
@@ -79,19 +80,24 @@ class ActivityMember : AppCompatActivity() {
     }
 
     private fun deleteMember(view: View?, user: UserModel) {
-          var newList = selectedMember.filter { !(it.id == user.id) }
-          selectedMember.clear()
-          for (item in newList) selectedMember.add(item)
-          selectedMemberAdapter.submitList(selectedMember.toMutableList())
+        var newList = selectedMember.filter { !(it.id == user.id) }
+        selectedMember.clear()
+        for (item in newList) selectedMember.add(item)
+        selectedMemberAdapter.submitList(selectedMember.toMutableList())
     }
 
-    private fun removeUserGroup(id: Int){
-        GlobalScope.launch(Dispatchers.IO) {
-            val dataRepos = UserGroupService.acceptInvitation(id, groupId, false)
-            withContext(Dispatchers.Main) {
-              /*  Toast.makeText(this@ActivityMember, dataRepos, Toast.LENGTH_LONG).show()*/
-                loadUserGroup()
+    private fun removeUserGroup(id: Int) {
+        if (id != userId) {
+            GlobalScope.launch(Dispatchers.IO) {
+                val dataRepos = UserGroupService.acceptInvitation(id, groupId, false)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ActivityMember, "Xóa user khỏi group thành công!", Toast.LENGTH_LONG).show()
+                    loadUserGroup()
+                }
             }
+        } else {
+            Toast.makeText(this, "Không thể xóa user này vì user này tạo group", Toast.LENGTH_LONG)
+                .show()
         }
     }
 

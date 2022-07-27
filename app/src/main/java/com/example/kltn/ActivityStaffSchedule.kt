@@ -49,14 +49,16 @@ class ActivityStaffSchedule : AppCompatActivity() {
             if (extendedInfor) {
                 lbExtendInfor.text = "Ẩn bớt"
                 llExtendedInfor.visibility = View.VISIBLE
-            }
-            else {
+            } else {
                 lbExtendInfor.text = "Xem thêm"
                 llExtendedInfor.visibility = View.GONE
             }
         }
         rcvStaffSchedule = findViewById(R.id.rcvGroupSchedule)
-        /*eventAdapter = EventAdapter { view, event -> adapterEventOnClick(view, event)}*/
+        eventAdapter =
+            EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
+
+            })
         rcvStaffSchedule.adapter = eventAdapter
         refreshEvent()
     }
@@ -79,8 +81,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
         var resultEvent = EventService.get(userId, groupId, month, year)
         if (resultEvent.first.length > 0) {
             Toast.makeText(this, resultEvent.first, Toast.LENGTH_SHORT).show()
-        }
-        else {
+        } else {
             var listEvent = resultEvent.second
             if (listEvent != null)
                 for (event in listEvent!!) {

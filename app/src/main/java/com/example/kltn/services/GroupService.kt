@@ -57,7 +57,7 @@ class GroupService {
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    return Triple("Xóa group thành công !", responseBody!!.toInt(), 0)
+                    return Triple("Xóa group thành công !", 200, 0)
                 }
                 if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {
