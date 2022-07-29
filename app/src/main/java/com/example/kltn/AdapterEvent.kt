@@ -5,7 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +29,10 @@ class EventAdapter(
         private val lbEventMonth: TextView = itemView.findViewById<TextView>(R.id.lbEventMonth)
         private val lbEventStatus: TextView = itemView.findViewById<TextView>(R.id.lbEventStatus)
         private val lbEventName: TextView = itemView.findViewById<TextView>(R.id.lbEventName)
+        private val txtLoimoi: TextView = itemView.findViewById(R.id.txtLoimoi)
+        private val btnAccept: ImageButton = itemView.findViewById(R.id.accept)
+        private val btnDeny: ImageButton = itemView.findViewById(R.id.deny)
+        private val linearLayout: LinearLayoutCompat = itemView.findViewById(R.id.linear2)
         private lateinit var eventModel: EventItem
 
         init {
@@ -53,6 +60,15 @@ class EventAdapter(
                 lbEventDay.setText(event.date.date.toString())
                 lbEventMonth.setText("Thg " + (event.date.month + 1).toString())
                 lbEventName.setText(event.name)
+
+                if (event.status == Status.ACCEPTED) {
+                    linearLayout.visibility = View.GONE
+                    txtLoimoi.visibility = View.GONE
+                }
+                if (event.status == Status.NOT_YET_ACCEPT) {
+                    linearLayout.visibility = View.VISIBLE
+                    txtLoimoi.setText("Lời mời từ ")
+                }
 //                if (event.type == 1) {
 //                    var drawable = lbEventStatus.background
 //                    drawable = DrawableCompat.wrap(drawable)

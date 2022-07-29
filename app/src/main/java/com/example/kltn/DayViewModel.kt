@@ -67,7 +67,18 @@ class DayViewModel() : ViewModel() {
             var listEvent = resultEvent.second
             if (listEvent != null)
                 for (event in listEvent) {
-                    events.add(EventItem(event.id, event.startTime, 1, event.title, event.groupId))
+                    events.add(
+                        EventItem(
+                            event.id,
+                            event.startTime,
+                            1,
+                            event.title,
+                            event.groupId,
+                            event.creator.id,
+                            event.creator.userName,
+                            event.status
+                        )
+                    )
                     for (day in listDayOfMonth) {
                         if (day == null || day!!.date == null) continue
                         var cal1 = Calendar.getInstance()
@@ -108,7 +119,7 @@ class DayViewModel() : ViewModel() {
         }
     }
 
-    fun insertEvent(date: Date, type: Int, name: String, groupId: Int) {
+ /*   fun insertEvent(date: Date, type: Int, name: String, groupId: Int) {
         var updatedList = listEvent.value?.toMutableList()
         try {
             if (updatedList == null) _listEvent.postValue(
@@ -151,9 +162,9 @@ class DayViewModel() : ViewModel() {
             }
         } catch (ex: Exception) {
         }
-    }
+    }*/
 
-    fun updateStatus2(id: Int, value: Boolean) {
+   /* fun updateStatus2(id: Int, value: Boolean) {
         var updatedList = listDay.value?.toMutableList() ?: return
         try {
             var n = updatedList.count()
@@ -171,7 +182,7 @@ class DayViewModel() : ViewModel() {
             _listDay.postValue(updatedList)
         } catch (ex: Exception) {
         }
-    }
+    }*/
 }
 
 class DayViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

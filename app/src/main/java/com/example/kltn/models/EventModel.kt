@@ -7,6 +7,7 @@ class EventModel(val id: Int) {
     var description: String = ""
     var startTime: Date = Date()
     var endTime: Date = Date()
-    var loopType: Int = 0
+    var recurrenceType: Int = 0
+    var groupId: Int = 0
     var participants: List<UserModel> = ArrayList<UserModel>()
 }

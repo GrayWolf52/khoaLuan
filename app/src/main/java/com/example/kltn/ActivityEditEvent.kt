@@ -76,8 +76,14 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventParticipant.threshold = 2
         txtEditEventParticipant.setAdapter(participantAdapter)
         txtEditEventParticipant.setOnItemClickListener { _, _, position, _ ->
-            Log.d("TAG", "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position")
-            Log.d("TAG", "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position")
+            Log.d(
+                "TAG",
+                "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position"
+            )
+            Log.d(
+                "TAG",
+                "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position"
+            )
             listParticipant.add(_participants2[position])
             val listValue = mutableListOf<UserModel>()
             for (user in _participants2[position].users) {
@@ -147,8 +153,11 @@ class ActivityEditEvent : AppCompatActivity() {
         }
         btnSaveEvent.setOnClickListener {
             var recurrenceType = 0
-            if (chkEditEventLoop.isChecked) recurrenceType =
-                (spnEditEventLoop.selectedItemPosition + 1)
+            if (chkEditEventLoop.isChecked) {
+                recurrenceType =
+                    (spnEditEventLoop.selectedItemPosition + 1)
+                Log.d("TAG", "onCreate:recurrenceType = $recurrenceType ")
+            }
             Thread {
                 Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
                 Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
@@ -430,6 +439,7 @@ class ActivityEditEvent : AppCompatActivity() {
         txtEditEventEndTime.isEnabled = isEdit
         txtEditEventEndDate.isEnabled = isEdit
         chkEditEventLoop.isEnabled = isEdit
+        spnEditEventLoop.isEnabled = isEdit
         if (isEdit) {
             btnSaveEvent.visibility = View.VISIBLE
             btnEditEventCancel.visibility = View.VISIBLE
@@ -492,10 +502,10 @@ class ActivityEditEvent : AppCompatActivity() {
                     calendarEnd.get(Calendar.YEAR)
                 )
                 refreshLoopType()
-                if (event?.loopType!! > 0) {
+                if (event?.recurrenceType!! > 0) {
                     chkEditEventLoop.isChecked = true
                     spnEditEventLoop.visibility = View.VISIBLE
-                    spnEditEventLoop.setSelection(event?.loopType - 1)
+                    spnEditEventLoop.setSelection(event?.recurrenceType - 1)
                 } else {
                     chkEditEventLoop.isChecked = false
                     spnEditEventLoop.visibility = View.GONE
