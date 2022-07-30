@@ -16,7 +16,12 @@ import java.util.*
 
 class EventService {
     companion object {
-        fun get(userId: Int, groupId: Int, month: Int, year: Int): Triple<String, Array<EventInfos>?, Int> {
+        fun get(
+            userId: Int,
+            groupId: Int,
+            month: Int,
+            year: Int
+        ): Triple<String, Array<EventInfos>?, Int> {
             if (userId == -1) return Triple("", null, 0)
             var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
             var client = OkHttpClient()
@@ -28,17 +33,18 @@ class EventService {
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                    var events:Array<EventInfos> = gson.fromJson(responseBody, (ArrayList<EventInfos>()).toTypedArray().javaClass)
+                    var events: Array<EventInfos> = gson.fromJson(
+                        responseBody,
+                        (ArrayList<EventInfos>()).toTypedArray().javaClass
+                    )
                     Log.d("events", "events = $events")
-                    return Triple("",events , 0)
-                }
-                else if (statusCode == 400) {
+                    return Triple("", events, 0)
+                } else if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {
                         return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
                     }
                     return Triple(responseBody, null, 0)
-                }
-                else {
+                } else {
                     return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
                 }
             } catch (ex: Exception) {
@@ -84,7 +90,7 @@ class EventService {
                 var response = client.newCall(request).execute()
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
-                if (statusCode == 200) "    "
+                if (statusCode == 200) "Cập nhật sự kiện thành công!"
                 else if (statusCode == 400 && responseBody != null) responseBody
                 else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
                 else "Đã xảy ra lỗi. Vui lòng thử lại sau."
@@ -119,7 +125,7 @@ class EventService {
             }
         }
 
-        fun deleteEvent(idEvent: Int) : Triple<String, Int, Int>{
+        fun deleteEvent(idEvent: Int): Triple<String, Int, Int> {
             Log.d("TAG", "deleteGroup111: id idEvent = $idEvent")
             var Json = MediaType.parse("application/json; charset=utf-8")
             var client = OkHttpClient()
@@ -147,6 +153,30 @@ class EventService {
             } catch (ex: Exception) {
                 Log.d("TAG", "deleteGroup: $ex")
                 return Triple(Common.ERR_MSG, 0, 0)
+            }
+        }
+
+        fun acceptEvent(userId: Int, eventId: Int, isAccepted: Boolean): String {
+            val data =
+                hashMapOf("UserId" to userId, "EventId" to eventId, "IsAccepted" to isAccepted)
+            var Json = MediaType.parse("application/json; charset=utf-8")
+            var gson = Gson()
+            var requestBody = RequestBody.create(Json, gson.toJson(data))
+            var client = OkHttpClient()
+            val request = Request.Builder()
+                .url(Common.API_HOST + "api/Event/ReplyInvitation")
+                .post(requestBody)
+                .build()
+            return try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) "Bạn đã tham gia sự kiện thành công!"
+                else if (statusCode == 400 && responseBody != null) responseBody
+                else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
+                else "Đã xảy ra lỗi. Vui lòng thử lại sau."
+            } catch (ex: Exception) {
+                "Đã xảy ra lỗi. Vui lòng thử lại sau.";
             }
         }
     }

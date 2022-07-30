@@ -32,8 +32,9 @@
             android:name=".ActivityEditEvent"
             android:exported="true"
             android:theme="@style/Theme.KLTN.NoAcitonBar"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustNothing" >
+            >
+            <!-- android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustNothing"-->
         </activity>
         <activity
             android:name=".ActivityMember"

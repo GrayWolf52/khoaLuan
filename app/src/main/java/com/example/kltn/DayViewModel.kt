@@ -1,11 +1,13 @@
 package com.example.kltn
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.kltn.models.EventModel
 import com.example.kltn.services.EventService
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,6 +24,12 @@ class DayViewModel() : ViewModel() {
         get() = _message
     private var autoId: Int = 0
     private var autoEventId: Int = 0
+
+    private var listEventLoopMonth = mutableListOf<EventModel>()
+    private var listEventLoopDay = mutableListOf<EventModel>()
+    private var listEventLoopWeek = mutableListOf<EventModel>()
+    private var listEventLoopSundayOnlyWeek = mutableListOf<EventModel>()
+
     fun insertDay(day: DayModel?) {
         var updatedList = listDay.value?.toMutableList()
         try {
@@ -79,6 +87,17 @@ class DayViewModel() : ViewModel() {
                             event.status
                         )
                     )
+
+                    EventService.getById(event.id).second?.let {
+                        when (it.recurrenceType) {
+                            1 -> listEventLoopDay.add(it)
+                            2 -> listEventLoopSundayOnlyWeek.add(it)
+                            3 -> listEventLoopWeek.add(it)
+                            4 -> listEventLoopMonth.add(it)
+                            else -> Log.d("TAG", "load: not found loop")
+                        }
+                    }
+
                     for (day in listDayOfMonth) {
                         if (day == null || day!!.date == null) continue
                         var cal1 = Calendar.getInstance()
@@ -90,6 +109,26 @@ class DayViewModel() : ViewModel() {
                             && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
                         )
                             day.status2 = true
+                        listEventLoopDay.forEach {
+                            val cal3 = Calendar.getInstance()
+                            cal3.setTime(it.startTime)
+                            if (cal1.get(Calendar.DAY_OF_MONTH) >= cal3.get(Calendar.DAY_OF_MONTH)
+                                && cal1.get(Calendar.MONTH) == cal3.get(Calendar.MONTH)
+                                && cal1.get(Calendar.YEAR) == cal3.get(Calendar.YEAR)
+                            )
+                                day.status2 = true
+                        }
+
+                        listEventLoopMonth.forEach {
+                            val cal3 = Calendar.getInstance()
+                            cal3.setTime(it.startTime)
+                            if (cal1.get(Calendar.DAY_OF_MONTH) == cal3.get(Calendar.DAY_OF_MONTH)
+                                && cal1.get(Calendar.MONTH) == cal3.get(Calendar.MONTH + 1)
+                                && cal1.get(Calendar.YEAR) == cal3.get(Calendar.YEAR)
+                            )
+                                day.status2 = true
+                        }
+
                     }
                 }
         }
@@ -119,70 +158,70 @@ class DayViewModel() : ViewModel() {
         }
     }
 
- /*   fun insertEvent(date: Date, type: Int, name: String, groupId: Int) {
-        var updatedList = listEvent.value?.toMutableList()
-        try {
-            if (updatedList == null) _listEvent.postValue(
-                listOf<EventItem?>(
-                    EventItem(
-                        ++autoEventId,
-                        date,
-                        type,
-                        name, groupId
-                    )
-                )
-            )
-            else {
-                var n = updatedList.count()
-                for (i in 0 until n + 1) {
-                    if (i < n && updatedList[i]!!.date <= date) continue
-                    updatedList!!.add(
-                        i,
-                        EventItem(++autoEventId, date, type, name, groupId = groupId)
-                    )
-                    break
-                }
-                _listEvent.postValue(updatedList!!)
-            }
-            var currentListDay = listDay.value?.toMutableList()
-            if (currentListDay != null) {
-                var n = currentListDay.count()
-                for (i in 0 until n) {
-                    var day = currentListDay[i]!!
-                    if (day!!.date != null && day!!.date == date) {
-                        currentListDay.removeAt(i);
-                        var newDay = DayModel(day.id, day.date)
-                        newDay.status1 = true
-                        newDay.status2 = true
-                        currentListDay.add(i, newDay)
-                        break
-                    }
-                }
-                _listDay.postValue(currentListDay)
-            }
-        } catch (ex: Exception) {
-        }
-    }*/
+    /*   fun insertEvent(date: Date, type: Int, name: String, groupId: Int) {
+           var updatedList = listEvent.value?.toMutableList()
+           try {
+               if (updatedList == null) _listEvent.postValue(
+                   listOf<EventItem?>(
+                       EventItem(
+                           ++autoEventId,
+                           date,
+                           type,
+                           name, groupId
+                       )
+                   )
+               )
+               else {
+                   var n = updatedList.count()
+                   for (i in 0 until n + 1) {
+                       if (i < n && updatedList[i]!!.date <= date) continue
+                       updatedList!!.add(
+                           i,
+                           EventItem(++autoEventId, date, type, name, groupId = groupId)
+                       )
+                       break
+                   }
+                   _listEvent.postValue(updatedList!!)
+               }
+               var currentListDay = listDay.value?.toMutableList()
+               if (currentListDay != null) {
+                   var n = currentListDay.count()
+                   for (i in 0 until n) {
+                       var day = currentListDay[i]!!
+                       if (day!!.date != null && day!!.date == date) {
+                           currentListDay.removeAt(i);
+                           var newDay = DayModel(day.id, day.date)
+                           newDay.status1 = true
+                           newDay.status2 = true
+                           currentListDay.add(i, newDay)
+                           break
+                       }
+                   }
+                   _listDay.postValue(currentListDay)
+               }
+           } catch (ex: Exception) {
+           }
+       }*/
 
-   /* fun updateStatus2(id: Int, value: Boolean) {
-        var updatedList = listDay.value?.toMutableList() ?: return
-        try {
-            var n = updatedList.count()
-            for (i in 0 until n) {
-                if (updatedList[i]!!.id == id) {
-                    var day = updatedList[i]!!
-                    updatedList.removeAt(i);
-                    var newDay = DayModel(day.id, day.date)
-                    newDay.status1 = day.status1
-                    newDay.status2 = value
-                    updatedList.add(i, newDay)
-                    break
-                }
-            }
-            _listDay.postValue(updatedList)
-        } catch (ex: Exception) {
-        }
-    }*/
+    /* fun updateStatus2(id: Int, value: Boolean) {
+         var updatedList = listDay.value?.toMutableList() ?: return
+         try {
+             var n = updatedList.count()
+             for (i in 0 until n) {
+                 if (updatedList[i]!!.id == id) {
+                     var day = updatedList[i]!!
+                     updatedList.removeAt(i);
+                     var newDay = DayModel(day.id, day.date)
+                     newDay.status1 = day.status1
+                     newDay.status2 = value
+                     updatedList.add(i, newDay)
+                     break
+                 }
+             }
+             _listDay.postValue(updatedList)
+         } catch (ex: Exception) {
+         }
+     }*/
 }
 
 class DayViewModelFactory(private val context: Context) : ViewModelProvider.Factory {

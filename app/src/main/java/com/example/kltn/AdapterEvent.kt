@@ -15,14 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 
 class EventAdapter(
     private val onClick: (View?, EventItem) -> Unit,
-    private val deleteEvent: (View?, EventItem) -> Unit
+    private val deleteEvent: (View?, EventItem) -> Unit,
+    private val isAcceptEvent: (EventItem, Boolean) -> Unit
 ) :
     ListAdapter<EventItem, EventAdapter.EventViewHolder>(EventDiffCallback) {
 
     class EventViewHolder(
         itemView: View,
         val onClick: (View?, EventItem) -> Unit,
-        val deleteEvent: (View?, EventItem) -> Unit
+        val deleteEvent: (View?, EventItem) -> Unit,
+        val isAcceptEvent: (EventItem, Boolean) -> Unit
     ) :
         RecyclerView.ViewHolder(itemView) {
         private val lbEventDay: TextView = itemView.findViewById<TextView>(R.id.lbEventDay)
@@ -48,7 +50,16 @@ class EventAdapter(
                 }
                 true
             }
-
+            btnAccept.setOnClickListener {
+                eventModel.let {
+                    isAcceptEvent(it, true)
+                }
+            }
+            btnDeny.setOnClickListener {
+                eventModel.let {
+                    isAcceptEvent(it, false)
+                }
+            }
         }
 
         @SuppressLint("ResourceAsColor")
@@ -86,7 +97,7 @@ class EventAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_event, parent, false)
-        return EventViewHolder(view, onClick, deleteEvent)
+        return EventViewHolder(view, onClick, deleteEvent, isAcceptEvent)
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {

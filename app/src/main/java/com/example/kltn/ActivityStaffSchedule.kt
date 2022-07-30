@@ -58,6 +58,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
         eventAdapter =
             EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
 
+            }, { event, isAccept ->
             })
         rcvStaffSchedule.adapter = eventAdapter
         refreshEvent()

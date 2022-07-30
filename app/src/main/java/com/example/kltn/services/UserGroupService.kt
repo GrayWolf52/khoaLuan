@@ -2,10 +2,7 @@ package com.example.kltn.services
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
-import com.example.kltn.Common
-import com.example.kltn.EventInfos
-import com.example.kltn.UserGroupInfos
-import com.example.kltn.UserInfos
+import com.example.kltn.*
 import com.example.kltn.models.EventModel
 import com.example.kltn.models.UserGroupModel
 import com.example.kltn.models.UserModel
@@ -92,7 +89,7 @@ class UserGroupService {
         ): String {
             val data = hashMapOf("userId" to userId, "groupId" to groupId, "accept" to isAccecpt)
             var Json = MediaType.parse("application/json; charset=utf-8")
-            var gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
+            var gson = Gson()
             var requestBody = RequestBody.create(Json, gson.toJson(data))
             var client = OkHttpClient()
             val request = Request.Builder()
@@ -163,10 +160,10 @@ class UserGroupService {
                 .build()
             try {
                 var response = client.newCall(request).execute()
-            var statusCode = response.code()
+                var statusCode = response.code()
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
-                     Log.d("TAG", "addUser:success ")
+                    Log.d("TAG", "addUser:success ")
                     loadDataAgain.postValue(true)
                     return Triple("Gửi lời mời tham gia nhóm thành công.", 0, 0)
                 }

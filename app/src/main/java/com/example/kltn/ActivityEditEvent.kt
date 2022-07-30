@@ -46,6 +46,7 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var calendarEnd: Calendar
     private var listParticipant = ArrayList<DataSuggest>()
     private var listIdParticipanted = ArrayList<Int>()
+    private var listIdParticipantedSaved = ArrayList<Int>()
     private val _participants: ArrayList<DataSuggest> = ArrayList<DataSuggest>()
     private val _participants2: ArrayList<DataSuggest> = ArrayList<DataSuggest>()
     private val listData = mutableListOf<UserModel>()
@@ -56,6 +57,10 @@ class ActivityEditEvent : AppCompatActivity() {
     private var groupId: Int = -1
     private var isEventGroup = false
     private lateinit var loopAdaper: ArrayAdapter<String>
+
+
+/*    private  var listIdParticipanted : MutableList<Int> = mutableListOf<Int>()*/
+
     override fun onCreate(savedInstanceState: Bundle?) {
         var bundle = intent.extras
         userId = bundle!!.getInt(Constants.USER_ID)
@@ -65,6 +70,7 @@ class ActivityEditEvent : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
         initView()
+
         selectedParticipantAdapter =
             AdapterParticipant { view, participant ->
                 Log.d("TAG", "onCreate:AdapterParticipant ")
@@ -84,29 +90,64 @@ class ActivityEditEvent : AppCompatActivity() {
                 "TAG",
                 "onCreate:txtEditEventParticipant  setOnItemClickListener position = $position"
             )
-            listParticipant.add(_participants2[position])
-            val listValue = mutableListOf<UserModel>()
-            for (user in _participants2[position].users) {
-                for (it in listData) {
-                    if (user.id != it.id) {
-                        Log.d("TAG", "onCreate: listIdParticipanted $it usser id = ${user.id}")
-                        listValue.add(user)
-                    }
+            val itemSelected = _participants[position]
+
+            val listSelected = mutableListOf<UserModel>()
+            itemSelected.users.forEach {
+                Log.d(
+                    "TAG",
+                    "setOnItemClickListener position = $position with id = ${it.id}"
+                )
+                if (!listIdParticipanted.contains(it.id)) {
+                    listSelected.add(it)
                 }
-                listData.addAll(listValue)
+            }
+            listSelected.forEach {
+                Log.d(
+                    "TAG",
+                    "setOnItemClickListener position 1111 = $position with id = ${it.id}"
+                )
+                listIdParticipanted.add(it.id)
+                listData.add(it)
             }
 
-            Log.d("TAG", "onCreate: listData size = ${listData.size}")
+
             selectedParticipantAdapter.submitList(listData)
             selectedParticipantAdapter.notifyDataSetChanged()
             txtEditEventParticipant.setText("")
             txtEditEventParticipant.clearFocus()
+
+            /*  listParticipant.add(_participants2[position])
+              val listValue = mutableListOf<UserModel>()
+              for (user in _participants2[position].users) {
+                  for (it in listData) {
+                      if (user.id != it.id) {
+                          Log.d("TAG", "onCreate: listIdParticipanted $it usser id = ${user.id}")
+                          listValue.add(user)
+                      }
+                  }
+                  listData.addAll(listValue)
+              }
+
+              Log.d("TAG", "onCreate: listData size = ${listData.size}")
+              selectedParticipantAdapter.submitList(listData)
+              selectedParticipantAdapter.notifyDataSetChanged()
+              txtEditEventParticipant.setText("")
+              txtEditEventParticipant.clearFocus()*/
         }
         txtEditEventParticipant.doBeforeTextChanged { _, _, _, _ ->
+            Log.d(
+                "TAG",
+                "onCreate:txtEditEventParticipant  doBeforeTextChanged loist data = ${listData.size}"
+            )
             _participants2.clear()
             for (item in _participants) _participants2.add(item)
         }
         txtEditEventParticipant.doAfterTextChanged {
+            Log.d(
+                "TAG",
+                "onCreate:txtEditEventParticipant  doAfterTextChanged"
+            )
             if (it.toString().length >= txtEditEventParticipant.threshold) {
                 var selectedParticipant = ArrayList<Int>()
                 for (item in listParticipant) {
@@ -129,13 +170,20 @@ class ActivityEditEvent : AppCompatActivity() {
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else if (resultSearchUser.second != null) {
-                            for (item in resultSearchUser.second!!) _participants.add(item)
+                            _participants.clear()
                             participantAdapter.clear()
                             for (user in resultSearchUser.second!!) {
-                                if (user.type == 2) participantAdapter.add(user.shortname + " - " + user.fullname) else
+                                if (user.type == 2) {
+                                    participantAdapter.add(user.shortname + " - " + user.fullname)
+                                    _participants.add(user)
+                                } else {
                                     user.users.forEach {
-                                        participantAdapter.add(it.username + " - " + it.lastname + " " + it.firstname)
+                                        if (!listIdParticipanted.contains(it.id)) {
+                                            _participants.add(user)
+                                            participantAdapter.add(it.username + " - " + it.lastname + " " + it.firstname)
+                                        }
                                     }
+                                }
                             }
                         }
                         participantAdapter.notifyDataSetChanged()
@@ -162,13 +210,8 @@ class ActivityEditEvent : AppCompatActivity() {
                 Log.d("calendarStart", " calendarStart = ${calendarStart.time}")
                 Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
                 val listId = mutableListOf<Int>()
-                listParticipant.forEach {
-                    it.users.forEach {
-                        for (id in listIdParticipanted) {
-                            if (it.id != id)
-                                listId.add(it.id)
-                        }
-                    }
+                listData.forEach {
+                    listId.add(it.id)
                 }
                 var msg = EventService.update(
                     eventId = eventId,
@@ -183,6 +226,7 @@ class ActivityEditEvent : AppCompatActivity() {
                 )
                 if (msg.isNotEmpty()) {
                     runOnUiThread {
+                        if (msg.equals("Cập nhật sự kiện thành công!")) changeUIStatus(false)
                         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
                     }
                 } else {
@@ -215,7 +259,7 @@ class ActivityEditEvent : AppCompatActivity() {
                 calendarStart.get(Calendar.MINUTE)
             ) + " hằng ngày"
         )
-        if (dayOfWeek == 1) listLoopType.add("Mỗi chủ nhật hằng tuần")
+        if (dayOfWeek == 1)   listLoopType.add("Mỗi chủ nhật hằng tuần")
         else listLoopType.add("Mỗi thứ $dayOfWeek hằng tuần")
         var dayOfMonth = calendarStart.get(Calendar.DAY_OF_MONTH)
         listLoopType.add("Mỗi ngày $dayOfMonth hằng tháng")
@@ -338,11 +382,11 @@ class ActivityEditEvent : AppCompatActivity() {
             Log.d("TAG", "deleteParticipant: ${it.id} and id particapant ${participant.id}")
             (it.id == participant.id)
         }
+        listIdParticipanted.remove(participant.id)
         listData.remove(newList)
-        listData.clear()
         Log.d("TAG", "deleteParticipant:listData ${listData.size}")
         selectedParticipantAdapter.submitList(listData)
-        /*   selectedParticipantAdapter.notifyDataSetChanged()*/
+        selectedParticipantAdapter.notifyDataSetChanged()
     }
 
     fun timeToString(hourOfDay: Int, minute: Int): String {
@@ -432,6 +476,7 @@ class ActivityEditEvent : AppCompatActivity() {
     }
 
     private fun changeUIStatus(isEdit: Boolean) {
+        recyclerViewParticipant.isEnabled = isEdit
         txtEditEventTitle.isEnabled = isEdit
         txtEditEventDescription.isEnabled = isEdit
         txtEditEventStartTime.isEnabled = isEdit
@@ -459,10 +504,13 @@ class ActivityEditEvent : AppCompatActivity() {
             var resultEvent = EventService.getById(eventId)
             resultEvent.second?.participants?.also {
                 listIdParticipanted.clear()
+                Log.d("TAG", "onCreate: edit event user id = $userId")
+                listIdParticipanted.add(userId)
                 it.forEach {
                     Log.d("TAG", "loadEvent: user name = ${it.username}")
                     listData.add(it)
                     listIdParticipanted.add(it.id)
+                    listIdParticipantedSaved.add(it.id)
                 }
                 selectedParticipantAdapter.submitList(listData)
             }

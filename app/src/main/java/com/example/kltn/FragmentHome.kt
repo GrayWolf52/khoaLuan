@@ -68,6 +68,8 @@ class FragmentHome : Fragment() {
         eventAdapter =
             EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
                 deleteEvent(event.id)
+            }, { event, isAccpet ->
+                isAcceptEvent(event, isAccpet)
             })
         recyclerView!!.adapter = dayAdapter
         recyclerViewEvent!!.adapter = eventAdapter
@@ -118,7 +120,7 @@ class FragmentHome : Fragment() {
     fun refreshEvent() {
         var month = calendar.get(Calendar.MONTH) + 1
         var year = calendar.get(Calendar.YEAR)
-        activity?.runOnUiThread{
+        activity?.runOnUiThread {
             lbMonth!!.setText("$month / $year")
         }
         Thread {
@@ -132,6 +134,18 @@ class FragmentHome : Fragment() {
         super.onResume()
         Log.d("FragmentHome", "hahahahhh")
         refreshEvent()
+    }
+
+    private fun isAcceptEvent(item: EventItem, isAccept: Boolean) {
+        Log.d("TAG", "isAcceptEvent: event $item with isAccept = $isAccept")
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val result = EventService.acceptEvent(userId, item.id, isAccept)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, result, Toast.LENGTH_LONG).show()
+                refreshEvent()
+            }
+        }
     }
 
     private fun loadUserGroup() {
