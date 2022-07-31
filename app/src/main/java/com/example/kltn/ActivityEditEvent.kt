@@ -180,7 +180,7 @@ class ActivityEditEvent : AppCompatActivity() {
                                     user.users.forEach {
                                         if (!listIdParticipanted.contains(it.id)) {
                                             _participants.add(user)
-                                            participantAdapter.add(it.username + " - " + it.lastname + " " + it.firstname)
+                                            participantAdapter.add(it.username + " - " + it.fullname)
                                         }
                                     }
                                 }
@@ -259,7 +259,7 @@ class ActivityEditEvent : AppCompatActivity() {
                 calendarStart.get(Calendar.MINUTE)
             ) + " hằng ngày"
         )
-        if (dayOfWeek == 1)   listLoopType.add("Mỗi chủ nhật hằng tuần")
+        if (dayOfWeek == 1) listLoopType.add("Mỗi chủ nhật hằng tuần")
         else listLoopType.add("Mỗi thứ $dayOfWeek hằng tuần")
         var dayOfMonth = calendarStart.get(Calendar.DAY_OF_MONTH)
         listLoopType.add("Mỗi ngày $dayOfMonth hằng tháng")

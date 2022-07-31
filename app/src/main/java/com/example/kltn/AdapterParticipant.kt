@@ -26,7 +26,7 @@ class AdapterParticipant (private val onClick: (View?, UserModel) -> Unit) :
         fun bind(participant: UserModel) {
             _participant = participant
             lbParticipantUsername.text = participant.username
-            lbParticipantFullName.text = participant.lastname + " " + participant.firstname
+            lbParticipantFullName.text = participant.fullname
             btnDeleteParticipant.setOnClickListener {
                 Log.d("TAG", "bind:btnDeleteParticipant clicked  ")
                 onClick(it, participant)
@@ -51,6 +51,6 @@ object ParticipantDiffCallback : DiffUtil.ItemCallback<UserModel>() {
     }
 
     override fun areContentsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.username == newItem.username && oldItem.firstname == newItem.firstname && oldItem.lastname == newItem.lastname
+        return oldItem.username == newItem.username && oldItem.firstName == newItem.firstName && oldItem.lastName == newItem.lastName
     }
 }

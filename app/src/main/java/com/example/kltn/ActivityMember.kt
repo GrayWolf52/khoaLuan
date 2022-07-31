@@ -51,7 +51,7 @@ class ActivityMember : AppCompatActivity() {
             groupId = bundle.getInt(Constants.GROUD_ID)
             userId = bundle.getInt(Constants.USER_ID)
             rcvMember = findViewById(R.id.rcvMember)
-            adapterMember = AdapterMember({ view, user -> onMemberClicked(user) }, {
+            adapterMember = AdapterMember({ view, user ->/* onMemberClicked(user)*/ }, {
                 it?.let {
                     removeUserGroup(it)
                 }
@@ -197,7 +197,7 @@ class ActivityMember : AppCompatActivity() {
                     }
                     Handler(Looper.getMainLooper()).post {
                         for (user in listResultMember) {
-                            memberAdapter.add(user.username + " " + user.firstname + " " + user.lastname)
+                            memberAdapter.add(user.username + " " + user.firstName + " " + user.lastName)
                         }
                     }
                     runOnUiThread {

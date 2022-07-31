@@ -40,7 +40,7 @@ class AdapterAddUser(
         fun bind(holder: AddUserViewHolder, u: UserModel) {
             user = u
             lbAddMemberUsername.text = u.username
-            lbAddMemberFullName.text = u.firstname + " " + u.lastname
+            lbAddMemberFullName.text = u.firstName + " " + u.lastName
         }
     }
 
@@ -58,10 +58,10 @@ class AdapterAddUser(
 
 object AddUserDiffCallback : DiffUtil.ItemCallback<UserModel>() {
     override fun areItemsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.username == newItem.username && oldItem.lastname == newItem.lastname && oldItem.id == newItem.id
+        return oldItem.username == newItem.username && oldItem.lastName == newItem.lastName && oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: UserModel, newItem: UserModel): Boolean {
-        return oldItem.username == newItem.username && oldItem.lastname == newItem.lastname && oldItem.id == newItem.id
+        return oldItem.username == newItem.username && oldItem.lastName == newItem.lastName && oldItem.id == newItem.id
     }
 }
