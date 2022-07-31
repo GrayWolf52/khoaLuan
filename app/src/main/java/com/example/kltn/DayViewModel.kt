@@ -25,10 +25,17 @@ class DayViewModel() : ViewModel() {
     private var autoId: Int = 0
     private var autoEventId: Int = 0
 
-    private var listEventLoopMonth = mutableListOf<EventModel>()
-    private var listEventLoopDay = mutableListOf<EventModel>()
-    private var listEventLoopWeek = mutableListOf<EventModel>()
-    private var listEventLoopSundayOnlyWeek = mutableListOf<EventModel>()
+    var listEventLoopMonth = mutableListOf<EventModel>()
+    var listEventLoopDay = mutableListOf<EventModel>()
+    var listEventLoopWeek = mutableListOf<EventModel>()
+    var listEventLoopSundayOnlyWeek = mutableListOf<EventModel>()
+
+    fun clearDataListLoop(){
+        listEventLoopSundayOnlyWeek.clear()
+        listEventLoopWeek.clear()
+        listEventLoopMonth.clear()
+        listEventLoopDay.clear()
+    }
 
     fun insertDay(day: DayModel?) {
         var updatedList = listDay.value?.toMutableList()
@@ -43,6 +50,7 @@ class DayViewModel() : ViewModel() {
     }
 
     fun load(userId: Int, groupId: Int, month: Int, year: Int) {
+        Log.d("TAG", "load: month = $month ")
         val listDayOfMonth = ArrayList<DayModel?>();
         var date = Date(year - 1900, month - 1, 1)
         var dayOfMonth = 1
@@ -65,6 +73,34 @@ class DayViewModel() : ViewModel() {
         if (dayOfWeek == 1) dayOfWeek = 8
         for (i in dayOfWeek - 1 until 7) {
             listDayOfMonth.add(DayModel(++autoId, null))
+        }
+
+        for (day in listDayOfMonth) {
+            if (day == null || day!!.date == null) continue
+            var cal1 = Calendar.getInstance()
+            cal1.setTime(day.date)
+
+            listEventLoopDay.forEach {
+                val cal3 = Calendar.getInstance()
+                cal3.setTime(it.startTime)
+                if (cal1.get(Calendar.DAY_OF_MONTH) >= cal3.get(Calendar.DAY_OF_MONTH)
+                    && cal1.get(Calendar.MONTH) == cal3.get(Calendar.MONTH)
+                    && cal1.get(Calendar.YEAR) == cal3.get(Calendar.YEAR)
+                )
+                    day.status2 = true
+            }
+            listEventLoopMonth.forEach {
+                val cal3 = Calendar.getInstance()
+                cal3.setTime(it.startTime)
+                Log.d("TAG", "load: start date = ${it.startTime}")
+                if (cal1.get(Calendar.DAY_OF_MONTH) == cal3.get(Calendar.DAY_OF_MONTH)
+                    && cal1.get(Calendar.MONTH) >= (cal3.get(Calendar.MONTH) + 1)
+                    && cal1.get(Calendar.YEAR) == cal3.get(Calendar.YEAR)
+                )
+                    day.status2 = true
+            }
+
+
         }
 
         var events = ArrayList<EventItem?>()
@@ -91,9 +127,9 @@ class DayViewModel() : ViewModel() {
                     EventService.getById(event.id).second?.let {
                         when (it.recurrenceType) {
                             1 -> listEventLoopDay.add(it)
-                            2 -> listEventLoopSundayOnlyWeek.add(it)
-                            3 -> listEventLoopWeek.add(it)
-                            4 -> listEventLoopMonth.add(it)
+                            2 -> listEventLoopWeek.add(it)
+                            4 -> listEventLoopSundayOnlyWeek.add(it)
+                            3 -> listEventLoopMonth.add(it)
                             else -> Log.d("TAG", "load: not found loop")
                         }
                     }
@@ -109,6 +145,7 @@ class DayViewModel() : ViewModel() {
                             && cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR)
                         )
                             day.status2 = true
+
                         listEventLoopDay.forEach {
                             val cal3 = Calendar.getInstance()
                             cal3.setTime(it.startTime)
@@ -119,16 +156,17 @@ class DayViewModel() : ViewModel() {
                                 day.status2 = true
                         }
 
-                        listEventLoopMonth.forEach {
+                        listEventLoopWeek.forEach {
                             val cal3 = Calendar.getInstance()
                             cal3.setTime(it.startTime)
-                            if (cal1.get(Calendar.DAY_OF_MONTH) == cal3.get(Calendar.DAY_OF_MONTH)
-                                && cal1.get(Calendar.MONTH) == cal3.get(Calendar.MONTH + 1)
-                                && cal1.get(Calendar.YEAR) == cal3.get(Calendar.YEAR)
+                            if (cal1.get(Calendar.DAY_OF_WEEK) == cal3.get(Calendar.DAY_OF_WEEK)
+                                && cal1.get(Calendar.MONTH) == cal3.get(Calendar.MONTH)
+                                && cal1.get(Calendar.YEAR) == cal3.get(Calendar.YEAR) && cal1.get(
+                                    Calendar.DAY_OF_MONTH
+                                ) >= cal3.get(Calendar.DAY_OF_MONTH)
                             )
                                 day.status2 = true
                         }
-
                     }
                 }
         }

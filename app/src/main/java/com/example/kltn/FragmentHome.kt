@@ -133,6 +133,7 @@ class FragmentHome : Fragment() {
     override fun onResume() {
         super.onResume()
         Log.d("FragmentHome", "hahahahhh")
+        dayViewModel.clearDataListLoop()
         refreshEvent()
     }
 
