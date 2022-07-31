@@ -75,6 +75,8 @@ class EventAdapter(
                 if (event.status == Status.ACCEPTED) {
                     linearLayout.visibility = View.GONE
                     txtLoimoi.visibility = View.GONE
+                    btnDeny.visibility = View.GONE
+                    btnAccept.visibility = View.GONE
                 }
                 if (event.status == Status.NOT_YET_ACCEPT) {
                     linearLayout.visibility = View.VISIBLE

@@ -171,7 +171,10 @@ class EventService {
                 var response = client.newCall(request).execute()
                 var statusCode = response.code()
                 var responseBody = response.body()?.string()
-                if (statusCode == 200) "Bạn đã tham gia sự kiện thành công!"
+                if (statusCode == 200) {
+                    if (isAccepted)
+                    "Bạn đã tham gia sự kiện thành công!" else  "Bạn đã hủy tham gia sự kiện thành công!"
+                }
                 else if (statusCode == 400 && responseBody != null) responseBody
                 else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
                 else "Đã xảy ra lỗi. Vui lòng thử lại sau."

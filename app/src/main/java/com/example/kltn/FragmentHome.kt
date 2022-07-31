@@ -83,7 +83,15 @@ class FragmentHome : Fragment() {
         dayViewModel.listEvent.observe(this.requireActivity(), Observer {
             Log.d("listEvent", " listEvent = ${it.size}")
             it?.let {
-                eventAdapter.submitList(it as MutableList<EventItem>)
+                /* it.toMutableList().removeIf {
+                     it?.status == Status.DENY_ACCEPT
+                 }*/
+                val listData = it.toMutableList()
+                it.forEach { i ->
+                    if (i?.status == Status.DENY_ACCEPT) listData.remove(i)
+                }
+                eventAdapter.submitList(listData)
+                eventAdapter.notifyDataSetChanged()
             }
         })
         dayViewModel.message.observe(this.requireActivity(), Observer {
@@ -118,6 +126,7 @@ class FragmentHome : Fragment() {
     }
 
     fun refreshEvent() {
+        dayViewModel.clearDataListLoop()
         var month = calendar.get(Calendar.MONTH) + 1
         var year = calendar.get(Calendar.YEAR)
         activity?.runOnUiThread {
@@ -144,9 +153,10 @@ class FragmentHome : Fragment() {
             val result = EventService.acceptEvent(userId, item.id, isAccept)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, result, Toast.LENGTH_LONG).show()
-                refreshEvent()
+
             }
         }
+        refreshEvent()
     }
 
     private fun loadUserGroup() {
