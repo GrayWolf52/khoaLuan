@@ -90,7 +90,8 @@ class FragmentHome : Fragment() {
                 it.forEach { i ->
                     if (i?.status == Status.DENY_ACCEPT) listData.remove(i)
                 }
-                eventAdapter.submitList(listData)
+                val list = listData
+                eventAdapter.submitList(list)
                 eventAdapter.notifyDataSetChanged()
             }
         })
@@ -153,9 +154,9 @@ class FragmentHome : Fragment() {
             val result = EventService.acceptEvent(userId, item.id, isAccept)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, result, Toast.LENGTH_LONG).show()
-
             }
         }
+        refreshEvent()
         refreshEvent()
     }
 
