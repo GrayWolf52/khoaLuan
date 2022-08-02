@@ -33,8 +33,12 @@ class DayViewModel() : ViewModel() {
     fun clearDataListLoop(){
         listEventLoopSundayOnlyWeek.clear()
         listEventLoopWeek.clear()
-        listEventLoopMonth.clear()
+  /*      listEventLoopMonth.clear()*/
         listEventLoopDay.clear()
+    }
+
+    fun clearDataMonth(){
+        listEventLoopMonth.clear()
     }
 
     fun insertDay(day: DayModel?) {
@@ -74,7 +78,7 @@ class DayViewModel() : ViewModel() {
         for (i in dayOfWeek - 1 until 7) {
             listDayOfMonth.add(DayModel(++autoId, null))
         }
-
+        Log.d("TAG", "load: size listEventLoopMonth ${listEventLoopMonth.size} ")
         for (day in listDayOfMonth) {
             if (day == null || day!!.date == null) continue
             var cal1 = Calendar.getInstance()
@@ -125,6 +129,7 @@ class DayViewModel() : ViewModel() {
                     )
 
                     EventService.getById(event.id).second?.let {
+                        Log.d("TAG", "load: event model = ${it.recurrenceType}")
                         when (it.recurrenceType) {
                             1 -> listEventLoopDay.add(it)
                             2 -> listEventLoopWeek.add(it)

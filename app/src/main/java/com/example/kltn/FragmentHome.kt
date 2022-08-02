@@ -230,6 +230,7 @@ class FragmentHome : Fragment() {
 
                                 Toast.makeText(context, result.first, Toast.LENGTH_LONG).show()
                             }
+                            dayViewModel.clearDataMonth()
                             refreshEvent()
                         }
                     }.setNegativeButton("Không") { dialog, _ ->
