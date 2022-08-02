@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 class EventAdapter(
     private val onClick: (View?, EventItem) -> Unit,
     private val deleteEvent: (View?, EventItem) -> Unit,
-    private val isAcceptEvent: (EventItem, Boolean) -> Unit
+    private val isAcceptEvent: (EventItem, Boolean, Int) -> Unit
 ) :
     ListAdapter<EventItem, EventAdapter.EventViewHolder>(EventDiffCallback) {
 
@@ -24,7 +24,7 @@ class EventAdapter(
         itemView: View,
         val onClick: (View?, EventItem) -> Unit,
         val deleteEvent: (View?, EventItem) -> Unit,
-        val isAcceptEvent: (EventItem, Boolean) -> Unit
+        val isAcceptEvent: (EventItem, Boolean, Int) -> Unit
     ) :
         RecyclerView.ViewHolder(itemView) {
         private val lbEventDay: TextView = itemView.findViewById<TextView>(R.id.lbEventDay)
@@ -52,12 +52,14 @@ class EventAdapter(
             }
             btnAccept.setOnClickListener {
                 eventModel.let {
-                    isAcceptEvent(it, true)
+                    isAcceptEvent(it, true, position)
                 }
+                linearLayout.visibility = View.GONE
+                txtLoimoi.visibility = View.GONE
             }
             btnDeny.setOnClickListener {
                 eventModel.let {
-                    isAcceptEvent(it, false)
+                    isAcceptEvent(it, false, position)
                 }
             }
         }
@@ -75,8 +77,6 @@ class EventAdapter(
                 if (event.status == Status.ACCEPTED) {
                     linearLayout.visibility = View.GONE
                     txtLoimoi.visibility = View.GONE
-                    btnDeny.visibility = View.GONE
-                    btnAccept.visibility = View.GONE
                 }
                 if (event.status == Status.NOT_YET_ACCEPT) {
                     linearLayout.visibility = View.VISIBLE

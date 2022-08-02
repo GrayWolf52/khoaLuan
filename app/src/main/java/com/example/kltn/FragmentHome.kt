@@ -39,6 +39,7 @@ class FragmentHome : Fragment() {
     private val calendar = Calendar.getInstance()
     private var userId = -1
     private var groupId = 0
+    private var listEventItem = mutableListOf<EventItem?>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,8 +69,8 @@ class FragmentHome : Fragment() {
         eventAdapter =
             EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
                 deleteEvent(event.id)
-            }, { event, isAccpet ->
-                isAcceptEvent(event, isAccpet)
+            }, { event, isAccpet, position ->
+                isAcceptEvent(event, isAccpet, position)
             })
         recyclerView!!.adapter = dayAdapter
         recyclerViewEvent!!.adapter = eventAdapter
@@ -91,7 +92,10 @@ class FragmentHome : Fragment() {
                     if (i?.status == Status.DENY_ACCEPT) listData.remove(i)
                 }
                 val list = listData
-                eventAdapter.submitList(list)
+                listData.let {
+                    listEventItem = it
+                }
+                eventAdapter.submitList(listEventItem)
                 eventAdapter.notifyDataSetChanged()
             }
         })
@@ -147,7 +151,7 @@ class FragmentHome : Fragment() {
         refreshEvent()
     }
 
-    private fun isAcceptEvent(item: EventItem, isAccept: Boolean) {
+    private fun isAcceptEvent(item: EventItem, isAccept: Boolean, position: Int) {
         Log.d("TAG", "isAcceptEvent: event $item with isAccept = $isAccept")
 
         GlobalScope.launch(Dispatchers.IO) {
@@ -157,7 +161,15 @@ class FragmentHome : Fragment() {
             }
         }
         refreshEvent()
-        refreshEvent()
+        if (isAccept) {
+            val index = listEventItem.indexOf(item)
+            val itemEvent = item
+            itemEvent.status = Status.ACCEPTED
+            listEventItem.removeAt(position)
+            listEventItem.add(position, itemEvent)
+            eventAdapter.submitList(listEventItem)
+
+        }
     }
 
     private fun loadUserGroup() {

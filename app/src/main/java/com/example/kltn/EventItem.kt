@@ -10,7 +10,7 @@ class EventItem(
     val groupId: Int,
     val userIdSendEvent: Int,
     val userNameSendEvent: String,
-    val status: Int
+  var status: Int
 ) {
 
 }
