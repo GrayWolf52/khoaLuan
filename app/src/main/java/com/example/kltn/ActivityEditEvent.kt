@@ -247,7 +247,10 @@ class ActivityEditEvent : AppCompatActivity() {
         }
         loadUserGroup()
         if (eventId > 0) loadEvent()
-        else refreshLoopType()
+        else {
+            listIdParticipanted.add(userId)
+            refreshLoopType()
+        }
     }
 
     private fun refreshLoopType() {
