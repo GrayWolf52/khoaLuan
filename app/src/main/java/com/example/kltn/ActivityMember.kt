@@ -41,6 +41,7 @@ class ActivityMember : AppCompatActivity() {
     private var groupId: Int = 0
     private var userId: Int = 0
     private lateinit var adapterMember: AdapterMember
+    private lateinit var txtMota: TextView
     private lateinit var btnMemberBack: TextView
     private lateinit var btnMemberAdd: TextView
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +51,8 @@ class ActivityMember : AppCompatActivity() {
         if (bundle != null) {
             groupId = bundle.getInt(Constants.GROUD_ID)
             userId = bundle.getInt(Constants.USER_ID)
+            txtMota = findViewById(R.id.txtMota)
+            loadDes()
             rcvMember = findViewById(R.id.rcvMember)
             adapterMember = AdapterMember({ view, user ->/* onMemberClicked(user)*/ }, {
                 it?.let {
@@ -143,6 +146,9 @@ class ActivityMember : AppCompatActivity() {
         }.start()
     }
 
+    private fun loadDes(){
+
+    }
 
     private fun addMemberForGroup() {
         var dialog = Dialog(this)

@@ -1,8 +1,11 @@
 package com.example.kltn
 
+import android.app.DatePickerDialog
 import android.app.Dialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.security.identity.AccessControlProfile
 import android.util.Log
 import android.view.*
 import android.widget.Button
@@ -18,8 +21,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class FragmentAccount : Fragment() {
+    private lateinit var txtUserNameProfile: TextView
+    private lateinit var txtNameProfile: TextView
+    private lateinit var txtEmailProfile: TextView
+    private lateinit var txtPhoneProfile: TextView
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,8 +44,11 @@ class FragmentAccount : Fragment() {
         btnResetPassword.setOnClickListener {
             resetPassword()
         }
-
-
+        txtUserNameProfile = view.findViewById(R.id.txtUsernameProfile)
+        txtNameProfile = view.findViewById(R.id.txtNameProfile)
+        txtEmailProfile = view.findViewById(R.id.txtEmailProfile)
+        txtPhoneProfile = view.findViewById(R.id.txtPhoneProfile)
+        loadProfile()
         return view
     }
 
@@ -100,5 +112,8 @@ class FragmentAccount : Fragment() {
         } catch (ex: Exception) {
             Toast.makeText(context, ex.toString(), Toast.LENGTH_SHORT).show()
         }
+    }
+    private fun loadProfile() {
+
     }
 }

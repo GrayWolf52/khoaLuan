@@ -58,6 +58,43 @@
         <entry key="..\:/Projects/khoaLuan/app/src/main/res/menu/group_menu.xml" value="0.28425925925925927" />
         <entry key="..\:/Projects/khoaLuan/app/src/main/res/menu/main_menu.xml" value="0.2921875" />
         <entry key="..\:/Projects/khoaLuan/app/src/main/res/xml/network_security_config.xml" value="0.2630208333333333" />
+        <entry key="..\:/Users/Home/AppData/Local/Android/Sdk/platforms/android-31/data/res/layout/select_dialog_item.xml" value="0.3625" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.15260416666666668" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/border_bottom.xml" value="0.15260416666666668" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/border_right.xml" value="0.15260416666666668" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/border_right_bottom.xml" value="0.26614583333333336" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/border_top.xml" value="0.26614583333333336" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/check_outline.xml" value="0.26614583333333336" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/close_thick.xml" value="0.26614583333333336" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/dot_day.xml" value="0.26614583333333336" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/drawable/ic_launcher_background.xml" value="0.15260416666666668" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/activity_editevent.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/activity_login.xml" value="0.264" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/activity_member.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/activity_staffschedule.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/activity_test.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/dialog_addgroup.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/dialog_addmember.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/dialog_rename_group.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/dialog_reset_password.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/fragment_account.xml" value="0.264" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/fragment_group.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/fragment_home.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/fragment_member.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/fragment_schedule.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_addmember.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_day.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_event.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_group.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_member.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_participant.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_schedule.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/layout/item_schudele_event.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/menu/group_menu.xml" value="0.24583333333333332" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/menu/main_menu.xml" value="0.25" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.26614583333333336" />
+        <entry key="..\:/Users/Home/Desktop/TaiLieu/khoaLuan/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.26614583333333336" />
       </map>
     </option>
   </component>

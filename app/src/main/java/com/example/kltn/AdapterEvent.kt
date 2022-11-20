@@ -72,7 +72,7 @@ class EventAdapter(
                 Log.d("bind", " bind = ${event.date.date}")
                 lbEventDay.setText(event.date.date.toString())
                 lbEventMonth.setText("Thg " + (event.date.month + 1).toString())
-                lbEventName.setText(event.name)
+                lbEventName.setText(event.name + "abc")
 
                 if (event.status == Status.ACCEPTED) {
                     linearLayout.visibility = View.GONE
@@ -80,7 +80,7 @@ class EventAdapter(
                 }
                 if (event.status == Status.NOT_YET_ACCEPT) {
                     linearLayout.visibility = View.VISIBLE
-                    txtLoimoi.setText("Lời mời từ ")
+                    txtLoimoi.setText("Lời mời từ " + event.userNameSendEvent)
                 }
 //                if (event.type == 1) {
 //                    var drawable = lbEventStatus.background

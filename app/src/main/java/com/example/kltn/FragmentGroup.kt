@@ -17,7 +17,6 @@ import com.example.kltn.models.GroupModel
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.utils.Constants
-import com.example.kltn.utils.LoginSharePrefrence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -54,21 +53,22 @@ class FragmentGroup : Fragment() {
                 var btnAddGroupClose = dialog.findViewById<Button>(R.id.btnAddGroupClose)
                 var btnAddGroupSave = dialog.findViewById<Button>(R.id.btnAddGroupSave)
                 var txtAddGroupName = dialog.findViewById<EditText>(R.id.txtAddGroupName)
+                var txtAddMota = dialog.findViewById<EditText>(R.id.txtMota)
                 val txtError = dialog.findViewById<TextView>(R.id.txtError)
                 btnAddGroupClose.setOnClickListener {
                     dialog.dismiss()
                 }
                 btnAddGroupSave.setOnClickListener {
                     Thread {
-                        if (txtAddGroupName.text.isEmpty() || txtAddGroupName.text.length < 5) {
+                        if (txtAddGroupName.text.isEmpty() || txtAddGroupName.text.length < 5 || txtAddMota.text.isEmpty()) {
                             activity?.runOnUiThread {
                                 txtError.setText(
-                                    "Vui lòng nhập tên cho nhóm. Tên nhóm có độ dài từ 5 kí tự trở lên."
+                                    "Vui lòng nhập tên và mô tả cho nhóm. Tên nhóm có độ dài từ 5 kí tự trở lên."
                                 )
                             }
                         } else {
                             var result =
-                                GroupService.create(userId, txtAddGroupName.text.toString())
+                                GroupService.create(userId, txtAddGroupName.text.toString(), txtAddMota.text.toString())
                             if (result.first.isEmpty()) {
                                 activity?.runOnUiThread {
                                     Toast.makeText(

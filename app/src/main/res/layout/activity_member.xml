@@ -70,12 +70,11 @@
 
 
         <EditText
-            android:id="@+id/txtAddMota"
+            android:id="@+id/txtMota"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:ems="10"
-            android:hint="Mô tả"
             android:inputType="textPersonName"
             tools:ignore="TouchTargetSizeCheck"
             android:minHeight="48dp"
@@ -89,8 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Mô tả chức năng nhóm
-"
+            android:text="Chức năng nhóm"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_editor_absoluteX="16dp" />
 
@@ -101,17 +99,18 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/txtAddMota" />
+            app:layout_constraintTop_toBottomOf="@+id/txtMota" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcvMember"
-        android:layout_width="409dp"
-        android:layout_height="536dp"
+        android:layout_width="411dp"
+        android:layout_height="541dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        app:layout_constraintVertical_bias="0.833" />
+        app:layout_constraintVertical_bias="1.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
