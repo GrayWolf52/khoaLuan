@@ -27,14 +27,16 @@
                 android:id="@+id/textView6"
                 android:layout_width="100dp"
                 android:layout_height="30dp"
-                android:text="Username:" />
+                android:text="Username:"
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/txtUsernameProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <LinearLayout
@@ -45,14 +47,16 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="32dp"
-                android:text="Họ và tên:" />
+                android:text="Name: "
+                android:textColor="@color/black"/>
 
             <TextView
                 android:id="@+id/txtNameProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <LinearLayout
@@ -63,14 +67,16 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="35dp"
-                android:text="Email:" />
+                android:text="Phone:"
+                android:textColor="@color/black"/>
 
             <TextView
-                android:id="@+id/txtEmailProfile"
+                android:id="@+id/txtPhoneProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
         <LinearLayout
@@ -81,14 +87,16 @@
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="29dp"
-                android:text="SĐT:" />
+                android:text="Address:"
+                android:textColor="@color/black"/>
 
             <TextView
-                android:id="@+id/txtPhoneProfile"
+                android:id="@+id/txtAddressProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text="TextView"
+                android:textColor="@color/black"/>
         </LinearLayout>
 
 
@@ -120,7 +128,7 @@
         android:id="@+id/imageProfile"
         android:layout_width="133dp"
         android:layout_height="142dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="44dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

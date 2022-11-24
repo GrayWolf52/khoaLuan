@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#CCFFFF">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout2"
@@ -63,7 +64,8 @@
                 android:id="@+id/lbEditEventTitle"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:text="Tiêu đề" />
+                android:text="Tiêu đề"
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/txtEditEventTitle"
@@ -72,6 +74,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Tiêu đề"
+                android:textColor="@color/black"
                 android:inputType="textPersonName"
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
@@ -85,7 +88,8 @@
                 android:id="@+id/lbEditEventDescription"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:text="Mô tả" />
+                android:text="Mô tả"
+                android:textColor="@color/black"/>
 
             <EditText
                 android:id="@+id/txtEditEventDescription"
@@ -94,6 +98,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:hint="Mô tả"
+                android:textColor="@color/black"
                 android:inputType="textPersonName"
                 tools:ignore="TouchTargetSizeCheck" />
         </LinearLayout>
@@ -107,7 +112,8 @@
                 android:id="@+id/textView4"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:text="Thời gian" />
+                android:text="Thời gian"
+                android:textColor="@color/black"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -129,6 +135,7 @@
                         android:editable="false"
                         android:ems="10"
                         android:textAlignment="center"
+                        android:textColor="@color/black"
                         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
                     <EditText
@@ -136,6 +143,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="@color/black"
                         android:editable="false"
                         android:ems="10"
                         android:textAlignment="center"
@@ -155,6 +163,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:editable="false"
+                        android:textColor="@color/black"
                         android:ems="10"
                         android:textAlignment="center"
                         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
@@ -165,6 +174,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:editable="false"
+                        android:textColor="@color/black"
                         android:ems="10"
                         android:textAlignment="center"
                         tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
@@ -206,7 +216,8 @@
                 android:id="@+id/lbEditEventParticipant"
                 android:layout_width="120dp"
                 android:layout_height="wrap_content"
-                android:text="Người tham dự" />
+                android:text="Người tham dự"
+                android:textColor="@color/black"/>
 
             <LinearLayout
                 android:layout_width="match_parent"

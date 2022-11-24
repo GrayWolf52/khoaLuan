@@ -5,6 +5,7 @@ import com.example.kltn.Common
 import com.example.kltn.GroupInfos
 import com.example.kltn.models.DataSuggest
 import com.example.kltn.models.EventModel
+import com.example.kltn.models.GroupModel
 import com.example.kltn.models.UserModel
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -130,6 +131,33 @@ class UserService {
                 Log.e("TAG", "resetPassword: Exception = $ex")
                 "Đã xảy ra lỗi. Vui lòng thử lại sau.";
             }
+        }
+        fun getUser(idUser: Int): Triple<String, UserModel?, Int>{
+            var gson = Gson()
+            var client = OkHttpClient()
+            var request = Request.Builder()
+                .url(Common.API_HOST + "api/User/GetUser/" + idUser)
+                .build()
+            try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) {
+                    var user: UserModel = gson.fromJson(responseBody, UserModel::class.java)
+                    return Triple("", user, 0)
+                } else if (statusCode == 400) {
+                    if (responseBody == null || responseBody == "") {
+                        return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau 1", null, 0)
+                    }
+                    return Triple(responseBody, null, 0)
+                } else {
+                    return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau 2", null, 0)
+                }
+            }
+            catch (ex: Exception) {
+                return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau 3", null, 0)
+            }
+
         }
     }
 }

@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.kltn.services.GroupService
+import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
 import com.example.kltn.utils.Constants
 import com.example.kltn.utils.LoginSharePrefrence
@@ -26,14 +27,18 @@ import java.util.*
 class FragmentAccount : Fragment() {
     private lateinit var txtUserNameProfile: TextView
     private lateinit var txtNameProfile: TextView
-    private lateinit var txtEmailProfile: TextView
     private lateinit var txtPhoneProfile: TextView
+    private lateinit var txtAddressProfile: TextView
+    private var userId: Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        var bundle = arguments
+        if (bundle != null)
+            userId = bundle!!.getInt(Constants.USER_ID)
         var view = inflater.inflate(R.layout.fragment_account, container, false)
         var btnLogout = view.findViewById<Button>(R.id.btnLogout)
         var btnResetPassword = view.findViewById<Button>(R.id.btnResetPassword)
@@ -46,8 +51,8 @@ class FragmentAccount : Fragment() {
         }
         txtUserNameProfile = view.findViewById(R.id.txtUsernameProfile)
         txtNameProfile = view.findViewById(R.id.txtNameProfile)
-        txtEmailProfile = view.findViewById(R.id.txtEmailProfile)
         txtPhoneProfile = view.findViewById(R.id.txtPhoneProfile)
+        txtAddressProfile = view.findViewById(R.id.txtAddressProfile)
         loadProfile()
         return view
     }
@@ -114,6 +119,33 @@ class FragmentAccount : Fragment() {
         }
     }
     private fun loadProfile() {
+        Thread {
+            var result = UserService.getUser(userId)
+            if (result.first.isEmpty()) {
+                if (result.second != null) {
+                    activity?.runOnUiThread {
+                        var descrip = result.second
+                        descrip?.username?.let {
+                            txtUserNameProfile.setText(it)
+                        }
+                        txtNameProfile.setText(descrip?.firstName + " " + descrip?.lastName)
+
+                        descrip?.phone?.let {
+                            txtPhoneProfile.setText(it)
+                        }
+                        descrip?.address?.let {
+                            txtAddressProfile.setText(it)
+                        }
+                    }
+                }
+            }
+            else {
+                val runOnUiThread = activity?.runOnUiThread {
+                    Toast.makeText(context, result.first, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        }.start()
 
     }
 }

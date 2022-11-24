@@ -72,7 +72,7 @@ class EventAdapter(
                 Log.d("bind", " bind = ${event.date.date}")
                 lbEventDay.setText(event.date.date.toString())
                 lbEventMonth.setText("Thg " + (event.date.month + 1).toString())
-                lbEventName.setText(event.name + "abc")
+                lbEventName.setText(event.name)
 
                 if (event.status == Status.ACCEPTED) {
                     linearLayout.visibility = View.GONE

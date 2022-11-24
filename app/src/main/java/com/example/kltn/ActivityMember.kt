@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.fragment.FragmentMember
 import com.example.kltn.models.DataSuggest
 import com.example.kltn.models.UserModel
+import com.example.kltn.services.EventService
 import com.example.kltn.services.GroupService
 import com.example.kltn.services.UserGroupService
 import com.example.kltn.services.UserService
@@ -29,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.log
 
 
 class ActivityMember : AppCompatActivity() {
@@ -52,7 +54,7 @@ class ActivityMember : AppCompatActivity() {
             groupId = bundle.getInt(Constants.GROUD_ID)
             userId = bundle.getInt(Constants.USER_ID)
             txtMota = findViewById(R.id.txtMota)
-            loadDes()
+            loadDescriptionGroup()
             rcvMember = findViewById(R.id.rcvMember)
             adapterMember = AdapterMember({ view, user ->/* onMemberClicked(user)*/ }, {
                 it?.let {
@@ -146,8 +148,21 @@ class ActivityMember : AppCompatActivity() {
         }.start()
     }
 
-    private fun loadDes(){
-
+    private fun loadDescriptionGroup() {
+        Thread {
+            var result = GroupService.getDes(groupId)
+            if (result.first.isNotEmpty()){
+                runOnUiThread {
+                    Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()
+                }
+            }
+            else{
+                var descrip = result.second
+                descrip?.description?.let{
+                    txtMota.setText(it)
+                }
+            }
+        }.start()
     }
 
     private fun addMemberForGroup() {
@@ -240,5 +255,6 @@ class ActivityMember : AppCompatActivity() {
             WindowManager.LayoutParams.MATCH_PARENT
         )
     }
+
 
 }
