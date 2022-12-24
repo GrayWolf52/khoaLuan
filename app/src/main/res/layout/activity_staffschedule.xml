@@ -40,9 +40,10 @@
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            tools:srcCompat="@tools:sample/avatars" />
+            android:src="@drawable/khoa"
+            android:layout_width="102dp"
+            android:layout_height="match_parent"
+             />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -60,10 +61,11 @@
                     android:id="@+id/textView6"
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Username:" />
+                    android:text="Username:"
+                    android:textColor="@color/black"/>
 
                 <TextView
-                    android:id="@+id/textView7"
+                    android:id="@+id/txtUsernameProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -78,9 +80,11 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Họ và tên:" />
+                    android:text="Name"
+                    android:textColor="@color/black"/>
 
                 <TextView
+                    android:id="@+id/txtNameProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -95,9 +99,11 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="Email:" />
+                    android:text="Phone:"
+                    android:textColor="@color/black"/>
 
                 <TextView
+                    android:id="@+id/txtPhoneProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -112,9 +118,11 @@
                 <TextView
                     android:layout_width="100dp"
                     android:layout_height="wrap_content"
-                    android:text="SĐT:" />
+                    android:text="Address:"
+                    android:textColor="@color/black"/>
 
                 <TextView
+                    android:id="@+id/txtAddressProfile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -177,15 +185,6 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/lbExtendInfor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:text="Xem thêm"
-                android:textColor="@android:color/holo_blue_light">
-
-            </TextView>
         </LinearLayout>
 
     </LinearLayout>
@@ -246,18 +245,35 @@
             tools:ignore="RtlCompat" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <FrameLayout
-        android:layout_width="0dp"
+    <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@drawable/border_top"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linerLayout1">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rcvGroupSchedule"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
-    </FrameLayout>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="2dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewEvent"
+        android:layout_width="409dp"
+        android:layout_height="389dp"
+        app:layoutManager="GridLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linerLayout1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

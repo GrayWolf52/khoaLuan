@@ -46,6 +46,9 @@ class ActivityMember : AppCompatActivity() {
     private lateinit var txtMota: TextView
     private lateinit var btnMemberBack: TextView
     private lateinit var btnMemberAdd: TextView
+//    private var recyclerViewEvent: RecyclerView? = null
+//    lateinit var eventAdapter: EventAdapter
+//    private var listEventItem = mutableListOf<EventItem?>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_member)
@@ -56,7 +59,7 @@ class ActivityMember : AppCompatActivity() {
             txtMota = findViewById(R.id.txtMota)
             loadDescriptionGroup()
             rcvMember = findViewById(R.id.rcvMember)
-            adapterMember = AdapterMember({ view, user ->/* onMemberClicked(user)*/ }, {
+            adapterMember = AdapterMember({ view, user -> /*onMemberClicked(user)*/ }, {
                 it?.let {
                     removeUserGroup(it)
                 }
@@ -69,6 +72,8 @@ class ActivityMember : AppCompatActivity() {
                     UserGroupService.loadDataAgain.postValue(false)
                 }
             }
+//            recyclerViewEvent = findViewById(R.id.recyclerViewEvent)
+//            recyclerViewEvent!!.adapter = eventAdapter
         }
         btnMemberBack = findViewById(R.id.btnStaffScheduleBack)
         btnMemberBack.setOnClickListener {
