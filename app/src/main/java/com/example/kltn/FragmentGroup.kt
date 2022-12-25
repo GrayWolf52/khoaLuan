@@ -62,7 +62,7 @@ class FragmentGroup : Fragment() {
                     Thread {
                         if (txtAddGroupName.text.isEmpty() || txtAddGroupName.text.length < 5 || txtAddMota.text.isEmpty()) {
                             activity?.runOnUiThread {
-                                txtError.setText(
+                                txtError?.setText(
                                     "Vui lòng nhập tên và mô tả cho nhóm. Tên nhóm có độ dài từ 5 kí tự trở lên."
                                 )
                             }
