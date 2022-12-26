@@ -1,6 +1,5 @@
 package com.example.kltn
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,22 +11,24 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.anychart.AnyChart
+import com.anychart.AnyChartView
+import com.anychart.chart.common.dataentry.DataEntry
+import com.anychart.chart.common.dataentry.ValueDataEntry
+import com.anychart.charts.Pie
+import com.anychart.enums.Align
+import com.anychart.enums.LegendLayout
 import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.components.Description
-import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class HomeFragment : Fragment() {
-    private lateinit var pieChart: PieChart
+    private lateinit var pieChart: AnyChartView
     private lateinit var messageChart: TextView
     private lateinit var viewModel: HomeViewModel
     private lateinit var monthSpinner: Spinner
     private var userId = -1
+    private lateinit var pie: Pie
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +39,7 @@ class HomeFragment : Fragment() {
             userId = bundle!!.getInt("UserId")
         }
         var view = inflater.inflate(R.layout.fragment_home, container, false)
+        pie =  AnyChart.pie()
         viewModel = ViewModelProviders.of(requireActivity()).get(HomeViewModel::class.java)
         val calender = Calendar.getInstance()
         var month = calender.get(Calendar.MONTH)
@@ -53,7 +55,6 @@ class HomeFragment : Fragment() {
         pieChart = view.findViewById(R.id.pieChart)
         messageChart = view.findViewById(R.id.messageChart)
         monthSpinner = view.findViewById(R.id.monthSpinner)
-
 
         ArrayAdapter.createFromResource(
             requireContext(),
@@ -90,10 +91,10 @@ class HomeFragment : Fragment() {
         }
 
         messageChart.visibility = View.GONE
-        pieChart.description = Description()
+      /*  pieChart.description = Description()
         pieChart.setTransparentCircleAlpha(0)
         pieChart.setDrawEntryLabels(true)
-
+*/
         viewModel.inforChart.observe(viewLifecycleOwner) {
             Log.d("TAG", "onCreateView:inforChart = $it ")
             if (it.first == 0 && it.second == 0 && it.third == 0) {
@@ -102,36 +103,35 @@ class HomeFragment : Fragment() {
             } else {
                 pieChart.visibility = View.VISIBLE
                 messageChart.visibility = View.GONE
-                addDataSet(pieChart, it.first.toFloat(), it.second.toFloat(), it.third.toFloat())
+                addDataSet(it.first.toFloat(), it.second.toFloat(), it.third.toFloat())
             }
         }
         return view
     }
 
-    private fun addDataSet(pieChart: PieChart, data1: Float, data2: Float, data3: Float) {
-        val yEntrys: ArrayList<PieEntry> = ArrayList()
-        val xEntrys: ArrayList<String> = ArrayList()
-        val yData = floatArrayOf(data1, data2, data3)
-        val xData = arrayOf("Việc mới", "Đang thực hiện", "Hoàn thành")
-        for (i in yData.indices) {
-            yEntrys.add(PieEntry(yData[i], i))
-        }
-        for (i in xData.indices) {
-            xEntrys.add(xData[i])
-        }
-        val pieDataSet = PieDataSet(yEntrys, "Thống kê trạng thái")
-        pieDataSet.sliceSpace = 2f
-        pieDataSet.valueTextSize = 20f
-        val colors: ArrayList<Int> = ArrayList()
-        colors.add(R.color.blue)
-        colors.add(R.color.purple_700)
-        colors.add(R.color.green)
-        pieDataSet.colors = colors
-        val legend = pieChart.legend
-        legend.form = Legend.LegendForm.CIRCLE
-        val pieData = PieData(pieDataSet)
-        pieChart.data = pieData
-        pieChart.invalidate()
+    private fun addDataSet( data1: Float, data2: Float, data3: Float) {
+        val data: MutableList<DataEntry> = ArrayList()
+        data.add(ValueDataEntry("Việc mới", data1))
+        data.add(ValueDataEntry("Đang thực hiện", data2))
+        data.add(ValueDataEntry("Hoàn thành", data3))
+
+        pie.data(data)
+
+        pie.title("Thống kê trạng thái ")
+
+        pie.labels().position("outside")
+
+        pie.legend().title().enabled(true)
+        pie.legend().title()
+            .text("Chú thích ")
+            .padding(0.0, 0.0, 10.0, 0.0)
+
+        pie.legend()
+            .position("center-bottom")
+            .itemsLayout(LegendLayout.HORIZONTAL)
+            .align(Align.CENTER)
+
+        pieChart.setChart(pie)
     }
 
 }

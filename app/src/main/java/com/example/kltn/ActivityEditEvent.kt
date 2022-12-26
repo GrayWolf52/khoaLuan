@@ -212,6 +212,7 @@ class ActivityEditEvent : AppCompatActivity() {
                 Log.d("calendarStart", " calendarEnd = ${calendarEnd.time}")
                 val listId = mutableListOf<Int>()
                 listData.forEach {
+                    Log.d("TAG", "onCreate: listData called with user = $it")
                     listId.add(it.id)
                 }
                 var msg = EventService.update(
