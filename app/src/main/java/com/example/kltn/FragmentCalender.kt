@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 
 
-class FragmentHome : Fragment() {
+class FragmentCalender : Fragment() {
     private var recyclerView: RecyclerView? = null
     private var recyclerViewEvent: RecyclerView? = null
     private lateinit var dayViewModel: DayViewModel
@@ -50,7 +50,7 @@ class FragmentHome : Fragment() {
             userId = bundle!!.getInt("UserId")
         }
 
-        var view = inflater.inflate(R.layout.fragment_home, container, false);
+        var view = inflater.inflate(R.layout.fragment_calendar, container, false);
         recyclerView = view?.findViewById(R.id.recyclerView)
         recyclerViewEvent = view?.findViewById(R.id.recyclerViewEvent)
         lbMonth = view?.findViewById(R.id.lbGroupScheduleMonth)
@@ -67,11 +67,18 @@ class FragmentHome : Fragment() {
         }
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day) }
         eventAdapter =
-            EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
-                deleteEvent(event.id)
-            }, { event, isAccpet, position ->
-                isAcceptEvent(event, isAccpet, position)
-            })
+            EventAdapter(
+                requireContext(),
+                { view, event -> adapterEventOnClick(view, event) },
+                { view, event ->
+                    deleteEvent(event.id)
+                },
+                { event, isAccpet, position ->
+                    isAcceptEvent(event, isAccpet, position)
+                },
+                { event, status ->
+                    changeStatusEvent(event, status)
+                })
         recyclerView!!.adapter = dayAdapter
         recyclerViewEvent!!.adapter = eventAdapter
         dayViewModel = ViewModelProviders.of(this, DayViewModelFactory(context as Context))
@@ -240,5 +247,14 @@ class FragmentHome : Fragment() {
                 builder.show()
             }
         }
+    }
+
+    private fun changeStatusEvent(event: EventItem, statusEvent: Int) {
+        Log.d("TAG", "changeStatusEvent: event = $event and statusEvent = $statusEvent")
+        Thread {
+            dayViewModel.updateStatusEvent(statusEvent, event.id)
+            //refreshEvent()
+        }.start()
+        //
     }
 }

@@ -1,18 +1,14 @@
 package com.example.kltn
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
-import androidx.work.*
 import com.example.kltn.utils.Constants
-import com.example.kltn.worker.NotificationWorker
-import com.example.kltn.worker.notification.AcceptGroupNotification
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.concurrent.TimeUnit
 
 class ActivityMain : AppCompatActivity() {
-    private lateinit var fragmentHome: FragmentHome
+    private lateinit var fragmentCalendar: FragmentCalender
+    private lateinit var fragmentHome: HomeFragment
     private lateinit var fragmentGroup: FragmentGroup
     private lateinit var fragmentAccount: FragmentAccount
     private var userId: Int = 0
@@ -23,8 +19,10 @@ class ActivityMain : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val fragmentManager: FragmentManager = supportFragmentManager
-        fragmentHome = FragmentHome()
+        fragmentHome = HomeFragment()
         fragmentHome.arguments = bundle
+        fragmentCalendar = FragmentCalender()
+        fragmentCalendar.arguments = bundle
         fragmentGroup = FragmentGroup()
         fragmentGroup.arguments = bundle
         fragmentAccount = FragmentAccount()
@@ -40,9 +38,13 @@ class ActivityMain : AppCompatActivity() {
                 }
                 R.id.nav_2 -> {
                     fragmentManager.beginTransaction()
-                        .replace(R.id.fragmentContainer, fragmentGroup, "Schedule").commit();
+                        .replace(R.id.fragmentContainer, fragmentCalendar, "Calendar").commit();
                 }
                 R.id.nav_3 -> {
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.fragmentContainer, fragmentGroup, "Schedule").commit();
+                }
+                R.id.nav_4 -> {
                     fragmentManager.beginTransaction()
                         .replace(R.id.fragmentContainer, fragmentAccount, "Account").commit();
                 }

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout10"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/purple_500"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/btnAddGroup"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@drawable/add_white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linerLayout1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border_bottom"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout10">
+
+        <TextView
+            android:id="@+id/btnGroupSchudulePrevious"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/left_arrow"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlCompat" />
+
+        <TextView
+            android:id="@+id/lbGroupScheduleMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="2 / 2022"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnGroupSchuduleNext"
+            app:layout_constraintStart_toEndOf="@+id/btnGroupSchudulePrevious"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/btnGroupSchuduleNext"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/right_arrow"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="RtlCompat" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
+        android:layout_height="36dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linerLayout1">
+
+        <TextView
+            android:id="@+id/lbDay1"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="T2"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_right_bottom" />
+
+        <TextView
+            android:id="@+id/lbDay2"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="T3"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_right_bottom" />
+
+        <TextView
+            android:id="@+id/lbDay3"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="T4"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_right_bottom" />
+
+        <TextView
+            android:id="@+id/lbDay4"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="T5"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_right_bottom"/>
+
+        <TextView
+            android:id="@+id/lbDay5"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="T6"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_right_bottom"/>
+
+        <TextView
+            android:id="@+id/lbDay6"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="T7"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_right_bottom"/>
+
+        <TextView
+            android:id="@+id/lbDay7"
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
+            android:layout_height="36dp"
+            android:gravity="center_vertical"
+            android:text="CN"
+            android:textAlignment="center"
+            tools:ignore="RtlCompat"
+            android:background="@drawable/border_bottom"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="GridLayoutManager"
+            app:spanCount="7">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </FrameLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/border_top"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout3">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="2dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewEvent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="GridLayoutManager" />
+            </FrameLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

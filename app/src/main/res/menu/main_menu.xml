@@ -4,15 +4,22 @@
         android:id="@+id/nav_1"
         android:enabled="true"
         android:icon="@drawable/icon_home"
-        android:title="Home"></item>
+        android:title="Home" />
+
     <item
         android:id="@+id/nav_2"
         android:enabled="true"
-        android:icon="@drawable/icon_group"
-        android:title="Group"></item>
+        android:icon="@drawable/calendar_blank"
+        android:title="Calendar" />
+
     <item
         android:id="@+id/nav_3"
         android:enabled="true"
+        android:icon="@drawable/icon_group"
+        android:title="Group" />
+    <item
+        android:id="@+id/nav_4"
+        android:enabled="true"
         android:icon="@drawable/icon_user"
-        android:title="Account"></item>
+        android:title="Account" />
 </menu>

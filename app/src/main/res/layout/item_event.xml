@@ -4,16 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingVertical="5dp"
-    android:background="@drawable/border_bottom">
+    android:background="@drawable/border_bottom"
+    android:paddingVertical="5dp">
 
     <TextView
         android:id="@+id/txtLoimoi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="5dp"
-        android:textStyle="bold"
         android:text="Lời mời từ"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,9 +24,9 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtLoimoi"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/txtLoimoi">
 
         <TextView
             android:id="@+id/lbEventDay"
@@ -73,6 +73,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtLoimoi">
+
         <ImageButton
             android:id="@+id/accept"
             android:layout_width="wrap_content"
@@ -87,4 +88,14 @@
             android:layout_weight="1"
             android:src="@drawable/close_thick" />
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    <Spinner
+        android:id="@+id/statusEvent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtLoimoi"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

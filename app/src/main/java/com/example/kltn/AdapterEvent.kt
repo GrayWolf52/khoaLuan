@@ -1,30 +1,35 @@
 package com.example.kltn
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.kltn.models.StatusEvent
 
 class EventAdapter(
+    private val context: Context,
     private val onClick: (View?, EventItem) -> Unit,
     private val deleteEvent: (View?, EventItem) -> Unit,
-    private val isAcceptEvent: (EventItem, Boolean, Int) -> Unit
+    private val isAcceptEvent: (EventItem, Boolean, Int) -> Unit,
+    private val changeStatusEvent: (EventItem, Int) -> Unit
 ) :
     ListAdapter<EventItem, EventAdapter.EventViewHolder>(EventDiffCallback) {
 
     class EventViewHolder(
+        private val context: Context,
         itemView: View,
         val onClick: (View?, EventItem) -> Unit,
         val deleteEvent: (View?, EventItem) -> Unit,
-        val isAcceptEvent: (EventItem, Boolean, Int) -> Unit
+        val isAcceptEvent: (EventItem, Boolean, Int) -> Unit,
+        val changeStatusEvent: (EventItem, Int) -> Unit
     ) :
         RecyclerView.ViewHolder(itemView) {
         private val lbEventDay: TextView = itemView.findViewById<TextView>(R.id.lbEventDay)
@@ -32,6 +37,7 @@ class EventAdapter(
         private val lbEventStatus: TextView = itemView.findViewById<TextView>(R.id.lbEventStatus)
         private val lbEventName: TextView = itemView.findViewById<TextView>(R.id.lbEventName)
         private val txtLoimoi: TextView = itemView.findViewById(R.id.txtLoimoi)
+        private val spinnerStatus: Spinner = itemView.findViewById(R.id.statusEvent)
         private val btnAccept: ImageButton = itemView.findViewById(R.id.accept)
         private val btnDeny: ImageButton = itemView.findViewById(R.id.deny)
         private val linearLayout: LinearLayoutCompat = itemView.findViewById(R.id.linear2)
@@ -67,7 +73,32 @@ class EventAdapter(
         @SuppressLint("ResourceAsColor")
         fun bind(event: EventItem) {
             eventModel = event
+            ArrayAdapter.createFromResource(
+                context,
+                R.array.list_status_event,
+                android.R.layout.simple_spinner_item
+            ).also { adapter ->
+                // Specify the layout to use when the list of choices appears
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                // Apply the adapter to the spinner
+                spinnerStatus.adapter = adapter
+            }
+            spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    updateColor(statusEvent = position)
+                    changeStatusEvent.invoke(event, position)
+                }
 
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    TODO("Not yet implemented")
+                }
+
+            }
             if (event.date != null) {
                 Log.d("bind", " bind = ${event.date.date}")
                 lbEventDay.setText(event.date.date.toString())
@@ -76,12 +107,23 @@ class EventAdapter(
 
                 if (event.status == Status.ACCEPTED) {
                     linearLayout.visibility = View.GONE
+                    spinnerStatus.visibility = View.VISIBLE
                     txtLoimoi.visibility = View.GONE
                 }
                 if (event.status == Status.NOT_YET_ACCEPT) {
                     linearLayout.visibility = View.VISIBLE
+                    spinnerStatus.visibility = View.GONE
                     txtLoimoi.setText("Lời mời từ " + event.userNameSendEvent)
                 }
+                spinnerStatus.setSelection(event.statusEvent)
+                /*var color = when (event.statusEvent) {
+                    StatusEvent.NEW -> R.color.blue
+                    StatusEvent.DOING -> R.color.purple_700
+                    StatusEvent.DONE -> R.color.green
+                    else -> R.color.blue
+                }
+                lbEventStatus.background.setTint(ContextCompat.getColor(context, color))*/
+                updateColor(event.statusEvent)
 //                if (event.type == 1) {
 //                    var drawable = lbEventStatus.background
 //                    drawable = DrawableCompat.wrap(drawable)
@@ -94,12 +136,29 @@ class EventAdapter(
 //                }
             }
         }
+
+        fun updateColor(statusEvent: Int) {
+            var color = when (statusEvent) {
+                StatusEvent.NEW -> R.color.blue
+                StatusEvent.DOING -> R.color.purple_700
+                StatusEvent.DONE -> R.color.green
+                else -> R.color.blue
+            }
+            lbEventStatus.background.setTint(ContextCompat.getColor(context, color))
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_event, parent, false)
-        return EventViewHolder(view, onClick, deleteEvent, isAcceptEvent)
+        return EventViewHolder(
+            context,
+            view,
+            onClick,
+            deleteEvent,
+            isAcceptEvent,
+            changeStatusEvent
+        )
     }
 
     override fun onBindViewHolder(holder: EventViewHolder, position: Int) {

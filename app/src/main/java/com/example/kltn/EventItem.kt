@@ -8,6 +8,7 @@ class EventItem(
     val type: Int,
     val name: String,
     val groupId: Int,
+    var statusEvent: Int,
     val userIdSendEvent: Int,
     val userNameSendEvent: String,
   var status: Int

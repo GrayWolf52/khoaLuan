@@ -13,6 +13,8 @@ class EventInfos {
     var creator: UserInfos = UserInfos()
     var participants: ArrayList<UserInfos> = ArrayList<UserInfos>()
     var status: Int = 0
+    var place: String = ""
+    var statusEvent: Int = 0
 }
 
 object Status {

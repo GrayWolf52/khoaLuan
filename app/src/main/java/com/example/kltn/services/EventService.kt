@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.kltn.*
 import com.example.kltn.extensions.toLiveData
 import com.example.kltn.models.EventModel
+import com.example.kltn.models.StatusEvent
+import com.example.kltn.models.UserModel
 import com.google.gson.*
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -62,7 +64,10 @@ class EventService {
             groupId: Int,
             participants: List<Int>,
             creatorId: Int,
+            place: String,
+            status: Int = StatusEvent.NEW
         ): String {
+            Log.d("TAG", "update: statusEvent = $status ")
             var event = EventInfos()
             event.id = eventId
             event.title = title
@@ -73,6 +78,8 @@ class EventService {
             event.groupId = groupId
             event.creator = UserInfos()
             event.creator.id = creatorId
+            event.place = place
+            event.statusEvent = status
             for (participant in participants) {
                 var u = UserInfos()
                 u.id = participant
@@ -95,6 +102,7 @@ class EventService {
                 else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
                 else "Đã xảy ra lỗi. Vui lòng thử lại sau."
             } catch (ex: Exception) {
+                Log.d("TAG", "update: exception  = ${ex.printStackTrace()}")
                 "Đã xảy ra lỗi. Vui lòng thử lại sau.";
             }
         }
@@ -122,6 +130,36 @@ class EventService {
                 }
             } catch (ex: Exception) {
                 return Triple("Đã xảy ra lỗi. Vui lòng thử lại sau", null, 0)
+            }
+        }
+
+        fun getListStatusByMonth(userId: Int, groupId: Int, month: Int, year: Int): List<Int> {
+            val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
+            var client = OkHttpClient()
+            val request = Request.Builder()
+                .url(Common.API_HOST + "api/Event/GetByMonth?userId=" + userId + "&groupId=" + groupId + "&month=" + month + "&year=" + year)
+                .build()
+            try {
+                var response = client.newCall(request).execute()
+                var statusCode = response.code()
+                var responseBody = response.body()?.string()
+                if (statusCode == 200) {
+                    var event: Array<EventInfos> = gson.fromJson(
+                        responseBody,
+                        (ArrayList<EventInfos>()).toTypedArray().javaClass
+                    )
+                    return event.toList().map { eventInfos -> eventInfos.statusEvent }
+                } else if (statusCode == 400) {
+                    if (responseBody == null || responseBody == "") {
+                        return listOf()
+                    }
+                    return listOf()
+                } else {
+                    return listOf()
+                }
+            } catch (ex: Exception) {
+                Log.d("TAG", "getListStatusByMonth:${ex.printStackTrace()} ")
+                return listOf()
             }
         }
 
@@ -173,9 +211,8 @@ class EventService {
                 var responseBody = response.body()?.string()
                 if (statusCode == 200) {
                     if (isAccepted)
-                    "Bạn đã tham gia sự kiện thành công!" else  "Bạn đã hủy tham gia sự kiện thành công!"
-                }
-                else if (statusCode == 400 && responseBody != null) responseBody
+                        "Bạn đã tham gia sự kiện thành công!" else "Bạn đã hủy tham gia sự kiện thành công!"
+                } else if (statusCode == 400 && responseBody != null) responseBody
                 else if (statusCode == 401) "Phiên đăng nhập của bạn đã hết hạn.";
                 else "Đã xảy ra lỗi. Vui lòng thử lại sau."
             } catch (ex: Exception) {

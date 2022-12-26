@@ -24,20 +24,21 @@ class DayViewModel() : ViewModel() {
         get() = _message
     private var autoId: Int = 0
     private var autoEventId: Int = 0
+    private var listEventInfo: Array<EventInfos>? = arrayOf()
 
     var listEventLoopMonth = mutableListOf<EventModel>()
     var listEventLoopDay = mutableListOf<EventModel>()
     var listEventLoopWeek = mutableListOf<EventModel>()
     var listEventLoopSundayOnlyWeek = mutableListOf<EventModel>()
 
-    fun clearDataListLoop(){
+    fun clearDataListLoop() {
         listEventLoopSundayOnlyWeek.clear()
         listEventLoopWeek.clear()
-  /*      listEventLoopMonth.clear()*/
+        /*      listEventLoopMonth.clear()*/
         listEventLoopDay.clear()
     }
 
-    fun clearDataMonth(){
+    fun clearDataMonth() {
         listEventLoopMonth.clear()
     }
 
@@ -109,6 +110,7 @@ class DayViewModel() : ViewModel() {
 
         var events = ArrayList<EventItem?>()
         var resultEvent = EventService.get(userId, groupId, month, year)
+        listEventInfo = resultEvent.second
         if (resultEvent.first.length > 0) {
             _message.postValue(resultEvent.first)
         } else {
@@ -122,6 +124,7 @@ class DayViewModel() : ViewModel() {
                             1,
                             event.title,
                             event.groupId,
+                            event.statusEvent,
                             event.creator.id,
                             event.creator.userName,
                             event.status
@@ -178,6 +181,25 @@ class DayViewModel() : ViewModel() {
         _listDay.postValue(listDayOfMonth!!)
         _listEvent.postValue(events!!)
 
+    }
+
+
+    fun updateStatusEvent(statusEvent: Int, idEvent: Int) {
+        listEventInfo?.toList()?.find { eventInfos -> eventInfos.id == idEvent }?.let {
+            EventService.update(
+                it.id,
+                it.title,
+                it.description,
+                it.startTime,
+                it.endTime,
+                it.recurrenceType,
+                it.groupId,
+                it.participants.map { userInfos -> userInfos.id },
+                it.creator.id,
+                it.place,
+                statusEvent
+            )
+        }
     }
 
     fun updateStatus1(id: Int, value: Boolean) {

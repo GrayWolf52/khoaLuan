@@ -33,6 +33,7 @@ class ActivityEditEvent : AppCompatActivity() {
     private lateinit var btnEditEventCancel: Button
     private lateinit var txtEditEventTitle: TextView
     private lateinit var txtEditEventDescription: TextView
+    private lateinit var txtEditEventPlace: TextView
     private lateinit var txtEditEventStartTime: TextView
     private lateinit var txtEditEventStartDate: TextView
     private lateinit var txtEditEventEndTime: TextView
@@ -65,8 +66,8 @@ class ActivityEditEvent : AppCompatActivity() {
         var bundle = intent.extras
         userId = bundle!!.getInt(Constants.USER_ID)
         eventId = bundle!!.getInt(Constants.EVENT_ID)
-        groupId = bundle?.getInt(Constants.GROUD_ID)
-        isEventGroup = bundle?.getBoolean(Constants.IS_ADD_EVENT_GROUP)
+        groupId = bundle.getInt(Constants.GROUD_ID)
+        isEventGroup = bundle.getBoolean(Constants.IS_ADD_EVENT_GROUP)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editevent)
         initView()
@@ -223,6 +224,7 @@ class ActivityEditEvent : AppCompatActivity() {
                     groupId = groupId,
                     creatorId = userId,
                     participants = listId,
+                    place = txtEditEventPlace.text.toString()
                 )
                 if (msg.isNotEmpty()) {
                     runOnUiThread {
@@ -275,6 +277,7 @@ class ActivityEditEvent : AppCompatActivity() {
         btnEditEventEdit = findViewById(R.id.btnEditEventEdit)
         txtEditEventTitle = findViewById(R.id.txtEditEventTitle)
         txtEditEventDescription = findViewById(R.id.txtEditEventDescription)
+        txtEditEventPlace = findViewById(R.id.txtEditEventPlace)
         btnEditEventBack = findViewById(R.id.btnStaffScheduleBack)
         txtEditEventStartTime = findViewById(R.id.txtEditEventStartTime)
         txtEditEventStartDate = findViewById(R.id.txtEditEventStartDate)
@@ -530,6 +533,9 @@ class ActivityEditEvent : AppCompatActivity() {
                 event?.description?.let {
                     txtEditEventDescription.setText(it)
                 }
+                event?.place?.let {
+                    txtEditEventPlace.setText(it)
+                }
                 event?.startTime?.let {
                     calendarStart.time = it
                 }
@@ -556,7 +562,7 @@ class ActivityEditEvent : AppCompatActivity() {
                 if (event?.recurrenceType!! > 0) {
                     chkEditEventLoop.isChecked = true
                     spnEditEventLoop.visibility = View.VISIBLE
-                    spnEditEventLoop.setSelection(event?.recurrenceType - 1)
+                    spnEditEventLoop.setSelection(event.recurrenceType - 1)
                 } else {
                     chkEditEventLoop.isChecked = false
                     spnEditEventLoop.visibility = View.GONE

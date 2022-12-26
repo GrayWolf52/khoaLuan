@@ -2,9 +2,7 @@ package com.example.kltn
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -65,9 +63,9 @@ class ActivityStaffSchedule : AppCompatActivity() {
 //
         //recyclerViewEvent = findViewById(R.id.rcvGroupSchedule)
         eventAdapter =
-            EventAdapter({ view, event -> adapterEventOnClick(view, event) }, { view, event ->
-            }, { event, isAccept, position->
-           })
+            EventAdapter(this, { view, event -> adapterEventOnClick(view, event) }, { view, event ->
+            }, { event, isAccept, position ->
+            }, { event, status -> })
         recyclerViewEvent.adapter = eventAdapter
 //        rcvStaffSchedule.adapter = eventAdapter
         refreshEvent()
@@ -85,11 +83,12 @@ class ActivityStaffSchedule : AppCompatActivity() {
         intent.putExtra(Constants.GROUD_ID, event.groupId)
         startActivity(intent)
     }
+
     fun refreshEvent() {
         var month = calendar.get(Calendar.MONTH) + 1
         var year = calendar.get(Calendar.YEAR)
-        Thread{
-            var result = EventService.get(userId,groupId,month,year)
+        Thread {
+            var result = EventService.get(userId, groupId, month, year)
             runOnUiThread {
                 if (result.first.isNotEmpty())
                     Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()
@@ -98,7 +97,8 @@ class ActivityStaffSchedule : AppCompatActivity() {
             }
         }.start()
     }
-//
+
+    //
 //    fun refreshEvent() {
 //        val month = calendar.get(Calendar.MONTH) + 1
 //        val year = calendar.get(Calendar.YEAR)
@@ -165,8 +165,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 Toast.makeText(this, result.first, Toast.LENGTH_SHORT).show()
             }
 
