@@ -63,7 +63,7 @@ class ActivityStaffSchedule : AppCompatActivity() {
 //
         //recyclerViewEvent = findViewById(R.id.rcvGroupSchedule)
         eventAdapter =
-            EventAdapter(this, { view, event -> adapterEventOnClick(view, event) }, { view, event ->
+            EventAdapter(userId, this, { view, event -> adapterEventOnClick(view, event) }, { view, event ->
             }, { event, isAccept, position ->
             }, { event, status -> })
         recyclerViewEvent.adapter = eventAdapter

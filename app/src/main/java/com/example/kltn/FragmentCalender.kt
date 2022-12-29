@@ -68,6 +68,7 @@ class FragmentCalender : Fragment() {
         dayAdapter = DayAdapter { view, day -> adapterDayOnClick(view, day) }
         eventAdapter =
             EventAdapter(
+                userId,
                 requireContext(),
                 { view, event -> adapterEventOnClick(view, event) },
                 { view, event ->

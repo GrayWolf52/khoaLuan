@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kltn.models.StatusEvent
 
 class EventAdapter(
+    private val userId: Int,
     private val context: Context,
     private val onClick: (View?, EventItem) -> Unit,
     private val deleteEvent: (View?, EventItem) -> Unit,
@@ -24,6 +25,7 @@ class EventAdapter(
     ListAdapter<EventItem, EventAdapter.EventViewHolder>(EventDiffCallback) {
 
     class EventViewHolder(
+        val userId: Int,
         private val context: Context,
         itemView: View,
         val onClick: (View?, EventItem) -> Unit,
@@ -104,16 +106,25 @@ class EventAdapter(
                 lbEventDay.setText(event.date.date.toString())
                 lbEventMonth.setText("Thg " + (event.date.month + 1).toString())
                 lbEventName.setText(event.name)
-
-                if (event.status == Status.ACCEPTED) {
-                    linearLayout.visibility = View.GONE
-                    spinnerStatus.visibility = View.VISIBLE
-                    txtLoimoi.visibility = View.GONE
+                Log.d("TAG", "bind: $userId and ${event.userIdSendEvent} ")
+                if (event.userIdSendEvent != userId) {
+                    Log.d("TAG", "bind: true  ")
+                    if (event.status == Status.ACCEPTED) {
+                        linearLayout.visibility = View.GONE
+                        spinnerStatus.visibility = View.VISIBLE
+                        txtLoimoi.visibility = View.GONE
+                    }
+                    if (event.status == Status.NOT_YET_ACCEPT) {
+                        linearLayout.visibility = View.VISIBLE
+                        spinnerStatus.visibility = View.GONE
+                        txtLoimoi.setText("Lời mời từ " + event.userNameSendEvent)
+                    }
                 }
-                if (event.status == Status.NOT_YET_ACCEPT) {
-                    linearLayout.visibility = View.VISIBLE
-                    spinnerStatus.visibility = View.GONE
-                    txtLoimoi.setText("Lời mời từ " + event.userNameSendEvent)
+                else {
+                    Log.d("TAG", "bind: false ")
+                    spinnerStatus.visibility = View.VISIBLE
+                    linearLayout.visibility = View.GONE
+                    txtLoimoi.visibility = View.GONE
                 }
                 spinnerStatus.setSelection(event.statusEvent)
                 /*var color = when (event.statusEvent) {
@@ -152,6 +163,7 @@ class EventAdapter(
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_event, parent, false)
         return EventViewHolder(
+            userId,
             context,
             view,
             onClick,
