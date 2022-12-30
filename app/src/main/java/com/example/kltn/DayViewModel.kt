@@ -196,7 +196,7 @@ class DayViewModel() : ViewModel() {
                 it.groupId,
                 it.participants.map { userInfos -> userInfos.id },
                 it.creator.id,
-                it.place,
+                it.place?.let { it } ?: " ",
                 statusEvent
             )
         }

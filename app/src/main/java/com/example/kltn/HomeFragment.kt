@@ -11,6 +11,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.anychart.APIlib
 import com.anychart.AnyChart
 import com.anychart.AnyChartView
 import com.anychart.chart.common.dataentry.DataEntry
@@ -18,7 +19,6 @@ import com.anychart.chart.common.dataentry.ValueDataEntry
 import com.anychart.charts.Pie
 import com.anychart.enums.Align
 import com.anychart.enums.LegendLayout
-import com.github.mikephil.charting.charts.PieChart
 import java.util.*
 
 
@@ -39,7 +39,7 @@ class HomeFragment : Fragment() {
             userId = bundle!!.getInt("UserId")
         }
         var view = inflater.inflate(R.layout.fragment_home, container, false)
-        pie =  AnyChart.pie()
+        pie = AnyChart.pie()
         viewModel = ViewModelProviders.of(requireActivity()).get(HomeViewModel::class.java)
         val calender = Calendar.getInstance()
         var month = calender.get(Calendar.MONTH)
@@ -91,10 +91,14 @@ class HomeFragment : Fragment() {
         }
 
         messageChart.visibility = View.GONE
-      /*  pieChart.description = Description()
-        pieChart.setTransparentCircleAlpha(0)
-        pieChart.setDrawEntryLabels(true)
-*/
+
+        setViewPieChart()
+        pieChart.setChart(pie)
+
+        /*  pieChart.description = Description()
+          pieChart.setTransparentCircleAlpha(0)
+          pieChart.setDrawEntryLabels(true)
+  */
         viewModel.inforChart.observe(viewLifecycleOwner) {
             Log.d("TAG", "onCreateView:inforChart = $it ")
             if (it.first == 0 && it.second == 0 && it.third == 0) {
@@ -103,20 +107,30 @@ class HomeFragment : Fragment() {
             } else {
                 pieChart.visibility = View.VISIBLE
                 messageChart.visibility = View.GONE
-                addDataSet(it.first.toFloat(), it.second.toFloat(), it.third.toFloat())
+                requireActivity().runOnUiThread {
+                    APIlib.getInstance().setActiveAnyChartView(pieChart)
+                    addDataSet(it.first.toFloat(), it.second.toFloat(), it.third.toFloat())
+                }
             }
         }
         return view
     }
 
-    private fun addDataSet( data1: Float, data2: Float, data3: Float) {
+    private fun addDataSet(data1: Float, data2: Float, data3: Float) {
+        Log.d("TAG", "addDataSet: ")
         val data: MutableList<DataEntry> = ArrayList()
         data.add(ValueDataEntry("Việc mới", data1))
         data.add(ValueDataEntry("Đang thực hiện", data2))
         data.add(ValueDataEntry("Hoàn thành", data3))
-
+        Log.d("TAG", "addDataSet:0 ")
         pie.data(data)
+        pieChart.visibility = View.GONE
+        pieChart.visibility = View.VISIBLE
+        pieChart.invalidate()
 
+    }
+
+    private fun setViewPieChart() {
         pie.title("Thống kê trạng thái ")
 
         pie.labels().position("outside")
@@ -130,8 +144,6 @@ class HomeFragment : Fragment() {
             .position("center-bottom")
             .itemsLayout(LegendLayout.HORIZONTAL)
             .align(Align.CENTER)
-
-        pieChart.setChart(pie)
     }
 
 }
