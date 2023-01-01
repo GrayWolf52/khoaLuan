@@ -22,4 +22,10 @@
         <item>Tháng 11</item>
         <item>Tháng 12</item>
     </string-array>
+    <string-array name="list_year">
+        <item>2020</item>
+        <item>2021</item>
+        <item>2022</item>
+        <item>2023</item>
+    </string-array>
 </resources>

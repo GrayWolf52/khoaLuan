@@ -37,6 +37,7 @@ class HomeViewModel() : ViewModel() {
                         StatusEvent.DONE -> countStatusDone++
                     }
                 }
+                Log.d("TAG", "getInforChart: countStatusNew$countStatusNew $countStatusDoing $countStatusDone")
                 _inforChart.postValue(Triple(countStatusNew, countStatusDoing, countStatusDone))
             }.start()
         }

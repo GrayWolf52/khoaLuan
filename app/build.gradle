@@ -47,6 +47,7 @@ dependencies {
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
     def work_version = "2.7.1"
+    implementation("ir.mahozad.android:pie-chart:0.7.0")
 
     // (Java only)
     implementation("androidx.work:work-runtime:$work_version")

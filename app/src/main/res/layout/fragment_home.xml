@@ -7,7 +7,7 @@
     android:backgroundTint="#ffffff"
     tools:context=".HomeFragment">
 
-    <com.anychart.AnyChartView
+    <ir.mahozad.android.PieChart
         android:id="@+id/pieChart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
@@ -20,8 +20,8 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/messageChart"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         android:gravity="center"
         android:text="CHƯA CÓ SỰ KIỆN"
         android:textAlignment="center"
@@ -31,11 +31,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Thống kê trạng thái"
+        android:textSize="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pieChart" />
+
     <Spinner
         android:id="@+id/monthSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="330dp"
+        android:layout_marginTop="450dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="30dp"
+        android:background="#ccc"
+        android:padding="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/yearSpinner"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/yearSpinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="450dp"
         android:layout_marginRight="30dp"
         android:background="#ccc"
         android:padding="20dp"
@@ -65,6 +87,7 @@
                 android:background="@color/blue" />
 
             <TextView
+                android:id="@+id/newJob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Việc mới"
@@ -85,6 +108,7 @@
                 android:background="@color/purple_700" />
 
             <TextView
+                android:id="@+id/doingJob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đăng thực hiện"
@@ -105,6 +129,7 @@
                 android:background="@color/green" />
 
             <TextView
+                android:id="@+id/doneJob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Hoàn thành"
