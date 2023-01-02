@@ -54,8 +54,8 @@ class HomeFragment : Fragment() {
         //    pie = AnyChart.pie()
         viewModel = ViewModelProviders.of(requireActivity()).get(HomeViewModel::class.java)
         val calender = Calendar.getInstance()
-        var month = calender.get(Calendar.MONTH)
-        var year = calender.get(Calendar.YEAR)
+        month = calender.get(Calendar.MONTH)
+         year = calender.get(Calendar.YEAR)
 
         Thread {
             viewModel.getInforChart(

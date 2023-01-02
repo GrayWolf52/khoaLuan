@@ -149,7 +149,8 @@ class EventService {
                         (ArrayList<EventInfos>()).toTypedArray().javaClass
                     )
                     return event.toList()
-                        .map { eventInfos -> if (eventInfos.status == Status.ACCEPTED) eventInfos.statusEvent else null }
+                        .map { eventInfos -> if (eventInfos.status == Status.ACCEPTED || eventInfos.creator.id
+                         == userId) eventInfos.statusEvent else null }
                 } else if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {
                         return listOf()
