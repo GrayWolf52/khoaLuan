@@ -133,7 +133,7 @@ class EventService {
             }
         }
 
-        fun getListStatusByMonth(userId: Int, groupId: Int, month: Int, year: Int): List<Int> {
+        fun getListStatusByMonth(userId: Int, groupId: Int, month: Int, year: Int): List<Int?> {
             val gson = GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create()
             var client = OkHttpClient()
             val request = Request.Builder()
@@ -148,7 +148,8 @@ class EventService {
                         responseBody,
                         (ArrayList<EventInfos>()).toTypedArray().javaClass
                     )
-                    return event.toList().map { eventInfos -> eventInfos.statusEvent }
+                    return event.toList()
+                        .map { eventInfos -> if (eventInfos.status == Status.ACCEPTED) eventInfos.statusEvent else null }
                 } else if (statusCode == 400) {
                     if (responseBody == null || responseBody == "") {
                         return listOf()
