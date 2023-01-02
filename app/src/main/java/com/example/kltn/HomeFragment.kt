@@ -184,22 +184,22 @@ class HomeFragment : Fragment() {
                     data1 / (data1 + data2 + data3),
                     ContextCompat.getColor(context, R.color.blue),
                     ContextCompat.getColor(context, R.color.blue),
-                    legend = "Việc mới",
-                    label = "Việc mới"
+                    legend = "",
+                    label = ""
                 ),
                 PieChart.Slice(
                     data2 / (data1 + data2 + data3),
                     ContextCompat.getColor(context, R.color.purple_700),
                     ContextCompat.getColor(context, R.color.purple_700),
-                    legend = "Đang thực hiện",
-                    label = "Đang thực hiện"
+                    legend = "",
+                    label = ""
                 ),
                 PieChart.Slice(
                     data3 / (data1 + data2 + data3),
                     ContextCompat.getColor(context, R.color.green),
                     ContextCompat.getColor(context, R.color.green),
-                    legend = "Hoàn thành",
-                    label = "Hoàn thành"
+                    legend = "",
+                    label = ""
                 ),
             )
             gradientType = PieChart.GradientType.RADIAL

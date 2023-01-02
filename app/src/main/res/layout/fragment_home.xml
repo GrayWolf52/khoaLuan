@@ -111,7 +111,7 @@
                 android:id="@+id/doingJob"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Đăng thực hiện"
+                android:text="Đang thực hiện"
                 android:textSize="18dp"
                 android:textStyle="bold" />
 
