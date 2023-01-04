@@ -45,7 +45,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:background="@drawable/dot_day"
-            android:backgroundTint="@color/orange"
+            android:backgroundTint="@color/black"
             tools:ignore="SpeakableTextPresentCheck" />
     </LinearLayout>
 
